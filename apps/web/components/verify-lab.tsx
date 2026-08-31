@@ -6,8 +6,11 @@ import {
   confidence,
   createAutoSegmenter,
   createExplicitSegmenter,
+  fuseDecision,
   HAND_LABEL_TO_USER_SIDE,
   type FeedbackThresholds,
+  type StablePrediction,
+  type Verdict,
 } from '@lakon/cv-core'
 import { compileSign, type CompiledSign, type CompilerRig } from '@lakon/sign-compiler'
 import { parseHandshape, parseSign, type Handshape, type Sign } from '@lakon/sign-schema'
@@ -52,6 +55,8 @@ export function VerifyLab() {
   const [rigReady, setRigReady] = useState(false)
   const [tolerance, setTolerance] = useState(6)
   const [thresholds, setThresholds] = useState<FeedbackThresholds>(DEFAULT_FEEDBACK_THRESHOLDS)
+  const [verdict, setVerdict] = useState<Verdict | null>(null)
+  const stableRef = useRef<StablePrediction | null>(null)
 
   useEffect(() => {
     fetch('/api/dev/content')
@@ -107,6 +112,9 @@ export function VerifyLab() {
       onState: setState,
       onLandmarks: (hands, pose, timestamp) => {
         runRef.current?.onLandmarks(hands, pose, timestamp)
+      },
+      onPrediction: (_raw, stable) => {
+        stableRef.current = stable
       },
     })
     pipelineRef.current = pipeline
@@ -168,7 +176,16 @@ export function VerifyLab() {
           setError('gerakan terlalu singkat atau tangan tidak terlihat')
           return
         }
-        setResult(scoreAgainstReference(frames, compiled, thresholds))
+        const scored = scoreAgainstReference(frames, compiled, thresholds)
+        setResult(scored)
+        setVerdict(
+          fuseDecision({
+            expectedSign: compiled.id,
+            stableLabel: stableRef.current?.label ?? null,
+            dtwScore: scored.score,
+            dtwThreshold: tolerance,
+          }),
+        )
         if (progressEl.current) progressEl.current.textContent = 'selesai'
       },
     )
@@ -283,6 +300,12 @@ export function VerifyLab() {
             <>
               <section>
                 <h2 className="text-lg font-semibold">Hasil</h2>
+                <p>
+                  Keputusan gabungan:{' '}
+                  <span className="font-medium">
+                    {verdict ? `${verdict.kind} (${verdict.reason})` : '-'}
+                  </span>
+                </p>
                 <p>
                   Skor DTW:{' '}
                   <span className="font-mono tabular-nums">{result.score.toFixed(2)}</span> ·

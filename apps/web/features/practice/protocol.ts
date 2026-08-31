@@ -39,9 +39,37 @@ export const DEFAULT_WORKER_CONFIG: WorkerConfig = {
 
 export type CaptureFrame = VideoFrame | ImageBitmap
 
+export const ORT_VERSION = '1.29.0'
+export const ORT_WASM_BASE = `https://cdn.jsdelivr.net/npm/onnxruntime-web@${ORT_VERSION}/dist/`
+
+export type ClassifierManifest = {
+  kind: 'static' | 'dynamic'
+  labels: string[]
+  inputShape: number[]
+  url: string
+}
+
+export type ClassifierBackend = 'WebGPU' | 'WASM SIMD'
+
+export type RawPredictionMessage = { label: string; confidence: number }
+export type StablePredictionMessage = {
+  label: string | null
+  meanConfidence: number
+  votes: number
+}
+
+export type StabilizerParamsMessage = {
+  inferEvery?: number
+  bufferSize?: number
+  minVotes?: number
+  minConfidence?: number
+}
+
 export type ToWorker =
   | { type: 'init'; config: WorkerConfig }
   | { type: 'frame'; frame: CaptureFrame; timestamp: number }
+  | { type: 'load-model'; manifest: ClassifierManifest; modelBaseUrl: string }
+  | { type: 'stabilizer'; params: StabilizerParamsMessage }
   | { type: 'stop' }
 
 export type FromWorker =
@@ -52,6 +80,14 @@ export type FromWorker =
       pose: PoseObservation | null
       timestamp: number
       inferenceMs: number
+    }
+  | { type: 'model-ready'; backend: ClassifierBackend }
+  | { type: 'model-error'; message: string }
+  | {
+      type: 'prediction'
+      raw: RawPredictionMessage
+      stable: StablePredictionMessage
+      timestamp: number
     }
   | { type: 'error'; message: string }
 

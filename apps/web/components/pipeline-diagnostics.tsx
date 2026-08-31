@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { DEFAULT_STABILIZER, type StabilizerParams } from '@lakon/cv-core'
 import {
   detectRoute,
   hasTrackProcessor,
@@ -35,6 +36,11 @@ const METRICS = [
     key: 'backend',
     label: 'Backend aktif',
     format: (s: PipelineStats) => s.backend ?? 'belum siap',
+  },
+  {
+    key: 'classifierBackend',
+    label: 'Backend klasifikasi',
+    format: (s: PipelineStats) => s.classifierBackend ?? 'memeriksa',
   },
   {
     key: 'route',
@@ -79,9 +85,12 @@ export function PipelineDiagnostics() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const pipelineRef = useRef<Pipeline | null>(null)
   const valueRefs = useRef(new Map<string, HTMLSpanElement>())
+  const predictionRef = useRef<string>('-')
+  const predictionEl = useRef<HTMLSpanElement | null>(null)
 
   const [state, setState] = useState<PipelineState>({ status: 'idle' })
   const [forcedRoute, setForcedRoute] = useState<CaptureRoute | 'auto'>('auto')
+  const [stabilizer, setStabilizer] = useState<StabilizerParams>(DEFAULT_STABILIZER)
   const [capabilities, setCapabilities] = useState<{
     trackProcessor: boolean
     videoFrameCallback: boolean
@@ -101,7 +110,16 @@ export function PipelineDiagnostics() {
     const canvas = canvasRef.current
     if (!video || !canvas) return
 
-    const pipeline = createPipeline({ video, canvas, onState: setState })
+    const pipeline = createPipeline({
+      video,
+      canvas,
+      onState: setState,
+      onPrediction: (raw, stable) => {
+        predictionRef.current = stable.label
+          ? `${stable.label} (${(stable.meanConfidence * 100).toFixed(0)}%, ${stable.votes} suara)`
+          : `belum stabil (${raw.label} ${(raw.confidence * 100).toFixed(0)}%)`
+      },
+    })
     pipelineRef.current = pipeline
 
     let raf = 0
@@ -114,6 +132,7 @@ export function PipelineDiagnostics() {
         const node = valueRefs.current.get(metric.key)
         if (node) node.textContent = metric.format(pipeline.stats)
       }
+      if (predictionEl.current) predictionEl.current.textContent = predictionRef.current
     }
     raf = requestAnimationFrame(tick)
 
@@ -204,6 +223,45 @@ export function PipelineDiagnostics() {
           ))}
         </dl>
       </div>
+
+      <section className="flex flex-col gap-2">
+        <h2 className="text-lg font-semibold">Klasifikasi</h2>
+        <p className="text-sm">
+          Prediksi stabil:{' '}
+          <span ref={predictionEl} className="font-mono">
+            -
+          </span>
+        </p>
+        <div className="grid max-w-md gap-2 text-sm">
+          {(
+            [
+              ['inferEvery', 'inferensi tiap n frame', 1, 6, 1],
+              ['bufferSize', 'ukuran penyangga', 4, 20, 1],
+              ['minVotes', 'suara minimum', 2, 15, 1],
+              ['minConfidence', 'keyakinan minimum', 0.5, 1, 0.01],
+            ] as const
+          ).map(([key, label, min, max, step]) => (
+            <label key={key} className="flex items-center gap-2">
+              <span className="w-44">{label}</span>
+              <input
+                type="range"
+                min={min}
+                max={max}
+                step={step}
+                value={stabilizer[key]}
+                onChange={(event) => {
+                  const next = { ...stabilizer, [key]: Number(event.target.value) }
+                  setStabilizer(next)
+                  pipelineRef.current?.setStabilizer(next)
+                }}
+              />
+              <span className="font-mono tabular-nums">
+                {key === 'minConfidence' ? stabilizer[key].toFixed(2) : stabilizer[key]}
+              </span>
+            </label>
+          ))}
+        </div>
+      </section>
 
       <section className="flex flex-col gap-2">
         <h2 className="text-lg font-semibold">Kapabilitas peramban</h2>

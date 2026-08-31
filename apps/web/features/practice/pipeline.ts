@@ -4,9 +4,14 @@ import {
   DEFAULT_WORKER_CONFIG,
   type Backend,
   type CaptureFrame,
+  type ClassifierBackend,
+  type ClassifierManifest,
   type FromWorker,
   type HandObservation,
   type PoseObservation,
+  type RawPredictionMessage,
+  type StabilizerParamsMessage,
+  type StablePredictionMessage,
   type ToWorker,
   type WorkerConfig,
 } from './protocol'
@@ -22,6 +27,7 @@ export type PipelineStats = {
   droppedFrames: number
   queuedFrames: number
   backend: Backend | null
+  classifierBackend: ClassifierBackend | 'tanpa model' | null
   route: CaptureRoute | null
   resolution: string | null
   lastLandmarkAt: number
@@ -36,6 +42,12 @@ export type PipelineOptions = {
   mirrored?: boolean
   onState?: (state: PipelineState) => void
   onLandmarks?: (hands: HandObservation[], pose: PoseObservation | null, timestamp: number) => void
+  onPrediction?: (
+    raw: RawPredictionMessage,
+    stable: StablePredictionMessage,
+    timestamp: number,
+  ) => void
+  classifierManifestUrl?: string
 }
 
 export type Pipeline = {
@@ -43,6 +55,7 @@ export type Pipeline = {
   stop: () => void
   stats: Readonly<PipelineStats>
   state: () => PipelineState
+  setStabilizer: (params: StabilizerParamsMessage) => void
 }
 
 class Rate {
@@ -87,6 +100,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     droppedFrames: 0,
     queuedFrames: 0,
     backend: null,
+    classifierBackend: null,
     route: null,
     resolution: null,
     lastLandmarkAt: 0,
@@ -137,11 +151,44 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     send({ type: 'frame', frame, timestamp }, [frame as unknown as Transferable])
   }
 
+  const loadClassifier = async () => {
+    const manifestUrl = options.classifierManifestUrl ?? '/models/classifier.json'
+    try {
+      const response = await fetch(manifestUrl)
+      if (!response.ok) {
+        stats.classifierBackend = 'tanpa model'
+        return
+      }
+      const manifest = (await response.json()) as ClassifierManifest
+      send({
+        type: 'load-model',
+        manifest,
+        modelBaseUrl: new URL(manifestUrl, location.href).href,
+      })
+    } catch {
+      stats.classifierBackend = 'tanpa model'
+    }
+  }
+
   const onWorkerMessage = (event: MessageEvent<FromWorker>) => {
     const message = event.data
     if (message.type === 'ready') {
       stats.backend = message.backend
       ready = true
+      void loadClassifier()
+      return
+    }
+    if (message.type === 'model-ready') {
+      stats.classifierBackend = message.backend
+      return
+    }
+    if (message.type === 'model-error') {
+      stats.classifierBackend = 'tanpa model'
+      console.warn('model klasifikasi tidak dimuat:', message.message)
+      return
+    }
+    if (message.type === 'prediction') {
+      options.onPrediction?.(message.raw, message.stable, message.timestamp)
       return
     }
     if (message.type === 'error') {
@@ -250,5 +297,9 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     if (state.status !== 'error') setState({ status: 'idle' })
   }
 
-  return { start, stop, stats, state: () => state }
+  const setStabilizer = (params: StabilizerParamsMessage) => {
+    send({ type: 'stabilizer', params })
+  }
+
+  return { start, stop, stats, state: () => state, setStabilizer }
 }
