@@ -14,14 +14,14 @@ import { extractCompilerRig } from '@/features/avatar/compiler-rig'
 import { applyCompiledFrame } from '@/features/avatar/player'
 import { disposeAvatar, loadAvatar, type AvatarRig } from '@/features/avatar/vrm'
 
-type Playback = {
+export type Playback = {
   compiled: CompiledSign | null
   playing: boolean
   speed: number
   time: number
 }
 
-function CompiledAvatar({
+export function CompiledAvatar({
   playbackRef,
   timeEl,
   sliderEl,

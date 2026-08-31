@@ -1,6 +1,9 @@
 {
   "id": "uji-gerak",
-  "gloss": { "id": "isyarat uji teknis compiler", "en": "compiler technical test sign" },
+  "gloss": {
+    "id": "isyarat uji teknis compiler",
+    "en": "compiler technical test sign"
+  },
   "dialect": "bisindo-jakarta",
   "structure": "symmetric",
   "dominance": "right",
@@ -14,8 +17,14 @@
       "easing": "ease-out",
       "dominant": {
         "handshape": "b-flat",
-        "location": { "anchor": "dada", "offset": [0.15, 0.05, 0.25] },
-        "orientation": { "palm": "in", "fingers": "up" }
+        "location": {
+          "anchor": "dada",
+          "offset": [0.15, 0.05, 0.25]
+        },
+        "orientation": {
+          "palm": "in",
+          "fingers": "up"
+        }
       }
     },
     {
@@ -23,11 +32,21 @@
       "duration": 600,
       "hold": 100,
       "easing": "ease-in-out",
-      "path": { "shape": "busur", "curvature": 0.4, "plane": "sagittal" },
+      "path": {
+        "shape": "busur",
+        "curvature": 0.4,
+        "plane": "sagittal"
+      },
       "dominant": {
         "handshape": "five-spread",
-        "location": { "anchor": "ruang-netral", "offset": [0.3, -0.2, 0.35] },
-        "orientation": { "palm": "up", "fingers": "forward" }
+        "location": {
+          "anchor": "ruang-netral",
+          "offset": [0.3, -0.2, 0.35]
+        },
+        "orientation": {
+          "palm": "up",
+          "fingers": "forward"
+        }
       }
     },
     {
@@ -36,12 +55,28 @@
       "easing": "ease-in",
       "dominant": {
         "handshape": "fist",
-        "location": { "anchor": "perut", "offset": [0.2, 0, 0.3] },
-        "orientation": { "palm": "down", "fingers": "forward" }
+        "location": {
+          "anchor": "perut",
+          "offset": [0.2, 0, 0.3]
+        },
+        "orientation": {
+          "palm": "down",
+          "fingers": "forward"
+        }
       }
     }
   ],
   "contact": null,
-  "nonManual": { "brow": null, "mouth": null, "head": null, "gaze": null },
-  "review": { "status": "draft", "validatedBy": null, "role": null, "date": null }
+  "nonManual": {
+    "brow": null,
+    "mouth": null,
+    "head": null,
+    "gaze": null
+  },
+  "review": {
+    "status": "draft",
+    "validatedBy": null,
+    "role": null,
+    "date": null
+  }
 }
