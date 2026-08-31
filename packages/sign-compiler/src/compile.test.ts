@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Vector3 } from 'three'
-import { handFeatures } from '@lakon/cv-core'
+import { FRAME_FEATURE_DIM, frameFeatures } from '@lakon/cv-core'
 import type { Handshape, Sign } from '@lakon/sign-schema'
 import { COMPILE_FPS, compileSign, evalPath, sampleCompiled, type CompiledFrame } from './compile'
 import { frameFromDirections } from './geometry'
@@ -187,15 +187,20 @@ describe('compileSign', () => {
     const realPose = Array.from({ length: 33 }, () => ({ x: 0, y: 0, z: 0 }))
     realPose[11] = { x: 0.2, y: 0, z: 0 }
     realPose[12] = { x: -0.2, y: 0, z: 0 }
-    const real = handFeatures(realHand, realPose)
+    const real = frameFeatures({
+      hands: [{ handedness: 'Left', world: realHand }],
+      pose: realPose,
+    })
 
-    expect(compiled.reference.right).not.toBeNull()
-    expect(compiled.reference.left).not.toBeNull()
-    for (const frame of compiled.reference.right!) {
+    expect(real.length).toBe(FRAME_FEATURE_DIM)
+    expect(compiled.reference.length).toBe(compiled.frames.length)
+    expect(compiled.phaseByFrame.length).toBe(compiled.frames.length)
+    for (const frame of compiled.reference) {
       expect(frame.length).toBe(real.length)
       for (const value of frame) expect(Number.isFinite(value)).toBe(true)
     }
-    expect(compiled.reference.right!.length).toBe(compiled.frames.length)
+    expect(compiled.phaseByFrame[0]).toBe(0)
+    expect(compiled.phaseByFrame.at(-1)).toBe(1)
   })
 
   it('dominant-only membiarkan tangan non-dominan di posisi istirahat', () => {
@@ -204,7 +209,6 @@ describe('compileSign', () => {
     for (const frame of compiled.frames) {
       expect(frame.hands.left.wristPos).toEqual(first)
     }
-    expect(compiled.reference.left).toBeNull()
     expect(first[1]).toBeLessThan(1.1)
   })
 

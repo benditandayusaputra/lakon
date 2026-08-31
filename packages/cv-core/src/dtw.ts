@@ -31,5 +31,58 @@ export const dtw = (
   return prev[w]! / (a.length + b.length)
 }
 
+export type DtwPathPair = [number, number]
+
+export type DtwResult = {
+  score: number
+  path: DtwPathPair[]
+  pairDistances: number[]
+}
+
+export const dtwDetailed = (
+  user: readonly Float32Array[],
+  reference: readonly Float32Array[],
+  dist = featureDistance,
+): DtwResult => {
+  const n = user.length
+  const m = reference.length
+  if (n === 0 || m === 0) return { score: Infinity, path: [], pairDistances: [] }
+
+  const cost = new Float64Array((n + 1) * (m + 1)).fill(Infinity)
+  const at = (i: number, j: number) => i * (m + 1) + j
+  cost[at(0, 0)] = 0
+
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      const c = dist(user[i - 1]!, reference[j - 1]!)
+      cost[at(i, j)] =
+        c + Math.min(cost[at(i - 1, j)]!, cost[at(i, j - 1)]!, cost[at(i - 1, j - 1)]!)
+    }
+  }
+
+  const path: DtwPathPair[] = []
+  let i = n
+  let j = m
+  while (i > 0 && j > 0) {
+    path.push([i - 1, j - 1])
+    const diagonal = cost[at(i - 1, j - 1)]!
+    const up = cost[at(i - 1, j)]!
+    const left = cost[at(i, j - 1)]!
+    if (diagonal <= up && diagonal <= left) {
+      i--
+      j--
+    } else if (up <= left) {
+      i--
+    } else {
+      j--
+    }
+  }
+  path.reverse()
+
+  const pairDistances = path.map(([ui, rj]) => dist(user[ui]!, reference[rj]!))
+
+  return { score: cost[at(n, m)]! / (n + m), path, pairDistances }
+}
+
 export const confidence = (distance: number, tolerance: number): number =>
   distance <= 0 ? 1 : Math.max(0, Math.min(1, 1 - distance / tolerance))

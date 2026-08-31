@@ -1,5 +1,5 @@
 import { Quaternion, Vector3 } from 'three'
-import { handFeatures, POSE } from '@lakon/cv-core'
+import { frameFeatures, POSE, type FrameInput } from '@lakon/cv-core'
 import {
   FINGERS,
   type Anchor,
@@ -63,7 +63,8 @@ export type CompiledSign = {
   duration: number
   fps: number
   frames: CompiledFrame[]
-  reference: Record<Side, Float32Array[] | null>
+  reference: Float32Array[]
+  phaseByFrame: number[]
 }
 
 type FingerParams = Record<
@@ -479,13 +480,25 @@ export const compileSign = (
   times.push(totalDuration)
 
   const frames: CompiledFrame[] = []
-  const reference: Record<Side, Float32Array[] | null> = {
-    left: null,
-    right: null,
-  }
-  const domReference: Float32Array[] = []
-  const nonDomReference: Float32Array[] = []
+  const reference: Float32Array[] = []
+  const phaseByFrame: number[] = []
   const nonDomMoves = sign.structure === 'symmetric'
+
+  const phaseStarts: number[] = []
+  {
+    let clock = 0
+    for (const phase of sign.phases) {
+      phaseStarts.push(clock)
+      clock += phase.duration + (phase.hold ?? 0)
+    }
+  }
+  const phaseIndexAt = (t: number) => {
+    let index = 0
+    for (let i = 0; i < phaseStarts.length; i++) {
+      if (t >= phaseStarts[i]!) index = i
+    }
+    return index
+  }
 
   const shoulderLeft = vec(rig.hands.left.shoulder)
   const shoulderRight = vec(rig.hands.right.shoulder)
@@ -593,18 +606,26 @@ export const compileSign = (
       }
     }
 
-    domReference.push(handFeatures(toMp(landmarksBySide[dominance]), mpPose))
-    if (nonDomMoves) {
-      nonDomReference.push(handFeatures(toMp(landmarksBySide[nonDom]), mpPose))
+    const framePose = mpPose.map((point) => ({ ...point }))
+    const leftWristFk = landmarksBySide.left[0]!
+    const rightWristFk = landmarksBySide.right[0]!
+    framePose[POSE.rightWrist] = { x: -leftWristFk.x, y: -leftWristFk.y, z: -leftWristFk.z }
+    framePose[POSE.leftWrist] = { x: -rightWristFk.x, y: -rightWristFk.y, z: -rightWristFk.z }
+
+    const frameInput: FrameInput = {
+      hands: [
+        { handedness: 'Left', world: toMp(landmarksBySide.left) },
+        { handedness: 'Right', world: toMp(landmarksBySide.right) },
+      ],
+      pose: framePose,
     }
+    reference.push(frameFeatures(frameInput))
+    phaseByFrame.push(phaseIndexAt(t))
 
     frames.push({ t, hands: handFrames })
   }
 
-  reference[dominance] = domReference
-  if (nonDomMoves) reference[nonDom] = nonDomReference
-
-  return { id: sign.id, duration: totalDuration, fps, frames, reference }
+  return { id: sign.id, duration: totalDuration, fps, frames, reference, phaseByFrame }
 }
 
 const mirrorQuatX = (q: Quaternion) => new Quaternion(q.x, -q.y, -q.z, q.w)

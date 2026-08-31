@@ -1,5 +1,28 @@
 import { expect, test } from 'vitest'
-import { dtw, featureDistance, handFeatures, jointAngle, shoulderWidth } from './index'
+import {
+  FLAGS_OFFSET,
+  FRAME_FEATURE_DIM,
+  HAND_LANDMARK_DIMS,
+  SIDE_OFFSET,
+  dtw,
+  dtwDetailed,
+  featureDistance,
+  frameFeatures,
+  jointAngle,
+  shoulderWidth,
+} from './index'
+
+const hand = (offset = 0) =>
+  Array.from({ length: 21 }, (_, i) => ({ x: offset + i * 0.01, y: 0.4, z: 0 }))
+
+const pose = () => {
+  const points = Array.from({ length: 33 }, () => ({ x: 0, y: 0, z: 0 }))
+  points[11] = { x: 0.2, y: 0, z: 0 }
+  points[12] = { x: -0.2, y: 0, z: 0 }
+  points[15] = { x: 0.25, y: 0.3, z: 0 }
+  points[16] = { x: -0.25, y: 0.3, z: 0 }
+  return points
+}
 
 test('dtw simetris dan nol untuk urutan identik', () => {
   const a = [new Float32Array([0, 0]), new Float32Array([1, 1])]
@@ -9,18 +32,64 @@ test('dtw simetris dan nol untuk urutan identik', () => {
   expect(featureDistance(a[0]!, a[1]!)).toBeCloseTo(Math.SQRT2, 6)
 })
 
-test('fitur tangan dinormalisasi terhadap lebar bahu', () => {
-  const pose = Array.from({ length: 13 }, () => ({ x: 0, y: 0, z: 0 }))
-  pose[11] = { x: 0.2, y: 0, z: 0 }
-  pose[12] = { x: -0.2, y: 0, z: 0 }
-  const hand = Array.from({ length: 21 }, (_, i) => ({ x: i * 0.01, y: 0.4, z: 0 }))
-  hand[5] = { x: 0.05, y: 0.45, z: 0 }
-  hand[17] = { x: -0.05, y: 0.45, z: 0 }
+test('dtwDetailed mengembalikan jalur monoton dan skor nol untuk urutan identik', () => {
+  const seq = [new Float32Array([0, 0]), new Float32Array([1, 0]), new Float32Array([2, 0])]
+  const result = dtwDetailed(seq, seq)
+  expect(result.score).toBe(0)
+  expect(result.path[0]).toEqual([0, 0])
+  expect(result.path.at(-1)).toEqual([2, 2])
+  for (let i = 1; i < result.path.length; i++) {
+    expect(result.path[i]![0]).toBeGreaterThanOrEqual(result.path[i - 1]![0])
+    expect(result.path[i]![1]).toBeGreaterThanOrEqual(result.path[i - 1]![1])
+  }
+})
 
-  expect(shoulderWidth(pose)).toBeCloseTo(0.4, 6)
-  const f = handFeatures(hand, pose)
-  expect(f.length).toBe(22)
-  expect(f[20]).toBeCloseTo(0.4 / 0.4, 6)
+test('frameFeatures berdimensi tetap untuk semua kombinasi tangan', () => {
+  const both = frameFeatures({
+    hands: [
+      { handedness: 'Left', world: hand() },
+      { handedness: 'Right', world: hand(0.3) },
+    ],
+    pose: pose(),
+  })
+  const leftOnly = frameFeatures({ hands: [{ handedness: 'Left', world: hand() }], pose: pose() })
+  const none = frameFeatures({ hands: [], pose: pose() })
+
+  expect(both.length).toBe(FRAME_FEATURE_DIM)
+  expect(leftOnly.length).toBe(FRAME_FEATURE_DIM)
+  expect(none.length).toBe(FRAME_FEATURE_DIM)
+  expect(both[FLAGS_OFFSET]).toBe(1)
+  expect(both[FLAGS_OFFSET + 1]).toBe(1)
+  expect(leftOnly[FLAGS_OFFSET]).toBe(1)
+  expect(leftOnly[FLAGS_OFFSET + 1]).toBe(0)
+  expect(none[FLAGS_OFFSET]).toBe(0)
+  for (let i = SIDE_OFFSET.Right; i < SIDE_OFFSET.Right + HAND_LANDMARK_DIMS; i++) {
+    expect(leftOnly[i]).toBe(0)
+  }
+})
+
+test('pergelangan dinormalisasi terhadap lebar bahu dan urutan tangan berdasar label', () => {
+  const swapped = frameFeatures({
+    hands: [
+      { handedness: 'Right', world: hand(0.3) },
+      { handedness: 'Left', world: hand() },
+    ],
+    pose: pose(),
+  })
+  const ordered = frameFeatures({
+    hands: [
+      { handedness: 'Left', world: hand() },
+      { handedness: 'Right', world: hand(0.3) },
+    ],
+    pose: pose(),
+  })
+  expect([...swapped]).toEqual([...ordered])
+
+  expect(shoulderWidth(pose())).toBeCloseTo(0.4, 6)
+  const wristBase = SIDE_OFFSET.Left + HAND_LANDMARK_DIMS
+  expect(ordered[wristBase]).toBeCloseTo(-0.25 / 0.4, 5)
+  expect(ordered[wristBase + 1]).toBeCloseTo(0.3 / 0.4, 5)
+
   expect(jointAngle({ x: 0, y: 1, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 0, y: -1, z: 0 })).toBeCloseTo(
     0,
     6,

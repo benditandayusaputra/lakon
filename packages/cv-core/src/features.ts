@@ -1,21 +1,7 @@
 export type Vec3 = { x: number; y: number; z: number }
 
-export const HAND_FEATURE_DIM = 22
-
-export const FEATURE_LAYOUT = {
-  flex: [0, 15],
-  spread: [15, 16],
-  orientation: [16, 19],
-  location: [19, 22],
-} as const
-
 const sub = (a: Vec3, b: Vec3): Vec3 => ({ x: a.x - b.x, y: a.y - b.y, z: a.z - b.z })
 const dot = (a: Vec3, b: Vec3) => a.x * b.x + a.y * b.y + a.z * b.z
-const cross = (a: Vec3, b: Vec3): Vec3 => ({
-  x: a.y * b.z - a.z * b.y,
-  y: a.z * b.x - a.x * b.z,
-  z: a.x * b.y - a.y * b.x,
-})
 const len = (a: Vec3) => Math.sqrt(dot(a, a))
 const norm = (a: Vec3): Vec3 => {
   const l = len(a) || 1
@@ -28,15 +14,12 @@ export const jointAngle = (a: Vec3, b: Vec3, c: Vec3): number => {
   return Math.PI - Math.acos(Math.min(1, Math.max(-1, dot(u, v))))
 }
 
-const FINGER_CHAINS: readonly (readonly [number, number, number, number])[] = [
-  [1, 2, 3, 4],
-  [5, 6, 7, 8],
-  [9, 10, 11, 12],
-  [13, 14, 15, 16],
-  [17, 18, 19, 20],
-]
-
-export const POSE = { leftShoulder: 11, rightShoulder: 12 } as const
+export const POSE = {
+  leftShoulder: 11,
+  rightShoulder: 12,
+  leftWrist: 15,
+  rightWrist: 16,
+} as const
 
 export type PoseFrame = readonly Vec3[]
 export type HandFrame = readonly Vec3[]
@@ -55,48 +38,88 @@ export const shoulderCenter = (pose: PoseFrame): Vec3 => {
   return { x: (l.x + r.x) / 2, y: (l.y + r.y) / 2, z: (l.z + r.z) / 2 }
 }
 
-export const handFeatures = (hand: HandFrame, pose: PoseFrame): Float32Array => {
-  const out = new Float32Array(HAND_FEATURE_DIM)
-  const wrist = hand[0]
-  if (!wrist) return out
+export type HandLabel = 'Left' | 'Right'
 
-  let i = 0
-  for (const chain of FINGER_CHAINS) {
-    const [a, b, c, d] = chain
-    const p0 = wrist
-    const p1 = hand[a]
-    const p2 = hand[b]
-    const p3 = hand[c]
-    const p4 = hand[d]
-    if (p0 && p1 && p2) out[i] = jointAngle(p0, p1, p2)
-    if (p1 && p2 && p3) out[i + 1] = jointAngle(p1, p2, p3)
-    if (p2 && p3 && p4) out[i + 2] = jointAngle(p2, p3, p4)
-    i += 3
+export type FrameInput = {
+  hands: readonly { handedness: HandLabel; world: readonly Vec3[] }[]
+  pose: PoseFrame | null
+}
+
+export const HAND_LANDMARKS = 21
+export const HAND_LANDMARK_DIMS = HAND_LANDMARKS * 3
+export const HAND_BLOCK_DIMS = HAND_LANDMARK_DIMS + 3
+export const SIDE_OFFSET: Record<HandLabel, number> = { Left: 0, Right: HAND_BLOCK_DIMS }
+export const FLAGS_OFFSET = HAND_BLOCK_DIMS * 2
+export const FRAME_FEATURE_DIM = FLAGS_OFFSET + 2
+
+export const HAND_WRIST_POSE_INDEX: Record<HandLabel, number> = {
+  Left: POSE.rightWrist,
+  Right: POSE.leftWrist,
+}
+
+export const HAND_LABEL_TO_USER_SIDE: Record<HandLabel, 'kanan' | 'kiri'> = {
+  Left: 'kanan',
+  Right: 'kiri',
+}
+
+export const FINGER_LANDMARKS = {
+  thumb: [1, 2, 3, 4],
+  index: [5, 6, 7, 8],
+  middle: [9, 10, 11, 12],
+  ring: [13, 14, 15, 16],
+  pinky: [17, 18, 19, 20],
+} as const
+
+export const FINGER_TIPS = {
+  thumb: 4,
+  index: 8,
+  middle: 12,
+  ring: 16,
+  pinky: 20,
+} as const
+
+export const KNUCKLE_LANDMARKS = [5, 9, 13, 17] as const
+
+export const frameFeatures = (input: FrameInput): Float32Array => {
+  const out = new Float32Array(FRAME_FEATURE_DIM)
+
+  const byLabel = new Map<HandLabel, readonly Vec3[]>()
+  for (const hand of input.hands) {
+    if (!byLabel.has(hand.handedness) && hand.world.length >= HAND_LANDMARKS) {
+      byLabel.set(hand.handedness, hand.world)
+    }
   }
 
-  const indexMcp = hand[5]
-  const pinkyMcp = hand[17]
-  if (indexMcp && pinkyMcp) {
-    const u = norm(sub(indexMcp, wrist))
-    const v = norm(sub(pinkyMcp, wrist))
-    out[15] = Math.acos(Math.min(1, Math.max(-1, dot(u, v))))
-  }
+  const width = input.pose ? shoulderWidth(input.pose) : 0
+  const center = input.pose ? shoulderCenter(input.pose) : { x: 0, y: 0, z: 0 }
 
-  if (indexMcp && pinkyMcp) {
-    const forward = norm(sub(indexMcp, wrist))
-    const side = norm(sub(pinkyMcp, wrist))
-    const palm = norm(cross(forward, side))
-    out[16] = Math.atan2(palm.y, palm.z)
-    out[17] = Math.atan2(palm.x, palm.z)
-    const up = norm(cross(palm, forward))
-    out[18] = Math.atan2(up.x, up.y)
-  }
+  for (const label of ['Left', 'Right'] as HandLabel[]) {
+    const world = byLabel.get(label)
+    const offset = SIDE_OFFSET[label]
+    if (!world) continue
 
-  const w = shoulderWidth(pose) || 1
-  const c = shoulderCenter(pose)
-  out[19] = (wrist.x - c.x) / w
-  out[20] = (wrist.y - c.y) / w
-  out[21] = (wrist.z - c.z) / w
+    const wrist = world[0]!
+    const middleMcp = world[9]!
+    const scale = len(sub(middleMcp, wrist)) || 1
+
+    for (let i = 0; i < HAND_LANDMARKS; i++) {
+      const point = world[i]!
+      out[offset + i * 3] = (point.x - wrist.x) / scale
+      out[offset + i * 3 + 1] = (point.y - wrist.y) / scale
+      out[offset + i * 3 + 2] = (point.z - wrist.z) / scale
+    }
+
+    if (input.pose && width > 0) {
+      const poseWrist = input.pose[HAND_WRIST_POSE_INDEX[label]]
+      if (poseWrist) {
+        out[offset + HAND_LANDMARK_DIMS] = (poseWrist.x - center.x) / width
+        out[offset + HAND_LANDMARK_DIMS + 1] = (poseWrist.y - center.y) / width
+        out[offset + HAND_LANDMARK_DIMS + 2] = (poseWrist.z - center.z) / width
+      }
+    }
+
+    out[FLAGS_OFFSET + (label === 'Left' ? 0 : 1)] = 1
+  }
 
   return out
 }
