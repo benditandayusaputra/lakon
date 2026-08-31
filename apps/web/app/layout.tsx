@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { ServiceWorkerRegister } from '@/components/service-worker-register'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="id">
-      <body className="bg-paper text-ink min-h-dvh antialiased">{children}</body>
+      <body className="bg-halaman text-teks min-h-dvh antialiased">
+        {children}
+        <ServiceWorkerRegister />
+      </body>
     </html>
   )
 }

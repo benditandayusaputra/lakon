@@ -66,6 +66,7 @@ export const extractLandmarksFromVideo = (
         reject(new Error(message.message))
         return
       }
+      if (message.type !== 'landmarks') return
       inFlight = false
       frames.push({
         timestamp: message.timestamp,

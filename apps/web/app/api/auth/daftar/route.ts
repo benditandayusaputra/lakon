@@ -1,0 +1,41 @@
+import { NextResponse } from 'next/server'
+import { z } from 'zod'
+import { db, schema } from '@/db'
+import { createSession, hashPassword, setSessionCookie } from '@/db/auth'
+
+const bodySchema = z.object({
+  nama: z.string().trim().min(2),
+  email: z.string().trim().email(),
+  sandi: z.string().min(8),
+})
+
+export async function POST(request: Request) {
+  const parsed = bodySchema.safeParse(await request.json().catch(() => null))
+  if (!parsed.success) {
+    return NextResponse.json({ ok: false, error: 'Data formulir belum lengkap.' }, { status: 400 })
+  }
+  const { nama, email, sandi } = parsed.data
+  try {
+    const inserted = await db
+      .insert(schema.users)
+      .values({
+        email: email.toLowerCase(),
+        displayName: nama,
+        passwordHash: hashPassword(sandi),
+      })
+      .returning({ id: schema.users.id })
+    const user = inserted[0]!
+    const session = await createSession(user.id)
+    await setSessionCookie(session.token, session.maxAge)
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : ''
+    if (message.includes('duplicate') || message.includes('unique')) {
+      return NextResponse.json(
+        { ok: false, field: 'email', error: 'Email ini sudah terdaftar. Coba masuk.' },
+        { status: 409 },
+      )
+    }
+    return NextResponse.json({ ok: false, error: 'Server bermasalah. Coba lagi.' }, { status: 500 })
+  }
+}

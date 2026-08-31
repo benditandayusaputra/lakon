@@ -7,7 +7,7 @@
     "build": "pnpm --filter @lakon/web build",
     "check:signs": "node tools/check-signs.mjs",
     "check:content": "node tools/validate-content.mjs",
-    "typecheck": "tsc -b --pretty",
+    "typecheck": "tsc -b --pretty && pnpm --filter @lakon/web exec tsc --noEmit",
     "test": "vitest run",
     "e2e": "pnpm --filter @lakon/web e2e",
     "db:push": "pnpm --filter @lakon/web db:push",

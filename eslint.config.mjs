@@ -3,7 +3,15 @@ import tseslint from 'typescript-eslint'
 import prettier from 'eslint-config-prettier'
 
 export default tseslint.config(
-  { ignores: ['**/.next/**', '**/node_modules/**', '**/db/migrations/**', '**/next-env.d.ts'] },
+  {
+    ignores: [
+      '**/public/sw.js',
+      '**/.next/**',
+      '**/node_modules/**',
+      '**/db/migrations/**',
+      '**/next-env.d.ts',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

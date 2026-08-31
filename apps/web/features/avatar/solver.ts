@@ -86,8 +86,8 @@ const directionBetween = (from: Object3D, to: Object3D) =>
   worldPosition(to).sub(worldPosition(from)).normalize()
 
 export const palmFrame = (world: Vector3[], side: Side): Quaternion => {
-  const forward = world[9].clone().sub(world[0]).normalize()
-  const across = world[17].clone().sub(world[5]).normalize()
+  const forward = world[9]!.clone().sub(world[0]!).normalize()
+  const across = world[17]!.clone().sub(world[5]!).normalize()
   return frameFromDirections(forward, across, side)
 }
 
@@ -121,7 +121,9 @@ export const initHandRig = (side: Side, bones: HandBoneMap): HandRig => {
     const isThumb = name === 'thumb'
     return chain.map((bone, index) => {
       const next = chain[index + 1]
-      const restDir = next ? directionBetween(bone, next) : directionBetween(chain[index - 1], bone)
+      const restDir = next
+        ? directionBetween(bone, next)
+        : directionBetween(chain[index - 1]!, bone)
       const clamp: JointClamp = isThumb
         ? index === 0
           ? 'thumbFree'
@@ -276,12 +278,12 @@ export const solveHand = (
 
   FINGER_NAMES.forEach((name, fingerIndex) => {
     const chain = HAND_CHAINS[name]
-    const joints = rig.fingers[fingerIndex]
+    const joints = rig.fingers[fingerIndex]!
     const fingerAccum = targetHandWorld.clone()
 
     joints.forEach((joint, jointIndex) => {
-      const from = hand[chain[jointIndex]]
-      const to = hand[chain[jointIndex + 1]]
+      const from = hand[chain[jointIndex]!]!
+      const to = hand[chain[jointIndex + 1]!]!
       const dirWorld = to.clone().sub(from).normalize()
       const dirLocal = dirWorld.applyQuaternion(fingerAccum.clone().invert())
       const raw = new Quaternion().setFromUnitVectors(joint.restDir, dirLocal)

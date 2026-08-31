@@ -221,14 +221,14 @@ describe('tekukan jari', () => {
       [proximal[0], proximal[1] - 0.07, proximal[2]],
       [proximal[0], proximal[1] - 0.095, proximal[2]],
     ]
-    for (let i = 0; i < 4; i++) landmarks[5 + i] = toMp(bent[i])
+    for (let i = 0; i < 4; i++) landmarks[5 + i] = toMp(bent[i]!)
 
     const readout = solveHand(rig, landmarks, restPoseLandmarks('right'))
     expect(readout!.fingers.index[0]).toBeCloseTo(90, 0)
     expect(Math.abs(readout!.fingers.index[1])).toBeLessThan(3)
     expect(Math.abs(readout!.fingers.index[2])).toBeLessThan(3)
 
-    const { deg } = twistAbout(rig.fingers[1][0].bone.quaternion, FINGER_HINGE_AXIS.right)
+    const { deg } = twistAbout(rig.fingers[1]![0]!.bone.quaternion, FINGER_HINGE_AXIS.right)
     expect(deg).toBeCloseTo(90, 0)
   })
 
@@ -243,11 +243,11 @@ describe('tekukan jari', () => {
       [proximal[0], proximal[1] + 0.07, proximal[2]],
       [proximal[0], proximal[1] + 0.095, proximal[2]],
     ]
-    for (let i = 0; i < 4; i++) landmarks[5 + i] = toMp(bentBack[i])
+    for (let i = 0; i < 4; i++) landmarks[5 + i] = toMp(bentBack[i]!)
 
     const clamped = solveHand(rig, landmarks, null, { clampEnabled: true })
     expect(clamped!.fingers.index[0]).toBeCloseTo(0, 1)
-    expectNearIdentity(rig.fingers[1][0].bone.quaternion, 1e-3)
+    expectNearIdentity(rig.fingers[1]![0]!.bone.quaternion, 1e-3)
 
     const free = solveHand(rig, landmarks, null, { clampEnabled: false })
     expect(free!.fingers.index[0]).toBeLessThan(-45)
@@ -264,10 +264,10 @@ describe('tekukan jari', () => {
       [proximal[0] + 0.07, proximal[1], proximal[2]],
       [proximal[0] + 0.095, proximal[1], proximal[2]],
     ]
-    for (let i = 0; i < 4; i++) landmarks[5 + i] = toMp(reversed[i])
+    for (let i = 0; i < 4; i++) landmarks[5 + i] = toMp(reversed[i]!)
 
     solveHand(rig, landmarks, null, { clampEnabled: false })
-    const q = rig.fingers[1][0].bone.quaternion
+    const q = rig.fingers[1]![0]!.bone.quaternion
     expect(Number.isFinite(q.x)).toBe(true)
     expect(Number.isFinite(q.y)).toBe(true)
     expect(Number.isFinite(q.z)).toBe(true)

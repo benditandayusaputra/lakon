@@ -17,6 +17,8 @@ import {
   type ScenarioEngine,
 } from '@/features/scenario/engine'
 import { createLearningPhase, type LearningPhase } from '@/features/scenario/learning'
+import { saveRun, saveSignProgress } from '@/features/progress/store'
+import { SyncBadge } from '@/components/sync-badge'
 import { paletteFor } from '@/features/ui/tokens'
 
 type Stage = 'intro' | 'belajar' | 'ujian' | 'ringkasan'
@@ -97,8 +99,27 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
   const currentSignId = learning.next()
   const directionLabel = direction === 'deaf' ? 'sisi Tuli' : 'sisi pekerja layanan'
 
+  const persistSign = (signId: string) => {
+    const progress = learning.progressFor(signId)
+    if (!progress) return
+    void saveSignProgress({
+      signId,
+      status: progress.status === 'belum' ? 'berlatih' : progress.status,
+      attempts: progress.attempts,
+    })
+  }
+
   const finishExam = () => {
     endedAtRef.current = Date.now()
+    const summary = summarizeRun(engine, startedAtRef.current, endedAtRef.current)
+    void saveRun({
+      scenarioId: scenario.id,
+      direction,
+      durationMs: summary.durationMs,
+      mastered: summary.mastered,
+      needsRepeat: summary.needsRepeat,
+      completedAt: Date.now(),
+    })
     setStage('ringkasan')
   }
 
@@ -111,9 +132,12 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
         <Link href="/skenario" className="underline underline-offset-4">
           ← Skenario
         </Link>
-        <p className="font-bold">
-          {scenario.title.id} · {directionLabel}
-        </p>
+        <div className="flex items-center gap-4">
+          <p className="font-bold">
+            {scenario.title.id} · {directionLabel}
+          </p>
+          <SyncBadge />
+        </div>
       </header>
 
       {stage === 'intro' ? (
@@ -219,15 +243,18 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                           signLabel={sign.gloss.id}
                           onPassed={() => {
                             learning.recordResult(currentSignId, true)
+                            persistSign(currentSignId)
                             setLearnView('demo')
                             forceUpdate()
                           }}
                           onFailedAttempt={() => {
                             learning.recordResult(currentSignId, false)
+                            persistSign(currentSignId)
                             forceUpdate()
                           }}
                           onSelfAssessed={() => {
                             learning.selfAssessPass(currentSignId)
+                            persistSign(currentSignId)
                             setLearnView('demo')
                             forceUpdate()
                           }}
@@ -257,6 +284,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                         type="button"
                         onClick={() => {
                           learning.selfAssessPass(currentSignId)
+                          persistSign(currentSignId)
                           forceUpdate()
                         }}
                         className="tombol-sekunder self-start"

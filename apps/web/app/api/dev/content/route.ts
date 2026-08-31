@@ -2,6 +2,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { NextResponse } from 'next/server'
 import { handshapeSchema, signSchema, type Sign } from '@lakon/sign-schema'
+import { getSessionUser } from '@/db/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,7 +59,29 @@ const refreshUsedIn = async () => {
   }
 }
 
+const withoutReview = (value: unknown) => {
+  const clone = JSON.parse(JSON.stringify(value)) as Record<string, unknown>
+  delete clone.review
+  return JSON.stringify(clone)
+}
+
+const readExisting = async (folder: string, id: string): Promise<unknown | null> => {
+  try {
+    return JSON.parse(await readFile(join(contentRoot, folder, `${id}.json`), 'utf8'))
+  } catch {
+    return null
+  }
+}
+
 export async function POST(request: Request) {
+  const user = await getSessionUser().catch(() => null)
+  if (!user || (user.role !== 'admin' && user.role !== 'validator')) {
+    return NextResponse.json(
+      { ok: false, issues: ['perlu peran admin atau validator untuk menyimpan konten'] },
+      { status: 403 },
+    )
+  }
+
   const body = (await request.json()) as {
     signs?: Record<string, unknown>
     handshapes?: Record<string, unknown>
@@ -95,6 +118,24 @@ export async function POST(request: Request) {
       continue
     }
     validShapes.push([id, result.data])
+  }
+
+  if (user.role === 'validator') {
+    for (const [folder, entries] of [
+      ['signs', validSigns],
+      ['handshapes', validShapes],
+    ] as const) {
+      for (const [id, data] of entries) {
+        const existing = await readExisting(folder, id)
+        if (!existing) {
+          issues.push(`${id}: validator tidak boleh membuat berkas baru`)
+          continue
+        }
+        if (withoutReview(existing) !== withoutReview(data)) {
+          issues.push(`${id}: peran validator hanya boleh mengubah field review`)
+        }
+      }
+    }
   }
 
   if (issues.length > 0) {

@@ -74,6 +74,9 @@ importers:
       three:
         specifier: ^0.172.0
         version: 0.172.0
+      zod:
+        specifier: ^3.24.1
+        version: 3.25.76
       zustand:
         specifier: ^5.0.3
         version: 5.0.15(@types/react@19.2.18)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))

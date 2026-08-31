@@ -1,9 +1,22 @@
-import { integer, pgTable, primaryKey, real, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { integer, pgTable, primaryKey, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   email: text('email').notNull().unique(),
   displayName: text('display_name').notNull(),
+  passwordHash: text('password_hash').notNull(),
+  role: text('role', { enum: ['pengguna', 'validator', 'admin'] })
+    .notNull()
+    .default('pengguna'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const sessions = pgTable('sessions', {
+  token: text('token').primaryKey(),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -14,8 +27,10 @@ export const signProgress = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     signId: text('sign_id').notNull(),
+    status: text('status', { enum: ['belum', 'berlatih', 'dikuasai', 'dinilai-sendiri'] })
+      .notNull()
+      .default('belum'),
     attempts: integer('attempts').notNull().default(0),
-    bestConfidence: real('best_confidence').notNull().default(0),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.signId] })],
@@ -27,8 +42,9 @@ export const scenarioRuns = pgTable('scenario_runs', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   scenarioId: text('scenario_id').notNull(),
-  side: text('side', { enum: ['tuli', 'layanan'] }).notNull(),
-  score: real('score'),
-  finishedAt: timestamp('finished_at', { withTimezone: true }),
-  startedAt: timestamp('started_at', { withTimezone: true }).notNull().defaultNow(),
+  direction: text('direction', { enum: ['deaf', 'service'] }).notNull(),
+  durationMs: integer('duration_ms').notNull().default(0),
+  mastered: text('mastered').notNull().default('[]'),
+  needsRepeat: text('needs_repeat').notNull().default('[]'),
+  completedAt: timestamp('completed_at', { withTimezone: true }).notNull().defaultNow(),
 })

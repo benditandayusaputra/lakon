@@ -58,19 +58,19 @@ export const createLandmarkFilter = (initial: Partial<OneEuroParams> = {}): Land
     const output: Point3[] = []
 
     for (let i = 0; i < points.length; i++) {
-      const point = points[i]
+      const point = points[i]!
       const raw = [point.x, point.y, point.z]
       const smoothed = [0, 0, 0]
       for (let axis = 0; axis < 3; axis++) {
-        const channel = existing.channels[i * 3 + axis]
-        const rawDerivative = (raw[axis] - channel.value) / dt
+        const channel = existing.channels[i * 3 + axis]!
+        const rawDerivative = (raw[axis]! - channel.value) / dt
         channel.derivative = channel.derivative + aDerivative * (rawDerivative - channel.derivative)
         const cutoff = params.minCutoff + params.beta * Math.abs(channel.derivative)
         const a = smoothingFactor(cutoff, dt)
-        channel.value = channel.value + a * (raw[axis] - channel.value)
+        channel.value = channel.value + a * (raw[axis]! - channel.value)
         smoothed[axis] = channel.value
       }
-      output.push({ x: smoothed[0], y: smoothed[1], z: smoothed[2] })
+      output.push({ x: smoothed[0]!, y: smoothed[1]!, z: smoothed[2]! })
     }
     return output
   }
