@@ -41,9 +41,25 @@ export type OverlayOptions = {
   shoulderColor?: string
 }
 
+export type OverlayHighlight = {
+  side: 'Left' | 'Right'
+  part: 'thumb' | 'index' | 'middle' | 'ring' | 'pinky' | 'pergelangan' | 'telapak'
+}
+
+const HIGHLIGHT_LANDMARKS: Record<OverlayHighlight['part'], number[]> = {
+  thumb: [3, 4],
+  index: [6, 8],
+  middle: [10, 12],
+  ring: [14, 16],
+  pinky: [18, 20],
+  pergelangan: [0],
+  telapak: [0, 5, 9, 13, 17],
+}
+
 export type Overlay = {
   resize: (cssWidth: number, cssHeight: number) => void
   draw: (frame: OverlayFrame) => void
+  setHighlights: (highlights: readonly OverlayHighlight[]) => void
   clear: () => void
 }
 
@@ -55,9 +71,11 @@ export const createOverlay = (canvas: HTMLCanvasElement, options: OverlayOptions
   const handColor = options.handColor ?? 'rgba(255, 255, 255, 0.85)'
   const jointColor = options.jointColor ?? 'rgba(90, 130, 220, 0.95)'
   const shoulderColor = options.shoulderColor ?? 'rgba(255, 255, 255, 0.55)'
+  const highlightColor = '#d9a521'
 
   let width = 0
   let height = 0
+  let highlights: readonly OverlayHighlight[] = []
 
   const resize = (cssWidth: number, cssHeight: number) => {
     const dpr = globalThis.devicePixelRatio || 1
@@ -121,8 +139,27 @@ export const createOverlay = (canvas: HTMLCanvasElement, options: OverlayOptions
         ctx.arc(px(point.x), py(point.y), 3.5, 0, Math.PI * 2)
         ctx.fill()
       }
+
+      const handHighlights = highlights.filter((h) => h.side === hand.handedness)
+      if (handHighlights.length > 0) {
+        ctx.strokeStyle = highlightColor
+        ctx.lineWidth = 3
+        for (const highlight of handHighlights) {
+          for (const index of HIGHLIGHT_LANDMARKS[highlight.part]) {
+            const point = points[index]
+            if (!point) continue
+            ctx.beginPath()
+            ctx.arc(px(point.x), py(point.y), 7, 0, Math.PI * 2)
+            ctx.stroke()
+          }
+        }
+      }
     }
   }
 
-  return { resize, draw, clear }
+  const setHighlights = (next: readonly OverlayHighlight[]) => {
+    highlights = next
+  }
+
+  return { resize, draw, setHighlights, clear }
 }

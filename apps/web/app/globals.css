@@ -1,10 +1,171 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-ink: oklch(0.22 0.02 260);
-  --color-paper: oklch(0.98 0.005 260);
-  --color-accent: oklch(0.58 0.13 250);
-  --color-pending: oklch(0.55 0.02 260);
+  --color-halaman: #faf7f2;
+  --color-kartu: #ffffff;
+  --color-terangkat: #f3eee6;
+  --color-border-halus: #e5dfd4;
+  --color-border-tegas: #b0a591;
+  --color-teks: #2b2620;
+  --color-teks-sekunder: #5c554a;
+  --color-teks-samar: #6f6759;
+
+  --color-berhasil: #256b45;
+  --color-ulang: #46536a;
+  --color-peringatan: #8a5f10;
+  --color-info: #2b6cb0;
+  --color-galat: #b3261e;
+
+  --color-zona-tenang: #6e7a86;
+
+  --color-ink: #2b2620;
+  --color-paper: #faf7f2;
+  --color-accent: #2b6cb0;
+  --color-pending: #6f6759;
+
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans', Ubuntu, Cantarell,
+    'Helvetica Neue', sans-serif;
+
+  --radius-kontrol: 10px;
+  --radius-kartu: 16px;
+  --radius-kartu-besar: 24px;
+
+  --text-dasar: 17px;
+  --text-dasar--line-height: 1.6;
+}
+
+:root {
+  --skenario-accent: #46536a;
+  --skenario-tint: #f3eee6;
+  --skenario-deep: #2b2620;
+  --skenario-ambient: #c9c2b4;
+
+  --suasana-blur: 0px;
+  --suasana-saturasi: 100%;
+  --suasana-terang: 100%;
+  --suasana-penimpa: rgba(245, 242, 236, 0);
+
+  --gerak-cepat: 160ms;
+  --gerak-sedang: 240ms;
+  --gerak-tahap: 420ms;
+}
+
+html {
+  font-size: 17px;
+}
+
+body {
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+.palet-kedai-kopi {
+  --skenario-accent: #b4632c;
+  --skenario-tint: #f7eadb;
+  --skenario-deep: #53300f;
+  --skenario-ambient: #c89b6e;
+}
+
+.palet-puskesmas {
+  --skenario-accent: #3e7d5e;
+  --skenario-tint: #e7f2ea;
+  --skenario-deep: #1d442f;
+  --skenario-ambient: #9dbfa9;
+}
+
+.palet-transportasi {
+  --skenario-accent: #33608c;
+  --skenario-tint: #e4edf5;
+  --skenario-deep: #1c3a55;
+  --skenario-ambient: #8fa9c0;
+}
+
+.palet-wawancara-kerja {
+  --skenario-accent: #8a6a45;
+  --skenario-tint: #f4ede2;
+  --skenario-deep: #453419;
+  --skenario-ambient: #c9b695;
+}
+
+.palet-darurat {
+  --skenario-accent: #5b7285;
+  --skenario-tint: #e9eef2;
+  --skenario-deep: #2c3a47;
+  --skenario-ambient: #a6b4c0;
+}
+
+.suasana-tahap-1 {
+  --suasana-blur: 0px;
+  --suasana-saturasi: 100%;
+  --suasana-terang: 100%;
+  --suasana-penimpa: rgba(245, 242, 236, 0);
+}
+
+.suasana-tahap-2 {
+  --suasana-blur: 18px;
+  --suasana-saturasi: 35%;
+  --suasana-terang: 82%;
+  --suasana-penimpa: rgba(245, 242, 236, 0.55);
+}
+
+.suasana-tahap-3 {
+  --suasana-blur: 8px;
+  --suasana-saturasi: 65%;
+  --suasana-terang: 92%;
+  --suasana-penimpa: rgba(245, 242, 236, 0.25);
+}
+
+.latar-suasana {
+  filter: blur(var(--suasana-blur)) saturate(var(--suasana-saturasi))
+    brightness(var(--suasana-terang));
+  transition: filter var(--gerak-tahap) ease-out;
+}
+
+.penimpa-suasana {
+  background-color: var(--suasana-penimpa);
+  transition: background-color var(--gerak-tahap) ease-out;
+}
+
+.zona-tenang-gradasi {
+  background: radial-gradient(
+    ellipse 55% 48% at 50% 42%,
+    color-mix(in srgb, var(--color-zona-tenang) 85%, transparent) 0%,
+    color-mix(in srgb, var(--color-zona-tenang) 55%, transparent) 60%,
+    transparent 100%
+  );
+}
+
+.tombol-utama {
+  background-color: var(--color-teks);
+  color: var(--color-halaman);
+  border-radius: var(--radius-kontrol);
+  padding: 0.75rem 1.5rem;
+  min-height: 48px;
+  font-weight: 700;
+}
+
+.tombol-sekunder {
+  border: 1.5px solid var(--color-border-tegas);
+  color: var(--color-teks);
+  border-radius: var(--radius-kontrol);
+  padding: 0.75rem 1.5rem;
+  min-height: 48px;
+}
+
+.tombol-utama:focus-visible,
+.tombol-sekunder:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--color-info);
+  outline-offset: 2px;
+}
+
+.tombol-utama:disabled,
+.tombol-sekunder:disabled {
+  opacity: 0.5;
 }
 
 @media (prefers-reduced-motion: reduce) {

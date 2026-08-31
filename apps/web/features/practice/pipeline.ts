@@ -1,5 +1,5 @@
 import { closeFrame, startCapture, type CaptureHandle, type CaptureRoute } from './capture'
-import { createOverlay, type Overlay } from './overlay'
+import { createOverlay, type Overlay, type OverlayHighlight } from './overlay'
 import {
   DEFAULT_WORKER_CONFIG,
   type Backend,
@@ -56,6 +56,7 @@ export type Pipeline = {
   stats: Readonly<PipelineStats>
   state: () => PipelineState
   setStabilizer: (params: StabilizerParamsMessage) => void
+  setHighlights: (highlights: readonly OverlayHighlight[]) => void
 }
 
 class Rate {
@@ -301,5 +302,9 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     send({ type: 'stabilizer', params })
   }
 
-  return { start, stop, stats, state: () => state, setStabilizer }
+  const setHighlights = (highlights: readonly OverlayHighlight[]) => {
+    overlay?.setHighlights(highlights)
+  }
+
+  return { start, stop, stats, state: () => state, setStabilizer, setHighlights }
 }
