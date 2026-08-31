@@ -1,7 +1,27 @@
-import { Matrix4, Quaternion, Vector3, type Object3D } from 'three'
+import { Quaternion, Vector3, type Object3D } from 'three'
+import {
+  FINGER_HINGE_AXIS,
+  HINGE_FLEX_MAX_DEG,
+  MCP_FAN_AXIS,
+  MCP_FAN_MAX_DEG,
+  MCP_FLEX_MAX_DEG,
+  THUMB_FLEX_MAX_DEG,
+  frameFromDirections,
+  twistAbout,
+  type Side,
+} from '@lakon/sign-compiler'
 import type { Point3 } from '../practice/protocol'
 
-export type Side = 'left' | 'right'
+export {
+  FINGER_HINGE_AXIS,
+  HINGE_FLEX_MAX_DEG,
+  MCP_FAN_AXIS,
+  MCP_FAN_MAX_DEG,
+  MCP_FLEX_MAX_DEG,
+  THUMB_FLEX_MAX_DEG,
+  twistAbout,
+}
+export type { Side }
 
 export const HAND_CHAINS = {
   thumb: [1, 2, 3, 4],
@@ -13,18 +33,6 @@ export const HAND_CHAINS = {
 
 export type FingerName = keyof typeof HAND_CHAINS
 export const FINGER_NAMES = Object.keys(HAND_CHAINS) as FingerName[]
-
-export const FINGER_HINGE_AXIS: Record<Side, Vector3> = {
-  left: new Vector3(0, 0, -1),
-  right: new Vector3(0, 0, 1),
-}
-
-export const MCP_FAN_AXIS = new Vector3(0, 1, 0)
-
-export const MCP_FLEX_MAX_DEG = 90
-export const HINGE_FLEX_MAX_DEG = 110
-export const MCP_FAN_MAX_DEG = 20
-export const THUMB_FLEX_MAX_DEG = 110
 
 export const POSE_ARM_INDICES: Record<Side, { shoulder: number; elbow: number; wrist: number }> = {
   left: { shoulder: 12, elbow: 14, wrist: 16 },
@@ -77,33 +85,10 @@ const worldPosition = (object: Object3D) => new Vector3().setFromMatrixPosition(
 const directionBetween = (from: Object3D, to: Object3D) =>
   worldPosition(to).sub(worldPosition(from)).normalize()
 
-const frameFromDirections = (forward: Vector3, across: Vector3, side: Side): Quaternion => {
-  const normal = new Vector3().crossVectors(forward, across).normalize()
-  if (side === 'left') normal.negate()
-  const sideAxis = new Vector3().crossVectors(forward, normal).normalize()
-  const trueForward = new Vector3().crossVectors(normal, sideAxis).normalize()
-  return new Quaternion().setFromRotationMatrix(
-    new Matrix4().makeBasis(sideAxis, trueForward, normal),
-  )
-}
-
 export const palmFrame = (world: Vector3[], side: Side): Quaternion => {
   const forward = world[9].clone().sub(world[0]).normalize()
   const across = world[17].clone().sub(world[5]).normalize()
   return frameFromDirections(forward, across, side)
-}
-
-export const twistAbout = (q: Quaternion, axis: Vector3): { twist: Quaternion; deg: number } => {
-  const dot = q.x * axis.x + q.y * axis.y + q.z * axis.z
-  const twist = new Quaternion(axis.x * dot, axis.y * dot, axis.z * dot, q.w)
-  if (twist.lengthSq() < 1e-12) {
-    return { twist: new Quaternion(), deg: 0 }
-  }
-  twist.normalize()
-  if (twist.w < 0) twist.set(-twist.x, -twist.y, -twist.z, -twist.w)
-  const vectorDot = twist.x * axis.x + twist.y * axis.y + twist.z * axis.z
-  const rad = 2 * Math.atan2(vectorDot, twist.w)
-  return { twist, deg: (rad * 180) / Math.PI }
 }
 
 const clampedTwist = (q: Quaternion, axis: Vector3, minDeg: number, maxDeg: number) => {

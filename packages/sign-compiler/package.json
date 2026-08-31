@@ -9,6 +9,10 @@
   },
   "dependencies": {
     "@lakon/cv-core": "workspace:*",
-    "@lakon/sign-schema": "workspace:*"
+    "@lakon/sign-schema": "workspace:*",
+    "three": "^0.172.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.172.0"
   }
 }
