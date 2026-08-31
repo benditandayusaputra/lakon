@@ -1,0 +1,186 @@
+{
+  "id": "kedai-kopi",
+  "title": {
+    "id": "Memesan minuman di kedai kopi",
+    "en": "Ordering a drink at a coffee shop"
+  },
+  "sdg": [10],
+  "vocab": [],
+  "estimatedMinutes": 12,
+  "nodes": [
+    {
+      "id": "sapa",
+      "actor": "barista",
+      "line": {
+        "id": "Selamat pagi, mau pesan apa?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "halo"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "halo",
+          "options": ["halo", "maaf", "tolong"]
+        }
+      },
+      "next": "pesan",
+      "onFail": "repair-sapa"
+    },
+    {
+      "id": "repair-sapa",
+      "actor": "barista",
+      "line": {
+        "id": "Maaf, bisa diulang?"
+      },
+      "hint": "Mulai dari sapaan.",
+      "next": "sapa"
+    },
+    {
+      "id": "pesan",
+      "actor": "barista",
+      "line": {
+        "id": "Mau minum apa?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "kopi"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "kopi",
+          "options": ["kopi", "teh", "susu"]
+        }
+      },
+      "next": "suhu",
+      "onFail": "repair-pesan"
+    },
+    {
+      "id": "repair-pesan",
+      "actor": "barista",
+      "line": {
+        "id": "Kopi, teh, atau susu?"
+      },
+      "hint": "Tunjukkan minuman yang kamu mau.",
+      "next": "pesan"
+    },
+    {
+      "id": "suhu",
+      "actor": "barista",
+      "line": {
+        "id": "Panas atau dingin?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "panas"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "panas",
+          "options": ["panas", "dingin"]
+        }
+      },
+      "next": "harga",
+      "onFail": "repair-suhu"
+    },
+    {
+      "id": "repair-suhu",
+      "actor": "barista",
+      "line": {
+        "id": "Maaf, panas atau dingin?"
+      },
+      "hint": "Pilih suhu minumanmu.",
+      "next": "suhu"
+    },
+    {
+      "id": "harga",
+      "actor": "barista",
+      "line": {
+        "id": "Ada lagi?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "berapa"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "berapa",
+          "options": ["berapa", "bayar", "tidak"]
+        }
+      },
+      "next": "bayar",
+      "onFail": "repair-harga"
+    },
+    {
+      "id": "repair-harga",
+      "actor": "barista",
+      "line": {
+        "id": "Silakan tanya harganya."
+      },
+      "hint": "Tanyakan berapa harganya.",
+      "next": "harga"
+    },
+    {
+      "id": "bayar",
+      "actor": "barista",
+      "line": {
+        "id": "Semuanya dua puluh ribu rupiah."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "bayar"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "bayar",
+          "options": ["bayar", "berapa", "ya"]
+        }
+      },
+      "next": "tutup",
+      "onFail": "repair-bayar"
+    },
+    {
+      "id": "repair-bayar",
+      "actor": "barista",
+      "line": {
+        "id": "Pembayarannya bagaimana?"
+      },
+      "hint": "Sampaikan kamu mau membayar.",
+      "next": "bayar"
+    },
+    {
+      "id": "tutup",
+      "actor": "barista",
+      "line": {
+        "id": "Ini pesanannya. Sampai jumpa!"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "terima-kasih"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "terima-kasih",
+          "options": ["terima-kasih", "halo", "maaf"]
+        }
+      },
+      "next": null,
+      "onFail": "repair-tutup"
+    },
+    {
+      "id": "repair-tutup",
+      "actor": "barista",
+      "line": {
+        "id": "Sama-sama!"
+      },
+      "hint": "Ucapkan terima kasih.",
+      "next": "tutup"
+    }
+  ]
+}

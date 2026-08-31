@@ -1,0 +1,244 @@
+{
+  "id": "wawancara-kerja",
+  "title": {
+    "id": "Wawancara kerja singkat",
+    "en": "A short job interview"
+  },
+  "sdg": [8],
+  "vocab": [],
+  "estimatedMinutes": 15,
+  "nodes": [
+    {
+      "id": "sapa",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Selamat pagi, silakan duduk."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "halo"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "halo",
+          "options": ["halo", "terima-kasih", "maaf"]
+        }
+      },
+      "next": "nama",
+      "onFail": "repair-sapa"
+    },
+    {
+      "id": "repair-sapa",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Selamat pagi."
+      },
+      "hint": "Mulai dari sapaan.",
+      "next": "sapa"
+    },
+    {
+      "id": "nama",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Namanya siapa?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "nama"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "nama",
+          "options": ["nama", "umur", "kerja"]
+        }
+      },
+      "next": "umur",
+      "onFail": "repair-nama"
+    },
+    {
+      "id": "repair-nama",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Boleh perkenalkan diri?"
+      },
+      "hint": "Perkenalkan namamu.",
+      "next": "nama"
+    },
+    {
+      "id": "umur",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Umurnya berapa?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "umur"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "umur",
+          "options": ["umur", "berapa", "nama"]
+        }
+      },
+      "next": "pengalaman",
+      "onFail": "repair-umur"
+    },
+    {
+      "id": "repair-umur",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Berapa umurnya?"
+      },
+      "hint": "Jawab soal umur.",
+      "next": "umur"
+    },
+    {
+      "id": "pengalaman",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Sudah pernah bekerja sebelumnya?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "pengalaman"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "pengalaman",
+          "options": ["pengalaman", "kerja", "belajar"]
+        }
+      },
+      "next": "kemampuan",
+      "onFail": "repair-pengalaman"
+    },
+    {
+      "id": "repair-pengalaman",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Ceritakan pengalaman kerjamu."
+      },
+      "hint": "Ceritakan pengalamanmu.",
+      "next": "pengalaman"
+    },
+    {
+      "id": "kemampuan",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Apa yang kamu bisa?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "bisa"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "bisa",
+          "options": ["bisa", "belajar", "kerja"]
+        }
+      },
+      "next": "belajar",
+      "onFail": "repair-kemampuan"
+    },
+    {
+      "id": "repair-kemampuan",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Sebutkan kemampuanmu."
+      },
+      "hint": "Sampaikan apa yang kamu bisa.",
+      "next": "kemampuan"
+    },
+    {
+      "id": "belajar",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Kalau ada hal baru, bagaimana?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "belajar"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "belajar",
+          "options": ["belajar", "bisa", "mulai"]
+        }
+      },
+      "next": "mulai",
+      "onFail": "repair-belajar"
+    },
+    {
+      "id": "repair-belajar",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Bagaimana sikapmu pada hal baru?"
+      },
+      "hint": "Sampaikan kemauanmu belajar.",
+      "next": "belajar"
+    },
+    {
+      "id": "mulai",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Kapan bisa mulai bekerja?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "mulai"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "mulai",
+          "options": ["mulai", "kerja", "jam"]
+        }
+      },
+      "next": "tutup",
+      "onFail": "repair-mulai"
+    },
+    {
+      "id": "repair-mulai",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Kapan siap mulai?"
+      },
+      "hint": "Jawab kapan kamu bisa mulai.",
+      "next": "mulai"
+    },
+    {
+      "id": "tutup",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Baik, nanti kami kabari. Terima kasih sudah datang."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "terima-kasih"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "terima-kasih",
+          "options": ["terima-kasih", "maaf", "halo"]
+        }
+      },
+      "next": null,
+      "onFail": "repair-tutup"
+    },
+    {
+      "id": "repair-tutup",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Terima kasih kembali."
+      },
+      "hint": "Ucapkan terima kasih.",
+      "next": "tutup"
+    }
+  ]
+}

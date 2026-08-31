@@ -1,35 +1,30 @@
-import { readdir, readFile } from 'node:fs/promises'
-import { basename, join } from 'node:path'
+import { loadContent, report } from './validate-content.mjs'
+import { unapprovedSigns, validateContent } from '../packages/sign-schema/src/index.ts'
 
-const dir = join(import.meta.dirname, '..', 'content', 'signs')
-const errors = []
+const content = await loadContent()
 
-let files = []
-try {
-  files = (await readdir(dir)).filter((f) => f.endsWith('.json'))
-} catch {
-  console.log('content/signs kosong, lewati')
-  process.exit(0)
-}
-
-for (const file of files) {
-  const raw = await readFile(join(dir, file), 'utf8')
-  let sign
-  try {
-    sign = JSON.parse(raw)
-  } catch (e) {
-    errors.push(`${file}: JSON tidak valid (${e.message})`)
-    continue
-  }
-  const name = basename(file, '.json')
-  if (sign.id !== name) errors.push(`${file}: id "${sign.id}" tidak sama dengan nama berkas`)
-  if (sign.review?.status !== 'approved') {
-    errors.push(`${file}: review.status "${sign.review?.status ?? 'kosong'}" bukan approved`)
-  }
-}
-
-if (errors.length) {
-  console.error('Build diblokir:\n' + errors.map((e) => `  - ${e}`).join('\n'))
+const issues = validateContent(content)
+if (issues.length > 0) {
+  console.error('Build diblokir, konten tidak valid:')
+  report(issues)
   process.exit(1)
 }
-console.log(`${files.length} isyarat approved`)
+
+const allowDraft = process.env.LAKON_ALLOW_DRAFT === '1'
+const drafts = unapprovedSigns(content.signs)
+if (drafts.length > 0 && !allowDraft) {
+  console.error(
+    'Build diblokir, isyarat belum approved (set LAKON_ALLOW_DRAFT=1 untuk build pengembangan):',
+  )
+  report(drafts)
+  process.exit(1)
+}
+
+const total = Object.keys(content.signs).length
+if (drafts.length > 0) {
+  console.log(
+    `LAKON_ALLOW_DRAFT=1: ${drafts.length} dari ${total} isyarat belum approved, build dilanjutkan`,
+  )
+} else {
+  console.log(`${total} isyarat approved`)
+}

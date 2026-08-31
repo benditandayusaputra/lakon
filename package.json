@@ -6,6 +6,7 @@
     "dev": "pnpm --filter @lakon/web dev",
     "build": "pnpm --filter @lakon/web build",
     "check:signs": "node tools/check-signs.mjs",
+    "check:content": "node tools/validate-content.mjs",
     "typecheck": "tsc -b --pretty",
     "test": "vitest run",
     "e2e": "pnpm --filter @lakon/web e2e",

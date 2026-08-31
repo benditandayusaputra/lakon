@@ -1,0 +1,215 @@
+{
+  "id": "transportasi",
+  "title": {
+    "id": "Menanyakan rute dan membeli tiket transportasi",
+    "en": "Asking for directions and buying a transit ticket"
+  },
+  "sdg": [11],
+  "vocab": [],
+  "estimatedMinutes": 12,
+  "nodes": [
+    {
+      "id": "sapa",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Selamat siang, mau ke mana?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "halo"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "halo",
+          "options": ["halo", "maaf", "tolong"]
+        }
+      },
+      "next": "rute",
+      "onFail": "repair-sapa"
+    },
+    {
+      "id": "repair-sapa",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Maaf, bisa diulang?"
+      },
+      "hint": "Mulai dari sapaan.",
+      "next": "sapa"
+    },
+    {
+      "id": "rute",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Tujuannya ke mana?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "ke-mana"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "ke-mana",
+          "options": ["ke-mana", "halte", "turun"]
+        }
+      },
+      "next": "tiket",
+      "onFail": "repair-rute"
+    },
+    {
+      "id": "repair-rute",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Sebutkan tujuanmu."
+      },
+      "hint": "Tanyakan arah tujuanmu.",
+      "next": "rute"
+    },
+    {
+      "id": "tiket",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Naik dari halte ini, beli tiket dulu."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "tiket"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "tiket",
+          "options": ["tiket", "halte", "jam"]
+        }
+      },
+      "next": "harga",
+      "onFail": "repair-tiket"
+    },
+    {
+      "id": "repair-tiket",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Silakan beli tiket dulu."
+      },
+      "hint": "Minta tiketnya.",
+      "next": "tiket"
+    },
+    {
+      "id": "harga",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Tiketnya satu lembar."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "berapa"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "berapa",
+          "options": ["berapa", "bayar", "ya"]
+        }
+      },
+      "next": "jadwal",
+      "onFail": "repair-harga"
+    },
+    {
+      "id": "repair-harga",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Silakan tanya harganya."
+      },
+      "hint": "Tanyakan berapa harganya.",
+      "next": "harga"
+    },
+    {
+      "id": "jadwal",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Lima ribu rupiah. Busnya sebentar lagi."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "jam"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "jam",
+          "options": ["jam", "berhenti", "turun"]
+        }
+      },
+      "next": "turun",
+      "onFail": "repair-jadwal"
+    },
+    {
+      "id": "repair-jadwal",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Busnya datang sebentar lagi."
+      },
+      "hint": "Tanyakan jam keberangkatan.",
+      "next": "jadwal"
+    },
+    {
+      "id": "turun",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Nanti turun di halte ketiga."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "turun"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "turun",
+          "options": ["turun", "berhenti", "halte"]
+        }
+      },
+      "next": "tutup",
+      "onFail": "repair-turun"
+    },
+    {
+      "id": "repair-turun",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Turunnya di halte ketiga ya."
+      },
+      "hint": "Pastikan tempat turunmu.",
+      "next": "turun"
+    },
+    {
+      "id": "tutup",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Ini tiketnya. Hati-hati di jalan!"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "terima-kasih"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "terima-kasih",
+          "options": ["terima-kasih", "halo", "maaf"]
+        }
+      },
+      "next": null,
+      "onFail": "repair-tutup"
+    },
+    {
+      "id": "repair-tutup",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Sama-sama!"
+      },
+      "hint": "Ucapkan terima kasih.",
+      "next": "tutup"
+    }
+  ]
+}

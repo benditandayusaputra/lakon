@@ -1,0 +1,244 @@
+{
+  "id": "puskesmas",
+  "title": {
+    "id": "Mendaftar dan menyampaikan keluhan di puskesmas",
+    "en": "Registering and describing symptoms at a community clinic"
+  },
+  "sdg": [3, 10],
+  "vocab": [],
+  "estimatedMinutes": 14,
+  "nodes": [
+    {
+      "id": "sapa",
+      "actor": "petugas",
+      "line": {
+        "id": "Selamat pagi, ada yang bisa dibantu?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "halo"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "halo",
+          "options": ["halo", "maaf", "tolong"]
+        }
+      },
+      "next": "daftar",
+      "onFail": "repair-sapa"
+    },
+    {
+      "id": "repair-sapa",
+      "actor": "petugas",
+      "line": {
+        "id": "Maaf, bisa diulang?"
+      },
+      "hint": "Mulai dari sapaan.",
+      "next": "sapa"
+    },
+    {
+      "id": "daftar",
+      "actor": "petugas",
+      "line": {
+        "id": "Mau berobat? Silakan daftar dulu."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "daftar"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "daftar",
+          "options": ["daftar", "tunggu", "obat"]
+        }
+      },
+      "next": "nama",
+      "onFail": "repair-daftar"
+    },
+    {
+      "id": "repair-daftar",
+      "actor": "petugas",
+      "line": {
+        "id": "Silakan sampaikan mau mendaftar."
+      },
+      "hint": "Sampaikan kamu mau mendaftar.",
+      "next": "daftar"
+    },
+    {
+      "id": "nama",
+      "actor": "petugas",
+      "line": {
+        "id": "Namanya siapa?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "nama"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "nama",
+          "options": ["nama", "umur", "berapa"]
+        }
+      },
+      "next": "keluhan",
+      "onFail": "repair-nama"
+    },
+    {
+      "id": "repair-nama",
+      "actor": "petugas",
+      "line": {
+        "id": "Boleh sebutkan nama?"
+      },
+      "hint": "Perkenalkan namamu.",
+      "next": "nama"
+    },
+    {
+      "id": "keluhan",
+      "actor": "dokter",
+      "line": {
+        "id": "Apa keluhannya?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "sakit"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "sakit",
+          "options": ["sakit", "demam", "obat"]
+        }
+      },
+      "next": "gejala",
+      "onFail": "repair-keluhan"
+    },
+    {
+      "id": "repair-keluhan",
+      "actor": "dokter",
+      "line": {
+        "id": "Bagian mana yang terasa?"
+      },
+      "hint": "Sampaikan keluhanmu.",
+      "next": "keluhan"
+    },
+    {
+      "id": "gejala",
+      "actor": "dokter",
+      "line": {
+        "id": "Sejak kapan? Ada panas badan?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "demam"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "demam",
+          "options": ["demam", "sakit", "ya"]
+        }
+      },
+      "next": "resep",
+      "onFail": "repair-gejala"
+    },
+    {
+      "id": "repair-gejala",
+      "actor": "dokter",
+      "line": {
+        "id": "Ada demam atau tidak?"
+      },
+      "hint": "Jawab soal demam.",
+      "next": "gejala"
+    },
+    {
+      "id": "resep",
+      "actor": "dokter",
+      "line": {
+        "id": "Ini resepnya, ambil di apotek."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "obat"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "obat",
+          "options": ["obat", "dokter", "daftar"]
+        }
+      },
+      "next": "tunggu",
+      "onFail": "repair-resep"
+    },
+    {
+      "id": "repair-resep",
+      "actor": "dokter",
+      "line": {
+        "id": "Obatnya diambil di apotek ya."
+      },
+      "hint": "Tanggapi soal obat.",
+      "next": "resep"
+    },
+    {
+      "id": "tunggu",
+      "actor": "petugas",
+      "line": {
+        "id": "Silakan tunggu, nanti dipanggil."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "tunggu"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "tunggu",
+          "options": ["tunggu", "cepat", "tidak"]
+        }
+      },
+      "next": "tutup",
+      "onFail": "repair-tunggu"
+    },
+    {
+      "id": "repair-tunggu",
+      "actor": "petugas",
+      "line": {
+        "id": "Mohon menunggu sebentar."
+      },
+      "hint": "Tanggapi permintaan menunggu.",
+      "next": "tunggu"
+    },
+    {
+      "id": "tutup",
+      "actor": "petugas",
+      "line": {
+        "id": "Semoga lekas sembuh."
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "terima-kasih"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "terima-kasih",
+          "options": ["terima-kasih", "maaf", "halo"]
+        }
+      },
+      "next": null,
+      "onFail": "repair-tutup"
+    },
+    {
+      "id": "repair-tutup",
+      "actor": "petugas",
+      "line": {
+        "id": "Sama-sama."
+      },
+      "hint": "Ucapkan terima kasih.",
+      "next": "tutup"
+    }
+  ]
+}
