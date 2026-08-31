@@ -30,21 +30,21 @@ export function Landing() {
         <button
           type="button"
           onClick={() => setLang(other)}
-          className="rounded-md border border-ink/20 px-3 py-1.5 text-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="border-ink/20 focus-visible:outline-accent rounded-md border px-3 py-1.5 text-sm underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2"
         >
           {copy[other].alt}
         </button>
       </div>
-      <h1 className="text-4xl font-semibold text-balance" lang={lang}>
+      <h1 className="text-balance text-4xl font-semibold" lang={lang}>
         {t.title}
       </h1>
-      <p className="text-lg text-pretty" lang={lang}>
+      <p className="text-pretty text-lg" lang={lang}>
         {t.body}
       </p>
       <p>
         <a
           href="/belajar"
-          className="inline-block rounded-md bg-ink px-5 py-3 text-paper focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="bg-ink text-paper focus-visible:outline-accent inline-block rounded-md px-5 py-3 focus-visible:outline-2 focus-visible:outline-offset-2"
           lang={lang}
         >
           {t.cta}

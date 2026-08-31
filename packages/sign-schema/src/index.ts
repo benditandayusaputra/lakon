@@ -4,7 +4,11 @@ export const FINGERS = ['thumb', 'index', 'middle', 'ring', 'pinky'] as const
 export type Finger = (typeof FINGERS)[number]
 
 const deg = z.number().min(-180).max(180)
-const flex = z.tuple([z.number().min(0).max(180), z.number().min(0).max(180), z.number().min(0).max(180)])
+const flex = z.tuple([
+  z.number().min(0).max(180),
+  z.number().min(0).max(180),
+  z.number().min(0).max(180),
+])
 
 export const handshapeSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),

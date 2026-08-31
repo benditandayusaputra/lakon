@@ -16,13 +16,19 @@ const flat: Handshape = {
   spread: 0,
 }
 
-const fist: Handshape = { ...flat, id: 'kepal', label: 'kepal', flex: {
-  thumb: [90, 90, 90],
-  index: [90, 90, 90],
-  middle: [90, 90, 90],
-  ring: [90, 90, 90],
-  pinky: [90, 90, 90],
-}, spread: 0 }
+const fist: Handshape = {
+  ...flat,
+  id: 'kepal',
+  label: 'kepal',
+  flex: {
+    thumb: [90, 90, 90],
+    index: [90, 90, 90],
+    middle: [90, 90, 90],
+    ring: [90, 90, 90],
+    pinky: [90, 90, 90],
+  },
+  spread: 0,
+}
 
 const sign = parseSign({
   id: 'uji',
@@ -31,8 +37,18 @@ const sign = parseSign({
   hands: 'one',
   tracks: {
     right: [
-      { t: 0, handshape: 'telapak-datar', location: { x: 0, y: 0, z: 0 }, orientation: { pitch: 0, yaw: 0, roll: 0 } },
-      { t: 1000, handshape: 'kepal', location: { x: 1, y: 0, z: 0 }, orientation: { pitch: 0, yaw: 90, roll: 0 } },
+      {
+        t: 0,
+        handshape: 'telapak-datar',
+        location: { x: 0, y: 0, z: 0 },
+        orientation: { pitch: 0, yaw: 0, roll: 0 },
+      },
+      {
+        t: 1000,
+        handshape: 'kepal',
+        location: { x: 1, y: 0, z: 0 },
+        orientation: { pitch: 0, yaw: 90, roll: 0 },
+      },
     ],
   },
   review: { status: 'approved' },
@@ -81,5 +97,8 @@ test('fitur tangan dinormalisasi terhadap lebar bahu', () => {
   const f = handFeatures(hand, pose)
   expect(f.length).toBe(22)
   expect(f[20]).toBeCloseTo(0.4 / 0.4, 6)
-  expect(jointAngle({ x: 0, y: 1, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 0, y: -1, z: 0 })).toBeCloseTo(0, 6)
+  expect(jointAngle({ x: 0, y: 1, z: 0 }, { x: 0, y: 0, z: 0 }, { x: 0, y: -1, z: 0 })).toBeCloseTo(
+    0,
+    6,
+  )
 })

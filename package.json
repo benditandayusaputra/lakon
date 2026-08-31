@@ -9,10 +9,19 @@
     "typecheck": "tsc -b --pretty",
     "test": "vitest run",
     "e2e": "pnpm --filter @lakon/web e2e",
-    "db:push": "pnpm --filter @lakon/web db:push"
+    "db:push": "pnpm --filter @lakon/web db:push",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "typescript": "^5.7.3",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "prettier": "^3.4.2",
+    "prettier-plugin-tailwindcss": "^0.6.10",
+    "typescript-eslint": "^8.21.0"
   }
 }

@@ -35,7 +35,11 @@ const lerpAngle = (a: number, b: number, u: number) => {
   return a + d * u
 }
 
-const poseAt = (frames: readonly Keyframe[], shapes: Map<string, Handshape>, t: number): AvatarPose => {
+const poseAt = (
+  frames: readonly Keyframe[],
+  shapes: Map<string, Handshape>,
+  t: number,
+): AvatarPose => {
   let i = 0
   while (i < frames.length - 2 && frames[i + 1]!.t <= t) i++
   const a = frames[i]!
