@@ -35,6 +35,7 @@ export type PipelineOptions = {
   config?: Partial<WorkerConfig>
   mirrored?: boolean
   onState?: (state: PipelineState) => void
+  onLandmarks?: (hands: HandObservation[], pose: PoseObservation | null, timestamp: number) => void
 }
 
 export type Pipeline = {
@@ -154,6 +155,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     stats.queuedFrames = inFlight
     latest.hands = message.hands
     latest.pose = message.pose
+    options.onLandmarks?.(message.hands, message.pose, message.timestamp)
     stats.hands = message.hands.length
     stats.inferenceMs = stats.inferenceMs * 0.8 + message.inferenceMs * 0.2
     stats.lastLandmarkAt = performance.now()
