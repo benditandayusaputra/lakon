@@ -7,7 +7,7 @@
   "dialect": "bisindo-jakarta",
   "structure": "dominant-only",
   "dominance": "right",
-  "duration": 1450,
+  "duration": 1550,
   "recognitionMode": true,
   "phases": [
     {
@@ -58,21 +58,21 @@
     },
     {
       "name": "retraction",
-      "duration": 350,
+      "duration": 450,
       "easing": "ease-in",
       "dominant": {
         "handshape": "b-flat",
         "location": {
-          "anchor": "ruang-netral",
+          "anchor": "bahu",
           "offset": [
-            0.1,
-            -0.35,
-            0.2
+            0.0,
+            -1.2,
+            0.08
           ]
         },
         "orientation": {
           "palm": "in",
-          "fingers": "forward"
+          "fingers": "down"
         }
       }
     }

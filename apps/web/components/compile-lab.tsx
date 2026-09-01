@@ -73,14 +73,15 @@ export function CompiledAvatar({
     if (compiled) {
       if (playback.playing) {
         playback.time += delta * 1000 * playback.speed
-        if (playback.time > compiled.duration) playback.time = 0
+        if (playback.time > compiled.duration + 700) playback.time = 0
       }
+      const shownTime = Math.min(playback.time, compiled.duration)
       applyCompiledFrame(avatar, sampleCompiled(compiled, playback.time))
       if (timeEl.current) {
-        timeEl.current.textContent = `${Math.round(playback.time)} / ${compiled.duration} ms`
+        timeEl.current.textContent = `${Math.round(shownTime)} / ${compiled.duration} ms`
       }
       if (sliderEl.current && document.activeElement !== sliderEl.current) {
-        sliderEl.current.value = String(Math.round(playback.time))
+        sliderEl.current.value = String(Math.round(shownTime))
       }
     }
     avatar.vrm.update(delta)

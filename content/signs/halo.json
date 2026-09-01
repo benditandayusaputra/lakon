@@ -7,7 +7,7 @@
   "dialect": "bisindo-jakarta",
   "structure": "dominant-only",
   "dominance": "right",
-  "duration": 1570,
+  "duration": 1620,
   "recognitionMode": true,
   "phases": [
     {
@@ -51,29 +51,29 @@
       },
       "hold": 120,
       "path": {
-        "shape": "zigzag",
+        "shape": "gelombang",
         "plane": "frontal",
         "repeat": 2,
-        "curvature": 0.3
+        "curvature": 0.35
       }
     },
     {
       "name": "retraction",
-      "duration": 400,
+      "duration": 450,
       "easing": "ease-in",
       "dominant": {
         "handshape": "five-spread",
         "location": {
-          "anchor": "ruang-netral",
+          "anchor": "bahu",
           "offset": [
-            0.15,
-            -0.3,
-            0.25
+            0.0,
+            -1.2,
+            0.08
           ]
         },
         "orientation": {
           "palm": "in",
-          "fingers": "forward"
+          "fingers": "down"
         }
       }
     }
