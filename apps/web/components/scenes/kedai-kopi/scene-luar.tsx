@@ -180,7 +180,7 @@ export function SceneLuar({
         style={{ transformOrigin: '50% 72%' }}
       >
         <LampuTali className="relative z-10 -mb-1 h-6 w-full" />
-        <div className="kk-bata relative rounded-t-lg px-[4%] pt-5 shadow-[0_-10px_40px_rgba(0,0,0,0.3)] sm:pt-7">
+        <div className="kk-bata relative z-10 rounded-t-lg px-[4%] pt-5 shadow-[0_-10px_40px_rgba(0,0,0,0.3)] sm:pt-7">
           <div className="mx-auto w-fit rounded-lg border-2 border-[#2b1a0e] bg-[#241811] px-5 py-2.5 shadow-[0_6px_20px_rgba(0,0,0,0.45)] sm:px-8 sm:py-3.5">
             <div className="flex items-center justify-center gap-3">
               <div className="relative">
