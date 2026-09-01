@@ -168,6 +168,10 @@ select:focus-visible {
   opacity: 0.5;
 }
 
+input[type='range'] {
+  min-height: 28px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

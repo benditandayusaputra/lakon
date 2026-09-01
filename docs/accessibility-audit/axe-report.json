@@ -1,0 +1,52 @@
+[
+  {
+    "name": "landing",
+    "url": "/",
+    "violations": []
+  },
+  {
+    "name": "masuk",
+    "url": "/masuk",
+    "violations": []
+  },
+  {
+    "name": "daftar",
+    "url": "/daftar",
+    "violations": []
+  },
+  {
+    "name": "pilih-skenario",
+    "url": "/skenario",
+    "violations": []
+  },
+  {
+    "name": "skenario-intro",
+    "url": "/skenario/kedai-kopi?arah=deaf",
+    "violations": []
+  },
+  {
+    "name": "skenario-belajar",
+    "url": "/skenario/kedai-kopi?arah=deaf",
+    "violations": []
+  },
+  {
+    "name": "gerbang-internal",
+    "url": "/dev/pipeline",
+    "violations": []
+  },
+  {
+    "name": "dev-pipeline",
+    "url": "/dev/pipeline",
+    "violations": []
+  },
+  {
+    "name": "dev-verify",
+    "url": "/dev/verify",
+    "violations": []
+  },
+  {
+    "name": "tools-collect",
+    "url": "/tools/collect",
+    "violations": []
+  }
+]

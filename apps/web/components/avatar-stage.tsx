@@ -117,12 +117,26 @@ export function AvatarStage({
           </label>
           <span className="text-teks-samar text-xs">seret avatar untuk memutar sudut</span>
           <span ref={timeEl} className="sr-only" aria-live="off" />
-          <input ref={sliderEl} type="range" className="sr-only" tabIndex={-1} readOnly />
+          <input
+            ref={sliderEl}
+            type="range"
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden
+            readOnly
+          />
         </div>
       ) : (
         <>
           <span ref={timeEl} className="sr-only" />
-          <input ref={sliderEl} type="range" className="sr-only" tabIndex={-1} readOnly />
+          <input
+            ref={sliderEl}
+            type="range"
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden
+            readOnly
+          />
         </>
       )}
     </div>

@@ -30,11 +30,11 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
   const direction: Direction = searchParams.get('arah') === 'service' ? 'service' : 'deaf'
 
   const { content, error: contentError } = useContent()
-  const { rig, error: rigError } = useCompilerRig()
   const scenario: Scenario | undefined = content?.scenarios[scenarioId]
   const palette = paletteFor(scenarioId)
 
   const [stage, setStage] = useState<Stage>('intro')
+  const { rig, error: rigError } = useCompilerRig(stage !== 'intro')
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [, forceUpdate] = useReducer((tick: number) => tick + 1, 0)
   const startedAtRef = useRef<number>(Date.now())
@@ -97,6 +97,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
   }
 
   const currentSignId = learning.next()
+  const rigLoading = stage !== 'intro' && !rig && !rigError
   const directionLabel = direction === 'deaf' ? 'sisi Tuli' : 'sisi pekerja layanan'
 
   const persistSign = (signId: string) => {
@@ -173,7 +174,11 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
 
       {stage === 'belajar' ? (
         <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 pb-10">
-          {currentSignId === null ? (
+          {rigLoading ? (
+            <p aria-live="polite" className="py-10">
+              Memuat avatar peraga…
+            </p>
+          ) : currentSignId === null ? (
             <div className="flex flex-col items-start gap-4 py-10">
               <h1 className="text-3xl font-bold">Semua isyarat selesai dipelajari</h1>
               <p className="max-w-prose">

@@ -1,12 +1,15 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { compileSign } from '@lakon/sign-compiler'
-import { useCompilerRig } from '@/features/avatar/use-rig'
+import dynamic from 'next/dynamic'
 import { useContent } from '@/features/content/use-content'
 import { paletteFor } from '@/features/ui/tokens'
-import { PracticeBlock } from '@/components/practice-block'
+
+const TrySignBlock = dynamic(() => import('@/components/try-sign-block'), {
+  ssr: false,
+  loading: () => <p className="text-teks-sekunder">Memuat…</p>,
+})
 
 const copy = {
   id: {
@@ -104,20 +107,25 @@ export function Landing() {
   const other: Lang = lang === 'id' ? 'en' : 'id'
 
   const { content } = useContent()
-  const { rig } = useCompilerRig()
-
-  const trySign = useMemo(() => {
-    if (!content || !rig) return null
-    const sign = content.signs.halo ?? Object.values(content.signs)[0]
-    if (!sign) return null
-    try {
-      return { sign, compiled: compileSign(sign, content.handshapes, rig) }
-    } catch {
-      return null
-    }
-  }, [content, rig])
-
   const scenarios = content ? Object.values(content.scenarios) : []
+  const trySectionRef = useRef<HTMLElement | null>(null)
+  const [showTry, setShowTry] = useState(false)
+
+  useEffect(() => {
+    const section = trySectionRef.current
+    if (!section) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShowTry(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: '200px' },
+    )
+    observer.observe(section)
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <main lang={lang} className="flex min-h-dvh flex-col">
@@ -171,19 +179,20 @@ export function Landing() {
         </div>
       </section>
 
-      <section id="coba" className="mx-auto w-full max-w-6xl px-6 py-14">
+      <section id="coba" ref={trySectionRef} className="mx-auto w-full max-w-6xl px-6 py-14">
         <h2 className="text-3xl font-bold">{t.tryTitle}</h2>
         <p className="text-teks-sekunder mt-1">{t.tryBody}</p>
         <div className="border-border-halus mt-6 rounded-3xl border bg-white p-5 md:p-8">
-          {trySign ? (
-            <PracticeBlock
-              compiled={trySign.compiled}
-              signLabel={trySign.sign.gloss[lang === 'id' ? 'id' : 'en']}
+          {showTry ? (
+            <TrySignBlock
+              lang={lang}
+              missingText={t.tryMissing}
+              loadingText={lang === 'id' ? 'Memuat…' : 'Loading…'}
             />
           ) : (
-            <p className="text-teks-sekunder max-w-prose">
-              {content && rig ? t.tryMissing : lang === 'id' ? 'Memuat…' : 'Loading…'}
-            </p>
+            <button type="button" onClick={() => setShowTry(true)} className="tombol-sekunder">
+              {lang === 'id' ? 'Muat blok latihan' : 'Load the practice block'}
+            </button>
           )}
         </div>
       </section>

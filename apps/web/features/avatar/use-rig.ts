@@ -5,11 +5,12 @@ import type { CompilerRig } from '@lakon/sign-compiler'
 import { extractCompilerRig } from './compiler-rig'
 import { disposeAvatar, loadAvatar } from './vrm'
 
-export const useCompilerRig = () => {
+export const useCompilerRig = (enabled = true) => {
   const [rig, setRig] = useState<CompilerRig | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!enabled) return
     let disposed = false
     loadAvatar()
       .then((avatar) => {
@@ -22,7 +23,7 @@ export const useCompilerRig = () => {
     return () => {
       disposed = true
     }
-  }, [])
+  }, [enabled])
 
   return { rig, error }
 }
