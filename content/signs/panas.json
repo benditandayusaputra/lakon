@@ -7,85 +7,72 @@
   "dialect": "bisindo-jatim",
   "structure": "dominant-only",
   "dominance": "right",
-  "duration": 2413,
+  "duration": 1900,
   "recognitionMode": true,
   "phases": [
     {
       "name": "onset",
-      "duration": 582,
-      "easing": "ease-in-out",
+      "duration": 400,
+      "easing": "ease-out",
       "dominant": {
-        "handshape": "c-curve",
+        "handshape": "five-spread",
         "location": {
-          "anchor": "dahi",
+          "anchor": "pelipis",
           "offset": [
-            0.61,
-            0.01,
-            0.74
+            0.3,
+            0.15,
+            0.15
           ]
         },
         "orientation": {
-          "palm": "up",
+          "palm": "in",
           "fingers": "up"
         }
       }
     },
     {
       "name": "stroke",
-      "duration": 1199,
+      "duration": 1000,
       "easing": "ease-in-out",
       "dominant": {
-        "handshape": "c-curve",
+        "handshape": "five-spread",
         "location": {
-          "anchor": "hidung",
+          "anchor": "pelipis",
           "offset": [
-            0.5,
-            0.12,
-            0.71
+            0.35,
+            0.15,
+            0.2
           ]
         },
         "orientation": {
-          "palm": "up",
-          "fingers": "out"
+          "palm": "in",
+          "fingers": "up"
         }
-      }
-    },
-    {
-      "name": "hold",
-      "duration": 270,
-      "easing": "ease-in-out",
-      "dominant": {
-        "handshape": "c-curve",
-        "location": {
-          "anchor": "hidung",
-          "offset": [
-            0.49,
-            0.08,
-            0.69
-          ]
-        },
-        "orientation": {
-          "palm": "up",
-          "fingers": "out"
-        }
+      },
+      "hold": 100,
+      "path": {
+        "shape": "gelombang",
+        "plane": "horizontal",
+        "repeat": 3,
+        "curvature": 0.5
       }
     },
     {
       "name": "retraction",
-      "duration": 362,
-      "easing": "ease-in-out",
+      "duration": 400,
+      "easing": "ease-in",
       "dominant": {
-        "handshape": "c-curve",
+        "handshape": "five-spread",
         "location": {
-          "anchor": "lengan-atas",
+          "anchor": "ruang-netral",
           "offset": [
-            -0.19,
-            -0.16,
-            0.91
+            0.15,
+            -0.3,
+            0.25
           ]
         },
         "orientation": {
-          "palm": "up",
+          "palm": "down",
           "fingers": "forward"
         }
       }
@@ -95,7 +82,7 @@
   "nonManual": {
     "brow": null,
     "mouth": null,
-    "head": null,
+    "head": "miring menjauhi tangan, kesan gerah",
     "gaze": null
   },
   "review": {

@@ -7,46 +7,73 @@
   "dialect": "bisindo-jakarta",
   "structure": "dominant-only",
   "dominance": "right",
-  "duration": 1096,
+  "duration": 1570,
   "recognitionMode": true,
   "phases": [
     {
       "name": "onset",
-      "duration": 462,
-      "easing": "ease-in-out",
+      "duration": 350,
+      "easing": "ease-out",
       "dominant": {
-        "handshape": "c-curve",
+        "handshape": "five-spread",
         "location": {
-          "anchor": "dagu",
+          "anchor": "pelipis",
           "offset": [
-            0.61,
-            -0.11,
-            0.99
+            0.35,
+            0.0,
+            0.2
           ]
         },
         "orientation": {
-          "palm": "back",
+          "palm": "forward",
           "fingers": "up"
         }
       }
     },
     {
       "name": "stroke",
-      "duration": 634,
+      "duration": 700,
       "easing": "ease-in-out",
       "dominant": {
-        "handshape": "o-round",
+        "handshape": "five-spread",
         "location": {
-          "anchor": "ruang-netral",
+          "anchor": "pelipis",
           "offset": [
-            0.16,
-            0.3,
-            0.19
+            0.4,
+            0.05,
+            0.2
           ]
         },
         "orientation": {
-          "palm": "up",
-          "fingers": "out"
+          "palm": "forward",
+          "fingers": "up"
+        }
+      },
+      "hold": 120,
+      "path": {
+        "shape": "zigzag",
+        "plane": "frontal",
+        "repeat": 2,
+        "curvature": 0.3
+      }
+    },
+    {
+      "name": "retraction",
+      "duration": 400,
+      "easing": "ease-in",
+      "dominant": {
+        "handshape": "five-spread",
+        "location": {
+          "anchor": "ruang-netral",
+          "offset": [
+            0.15,
+            -0.3,
+            0.25
+          ]
+        },
+        "orientation": {
+          "palm": "in",
+          "fingers": "forward"
         }
       }
     }
