@@ -1,0 +1,68 @@
+{
+  "id": "halo",
+  "gloss": {
+    "id": "halo",
+    "en": "hello"
+  },
+  "dialect": "bisindo-jakarta",
+  "structure": "dominant-only",
+  "dominance": "right",
+  "duration": 1096,
+  "recognitionMode": true,
+  "phases": [
+    {
+      "name": "onset",
+      "duration": 462,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "c-curve",
+        "location": {
+          "anchor": "dagu",
+          "offset": [
+            0.61,
+            -0.11,
+            0.99
+          ]
+        },
+        "orientation": {
+          "palm": "back",
+          "fingers": "up"
+        }
+      }
+    },
+    {
+      "name": "stroke",
+      "duration": 634,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "o-round",
+        "location": {
+          "anchor": "ruang-netral",
+          "offset": [
+            0.16,
+            0.3,
+            0.19
+          ]
+        },
+        "orientation": {
+          "palm": "up",
+          "fingers": "out"
+        }
+      }
+    }
+  ],
+  "contact": null,
+  "nonManual": {
+    "brow": null,
+    "mouth": null,
+    "head": null,
+    "gaze": null
+  },
+  "review": {
+    "status": "draft",
+    "validatedBy": null,
+    "role": null,
+    "date": null
+  },
+  "notes": "Draf dari impor video, BELUM divalidasi penanda Tuli. Sumber: \"PRIVATE LESSON IN SIGN LANGUAGE WITH SURYA SAHETAPY\", kanal Gogirl! TV, https://www.youtube.com/watch?v=G_MnbyHWa50, penanda: Surya Sahetapy (Tuli, besar di Jakarta), lisensi Creative Commons (reuse allowed), diakses 1 Sep 2026. Segmen 7,8-9,3 dtk: lambaian telapak terbuka di samping kepala."
+}

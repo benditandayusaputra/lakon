@@ -1,0 +1,108 @@
+{
+  "id": "terima-kasih",
+  "gloss": {
+    "id": "terima kasih",
+    "en": "thank you"
+  },
+  "dialect": "bisindo-jakarta",
+  "structure": "dominant-only",
+  "dominance": "right",
+  "duration": 1366,
+  "recognitionMode": true,
+  "phases": [
+    {
+      "name": "onset",
+      "duration": 436,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "claw",
+        "location": {
+          "anchor": "punggung-tangan-nondominan",
+          "offset": [
+            0.16,
+            0.37,
+            0.46
+          ]
+        },
+        "orientation": {
+          "palm": "down",
+          "fingers": "forward"
+        }
+      }
+    },
+    {
+      "name": "stroke",
+      "duration": 429,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "claw",
+        "location": {
+          "anchor": "punggung-tangan-nondominan",
+          "offset": [
+            0.14,
+            0.35,
+            0.49
+          ]
+        },
+        "orientation": {
+          "palm": "down",
+          "fingers": "forward"
+        }
+      }
+    },
+    {
+      "name": "hold",
+      "duration": 268,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "c-curve",
+        "location": {
+          "anchor": "punggung-tangan-nondominan",
+          "offset": [
+            0.14,
+            0.39,
+            0.43
+          ]
+        },
+        "orientation": {
+          "palm": "in",
+          "fingers": "forward"
+        }
+      }
+    },
+    {
+      "name": "retraction",
+      "duration": 233,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "claw",
+        "location": {
+          "anchor": "punggung-tangan-nondominan",
+          "offset": [
+            0.1,
+            0.02,
+            0.23
+          ]
+        },
+        "orientation": {
+          "palm": "up",
+          "fingers": "forward"
+        }
+      }
+    }
+  ],
+  "contact": null,
+  "nonManual": {
+    "brow": null,
+    "mouth": null,
+    "head": null,
+    "gaze": null
+  },
+  "review": {
+    "status": "draft",
+    "validatedBy": null,
+    "role": null,
+    "date": null
+  },
+  "notes": "Draf dari impor video, BELUM divalidasi penanda Tuli. Sumber: \"PRIVATE LESSON IN SIGN LANGUAGE WITH SURYA SAHETAPY\", kanal Gogirl! TV, https://www.youtube.com/watch?v=G_MnbyHWa50, penanda: Surya Sahetapy (Tuli, besar di Jakarta), lisensi Creative Commons (reuse allowed), diakses 1 Sep 2026. Segmen 54,3-57,0 dtk: telapak terbuka dari dagu bergerak keluar-depan."
+}

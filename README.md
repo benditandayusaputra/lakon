@@ -36,6 +36,10 @@ Production build: `LAKON_ALLOW_DRAFT=1 pnpm build`. Without that variable the
 build **fails if any sign is not `approved`** — that is the content-governance
 gate, enforced by script, not memory.
 
+Current coffee-shop signs (halo, terima-kasih, panas) are drafts derived from
+videos of Deaf signers (see [docs/attribution.md](docs/attribution.md)),
+honestly labeled in the UI and awaiting a validation session.
+
 `predev`/`prebuild` run `tools/fetch-assets.mjs`, which copies the MediaPipe
 WASM from node_modules and downloads the two landmark models into
 `apps/web/public/` (self-hosted so practice works offline and without a CDN).

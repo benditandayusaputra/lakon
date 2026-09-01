@@ -98,9 +98,17 @@ Langkah 1 rencana:
 
 | Kata         | Sumber terpilih (kanal, URL, penanda, timestamp) |
 | ------------ | ------------------------------------------------ |
-| halo         |                                                  |
-| kopi         |                                                  |
-| panas        |                                                  |
-| berapa       |                                                  |
-| bayar        |                                                  |
-| terima-kasih |                                                  |
+| halo         | ✔ TERSIMPAN sebagai draf — Gogirl! TV (CC), Surya Sahetapy, watch?v=G_MnbyHWa50, 7,8–9,3 dtk |
+| kopi         | belum |
+| panas        | ✔ TERSIMPAN sebagai draf — Balai Bahasa Jatim, 01K9MCTSN98SM1Z56XJ4T9HZZH.mp4 (varian Jatim) |
+| berapa       | belum |
+| bayar        | belum |
+| terima-kasih | ✔ TERSIMPAN sebagai draf — Gogirl! TV (CC), Surya Sahetapy, watch?v=G_MnbyHWa50, 54,3–57,0 dtk |
+
+Temuan penting 1 Sep 2026: pencarian YouTube dengan filter lisensi Creative
+Commons (`&sp=EgIwAQ%3D%3D`) menemukan video CC Surya Sahetapy (Tuli, Jakarta)
+yang mencakup halo + terima kasih — video CC legal diunduh dengan atribusi.
+Kandidat CC yang belum tergali: "Pelatihan Bahasa Isyarat" 56 menit (CSR Sinar
+Mas Land, watch?v=U3_cHs7lt5w) — mungkin memuat kata transaksi (berapa, bayar);
+perlu dipindai. Video CC lain (sosialisasi jalanan, dokumentasi kelas BBPBAP)
+sudah dicek dan tidak layak (tanpa caption per kata).

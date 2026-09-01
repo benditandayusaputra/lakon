@@ -47,3 +47,13 @@ Bentuk isyarat BISINDO hanya berasal dari sesi validasi penanda Tuli atau juru
 bahasa isyarat, dicatat pada field `review` tiap berkas di `content/`. Delapan
 belas kandidat bentuk tangan awal adalah kandidat anatomis dari dokumen
 inventaris tim, bukan klaim bentuk BISINDO.
+
+Isyarat berstatus draf di bawah ini dibuat lewat impor video (jalur balik
+sign-editor) dari sumber penanda Tuli berikut, menunggu sesi validasi. Detail
+per berkas ada di field `notes` masing-masing.
+
+| Kata | Penanda | Kanal/lembaga | URL | Varian | Lisensi | Diakses |
+| --- | --- | --- | --- | --- | --- | --- |
+| halo | Surya Sahetapy | Gogirl! TV | <https://www.youtube.com/watch?v=G_MnbyHWa50> | Jakarta | Creative Commons (reuse allowed) | 1 Sep 2026 |
+| terima-kasih | Surya Sahetapy | Gogirl! TV | <https://www.youtube.com/watch?v=G_MnbyHWa50> | Jakarta | Creative Commons (reuse allowed) | 1 Sep 2026 |
+| panas | (tidak disebutkan) | Balai Bahasa Provinsi Jawa Timur, Kemendikdasmen | <https://balaibahasajatim.kemendikdasmen.go.id/video> | Jawa Timur | situs publikasi pemerintah | 1 Sep 2026 |

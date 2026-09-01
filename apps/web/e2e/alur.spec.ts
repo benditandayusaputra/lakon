@@ -3,14 +3,31 @@ import { expect, test, type Page } from '@playwright/test'
 const DEMO = { email: 'demo@lakon.id', sandi: 'CobaLakon2026' }
 
 const skipAllLearning = async (page: Page) => {
-  for (let i = 0; i < 12; i++) {
-    const skip = page.getByRole('button', { name: 'Lewati dulu' })
-    if (await skip.isVisible().catch(() => false)) {
-      await skip.click()
-      await page.waitForTimeout(250)
-      continue
+  for (let i = 0; i < 24; i++) {
+    if (
+      await page
+        .getByRole('button', { name: 'Mulai ujian percakapan' })
+        .isVisible()
+        .catch(() => false)
+    ) {
+      break
     }
-    break
+    let clicked = false
+    for (const name of [
+      'Lewati dulu',
+      'Lanjut ke praktik',
+      'Tanpa kamera',
+      'Sudah cukup mirip, lanjut',
+    ]) {
+      const button = page.getByRole('button', { name })
+      if (await button.isVisible().catch(() => false)) {
+        await button.click()
+        await page.waitForTimeout(250)
+        clicked = true
+        break
+      }
+    }
+    if (!clicked) await page.waitForTimeout(300)
   }
   await expect(page.getByRole('button', { name: 'Mulai ujian percakapan' })).toBeVisible()
 }
@@ -28,6 +45,18 @@ const finishExam = async (page: Page) => {
     const produce = page.getByRole('button', { name: 'Sudah kuperagakan, lanjut' })
     if (await produce.isVisible().catch(() => false)) {
       await produce.click()
+      await page.waitForTimeout(250)
+      continue
+    }
+    const tanpaKamera = page.getByRole('button', { name: 'Tanpa kamera' })
+    if (await tanpaKamera.isVisible().catch(() => false)) {
+      await tanpaKamera.click()
+      await page.waitForTimeout(250)
+      continue
+    }
+    const mirip = page.getByRole('button', { name: 'Sudah cukup mirip, lanjut' })
+    if (await mirip.isVisible().catch(() => false)) {
+      await mirip.click()
       await page.waitForTimeout(250)
       continue
     }
@@ -192,7 +221,9 @@ test.describe('alur inti', () => {
 
   test('10. progres bertahan setelah muat ulang', async ({ page }) => {
     await enterScenario(page, 'deaf')
-    await page.getByRole('button', { name: 'Lewati dulu' }).click()
+    await page.getByRole('button', { name: 'Lanjut ke praktik' }).click()
+    await page.getByRole('button', { name: 'Tanpa kamera' }).click()
+    await page.getByRole('button', { name: 'Sudah cukup mirip, lanjut' }).click()
     await page.waitForTimeout(500)
 
     await page.goto('/skenario')

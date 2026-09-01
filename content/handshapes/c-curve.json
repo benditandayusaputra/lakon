@@ -50,7 +50,9 @@
     }
   },
   "usedIn": [
-    "panas"
+    "halo",
+    "panas",
+    "terima-kasih"
   ],
   "notes": null,
   "source": "candidate",
