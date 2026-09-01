@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "prebuild": "node ../../tools/check-signs.mjs",
+    "prebuild": "node ../../tools/fetch-assets.mjs && node ../../tools/check-signs.mjs",
     "build": "next build",
     "start": "next start",
     "e2e": "playwright test",
-    "db:push": "drizzle-kit push"
+    "db:push": "drizzle-kit push",
+    "predev": "node ../../tools/fetch-assets.mjs"
   },
   "dependencies": {
     "@lakon/cv-core": "workspace:*",

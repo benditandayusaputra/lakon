@@ -82,23 +82,31 @@ const build = async (config: WorkerConfig, delegate: 'GPU' | 'CPU'): Promise<Run
   return { hand, pose, canvas, backend: delegate === 'GPU' ? 'GPU (WebGL)' : 'CPU (WASM SIMD)' }
 }
 
-const init = async (config: WorkerConfig) => {
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const buildWithFallback = async (config: WorkerConfig): Promise<Runtime> => {
   try {
-    runtime = await build(config, config.delegate)
-  } catch (gpuError) {
-    if (config.delegate !== 'GPU') {
-      post({ type: 'error', message: describe(gpuError) })
-      return
-    }
+    return await build(config, config.delegate)
+  } catch (primaryError) {
+    if (config.delegate !== 'GPU') throw primaryError
+    return build(config, 'CPU')
+  }
+}
+
+const init = async (config: WorkerConfig) => {
+  let lastError: unknown = null
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) await delay(1000 * attempt)
     try {
-      runtime = await build(config, 'CPU')
-    } catch (cpuError) {
-      post({ type: 'error', message: describe(cpuError) })
+      runtime = await buildWithFallback(config)
+      lastTimestamp = -1
+      post({ type: 'ready', backend: runtime.backend })
       return
+    } catch (err) {
+      lastError = err
     }
   }
-  lastTimestamp = -1
-  post({ type: 'ready', backend: runtime.backend })
+  post({ type: 'error', message: describe(lastError) })
 }
 
 const describe = (err: unknown) => (err instanceof Error ? err.message : String(err))

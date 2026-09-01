@@ -1,42 +1,103 @@
 # Lakon
 
-Aplikasi web belajar bahasa isyarat Indonesia (BISINDO, varian Jakarta) melalui
-skenario transaksi nyata. Peragaan avatar 3D, praktik webcam dengan verifikasi
-di perangkat, dan simulasi percakapan dua arah.
+A web app for learning Indonesian Sign Language (BISINDO, Jakarta variant)
+through real transaction scenarios. Learners study each sign from a 3D avatar,
+practise it in front of their webcam with on-device verification, then play a
+full branching conversation simulation.
 
-## Menjalankan
+One scenario, two roles: the Deaf side learns to carry out the transaction,
+the service-worker side learns to serve Deaf customers. Lakon is a language
+learning tool for both sides — never framed as assistance for one.
+
+## Stack
+
+- Next.js App Router, TypeScript strict, Tailwind CSS
+- React Three Fiber + three.js + @pixiv/three-vrm (3D avatar)
+- MediaPipe Tasks Vision in a Web Worker (hand + pose landmarks, self-hosted)
+- ONNX Runtime Web (WebGPU, WASM SIMD fallback) for the optional classifier
+- Custom sign compiler: one parametric spec → avatar keyframes **and** the
+  DTW verification reference (single source of truth)
+- Drizzle ORM + Postgres (Neon), session auth, IndexedDB-first progress,
+  service-worker offline cache
+- Vitest (63 unit tests), Playwright (13 end-to-end tests incl. offline and
+  camera-denied flows)
+
+## Getting started
 
 ```bash
 pnpm install
-cp .env.example .env        # isi DATABASE_URL (Postgres/Neon)
-pnpm db:push                # terapkan skema
-node tools/seed.mjs         # akun demo + admin + validator
-pnpm dev                    # http://localhost:3000
+cp .env.example .env          # set DATABASE_URL (Postgres/Neon)
+pnpm db:push                  # apply schema
+node tools/seed.mjs           # demo + admin + validator accounts
+pnpm dev                      # http://localhost:3000 (assets auto-fetched)
 ```
 
-Build produksi: `LAKON_ALLOW_DRAFT=1 pnpm build` (tanpa variabel itu, build
-diblokir bila ada isyarat yang belum berstatus `approved`; itu disengaja).
+Production build: `LAKON_ALLOW_DRAFT=1 pnpm build`. Without that variable the
+build **fails if any sign is not `approved`** — that is the content-governance
+gate, enforced by script, not memory.
 
-## Akun demo
+`predev`/`prebuild` run `tools/fetch-assets.mjs`, which copies the MediaPipe
+WASM from node_modules and downloads the two landmark models into
+`apps/web/public/` (self-hosted so practice works offline and without a CDN).
 
-| Peran     | Email              | Kata sandi        |
-| --------- | ------------------ | ----------------- |
-| Pengguna  | demo@lakon.id      | CobaLakon2026     |
-| Admin     | admin@lakon.id     | AdminLakon2026    |
-| Validator | validator@lakon.id | ValidasiLakon2026 |
+## Demo accounts (seeded)
 
-Akun demo sudah berisi progres parsial (skenario kedai kopi) supaya aplikasi
-terlihat dalam keadaan terpakai. Rute `/dev/*` dan `/tools/*` memerlukan peran
-admin atau validator.
+| Role      | Email                | Password          |
+| --------- | -------------------- | ----------------- |
+| Learner   | `demo@lakon.id`      | CobaLakon2026     |
+| Admin     | `admin@lakon.id`     | AdminLakon2026    |
+| Validator | `validator@lakon.id` | ValidasiLakon2026 |
 
-## Skrip
+The demo account ships with partial progress so judges see the app in use.
+`/dev/*` and `/tools/*` require the admin or validator role; validators may
+only change `review` fields of content, never sign parameters.
 
-| Perintah                    | Fungsi                              |
-| --------------------------- | ----------------------------------- |
-| `pnpm test`                 | Uji unit (Vitest)                   |
-| `pnpm e2e`                  | Uji end-to-end (Playwright)         |
-| `pnpm check:content`        | Validasi seluruh berkas content/    |
-| `pnpm check:signs`          | Gerbang build status review isyarat |
-| `pnpm typecheck` / `lint`   | TypeScript dan ESLint               |
-| `node tools/seed.mjs`       | Seed database sampai siap demo      |
-| `python3 training/train.py` | Latih pengklasifikasi, ekspor ONNX  |
+## Technical documentation
+
+- [docs/architecture.md](docs/architecture.md) — data-flow diagram, package
+  layout, key decisions
+- [docs/attribution.md](docs/attribution.md) — third-party licenses and the
+  VRM avatar's embedded permission metadata
+- [docs/accessibility-audit/](docs/accessibility-audit/) — axe-core (0
+  violations across 10 screens) and Lighthouse reports, performance budget
+- [docs/uji-lintas-perangkat.md](docs/uji-lintas-perangkat.md) — manual
+  cross-device checklist and presentation prep
+
+Internal pages (admin): `/dev/pipeline` (CV diagnostics), `/dev/mirror`
+(rotation-solver mirror), `/dev/compile` (sign preview), `/dev/verify` (DTW
+scoring), `/dev/health` (system health), `/tools/collect` (training-data
+collector), `/tools/sign-editor` (sign editor with video-to-draft import).
+
+Scripts: `pnpm test` (unit), `pnpm e2e` (Playwright, builds production and
+uses a fake camera feed), `pnpm check:content` (content validator),
+`pnpm typecheck`, `pnpm lint`, `python3 training/train.py` (classifier
+training + ONNX export with per-contributor accuracy reporting).
+
+## Design decisions made manually by the team
+
+These are deliberate human decisions, recorded here as required by our design
+handoff checklist:
+
+- **Two-direction concept** — every scenario playable from the Deaf side and
+  the service side — is the product's core idea and is surfaced in the UI, not
+  hidden in a menu.
+- **Quiet zone vs. lively zone**: practice and demonstration screens use a
+  fixed neutral backdrop (`#6e7a86`) with a radial luminance-equalizing
+  gradient behind the hands; personality (Betawi-derived, desaturated
+  palettes) lives only on landing, scenario cards, and summaries.
+- **No red for "not yet right"** and no color-only states; feedback always
+  pairs icon + text + position. Red is reserved for real system failures.
+- **The emergency scenario (S5) is deliberately the calmest palette** —
+  anxious people learn worse; tension comes from the conversation content.
+- **17 px base typography**, short sentences: many Deaf users read long
+  written Indonesian with extra effort.
+- **No audio anywhere**, and no hearing metaphors in copy.
+- **Sign forms are never guessed**: BISINDO signs enter the product only
+  after validation by Deaf signers or interpreters (enforced by the build
+  gate). The current `uji-gerak` sign is an honestly-labeled technical test.
+
+## Credits
+
+3D avatar (development stand-in): **"Seed-san" © VirtualCast, Inc.**, used
+under the [VRM Public License 1.0](https://vrm.dev/licenses/1.0/). See
+[docs/attribution.md](docs/attribution.md) for full details.

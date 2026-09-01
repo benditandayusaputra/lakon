@@ -23,6 +23,7 @@ const isAssetRequest = (url) => {
   return (
     url.pathname.startsWith('/_next/static/') ||
     url.pathname.startsWith('/models/') ||
+    url.pathname.startsWith('/mediapipe/') ||
     /\.(vrm|onnx|wasm|task|woff2?)$/.test(url.pathname)
   )
 }

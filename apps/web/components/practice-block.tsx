@@ -147,12 +147,15 @@ export function PracticeBlock({
       (frames) => {
         setPhase('memeriksa')
         const scored = scoreAgainstReference(frames, compiled)
-        const decision = fuseDecision({
-          expectedSign: compiled.id,
-          stableLabel: stableRef.current?.label ?? null,
-          dtwScore: scored.score,
-          dtwThreshold: DTW_THRESHOLD,
-        })
+        const handsMissing = scored.analysis.hands.some((hand) => !hand.present)
+        const decision = handsMissing
+          ? ({ kind: 'belum-tepat', reason: 'dtw-saja' } as const)
+          : fuseDecision({
+              expectedSign: compiled.id,
+              stableLabel: stableRef.current?.label ?? null,
+              dtwScore: scored.score,
+              dtwThreshold: DTW_THRESHOLD,
+            })
         setResult(scored)
         setVerdict(decision)
         if (frames.length < 5) {

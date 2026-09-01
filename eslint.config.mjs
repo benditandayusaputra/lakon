@@ -6,6 +6,8 @@ export default tseslint.config(
   {
     ignores: [
       '**/public/sw.js',
+      '**/public/mediapipe/**',
+      '**/public/models/**',
       '**/.next/**',
       '**/node_modules/**',
       '**/db/migrations/**',
@@ -22,7 +24,15 @@ export default tseslint.config(
   },
   {
     files: ['tools/**/*.mjs'],
-    languageOptions: { globals: { console: 'readonly', process: 'readonly' } },
+    languageOptions: {
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        fetch: 'readonly',
+        Buffer: 'readonly',
+        URL: 'readonly',
+      },
+    },
   },
   prettier,
 )

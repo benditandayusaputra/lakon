@@ -3,7 +3,12 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useContent } from '@/features/content/use-content'
-import { clearAllProgress, listRuns, listSignProgress } from '@/features/progress/store'
+import {
+  clearAllProgress,
+  listRuns,
+  listSignProgress,
+  pullFromServer,
+} from '@/features/progress/store'
 import { SyncBadge } from '@/components/sync-badge'
 import { paletteFor } from '@/features/ui/tokens'
 
@@ -16,16 +21,21 @@ export function ScenarioPicker() {
   const [wiped, setWiped] = useState(false)
 
   useEffect(() => {
-    void listRuns().then((runs) => {
-      const counts: Record<string, number> = {}
-      for (const run of runs) counts[run.scenarioId] = (counts[run.scenarioId] ?? 0) + 1
-      setRunsByScenario(counts)
-    })
-    void listSignProgress().then((entries) =>
-      setMasteredCount(
-        entries.filter((entry) => entry.status !== 'belum' && entry.status !== 'berlatih').length,
-      ),
-    )
+    void pullFromServer()
+      .catch(() => {})
+      .then(() => {
+        void listRuns().then((runs) => {
+          const counts: Record<string, number> = {}
+          for (const run of runs) counts[run.scenarioId] = (counts[run.scenarioId] ?? 0) + 1
+          setRunsByScenario(counts)
+        })
+        void listSignProgress().then((entries) =>
+          setMasteredCount(
+            entries.filter((entry) => entry.status !== 'belum' && entry.status !== 'berlatih')
+              .length,
+          ),
+        )
+      })
     void fetch('/api/auth/saya')
       .then((response) => response.json())
       .then((data: { user: { displayName: string } | null }) => setAccount(data.user))
@@ -52,7 +62,18 @@ export function ScenarioPicker() {
         <div className="flex items-center gap-4">
           <SyncBadge />
           {account ? (
-            <span className="font-bold">{account.displayName}</span>
+            <>
+              <span className="font-bold">{account.displayName}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  void fetch('/api/auth/keluar', { method: 'POST' }).then(() => setAccount(null))
+                }}
+                className="underline underline-offset-4"
+              >
+                Keluar
+              </button>
+            </>
           ) : (
             <Link href="/masuk" className="underline underline-offset-4">
               Masuk

@@ -195,6 +195,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     if (message.type === 'error') {
       inFlight = 0
       stats.queuedFrames = 0
+      console.warn('worker CV galat:', message.message)
       setState({ status: 'error', message: message.message })
       return
     }
