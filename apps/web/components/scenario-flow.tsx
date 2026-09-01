@@ -135,7 +135,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
         </Link>
         <div className="flex items-center gap-4">
           <p className="font-bold">
-            {scenario.title.id} · {directionLabel}
+            {scenario.title.id}, {directionLabel}
           </p>
           <SyncBadge />
         </div>
@@ -284,7 +284,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                         </button>
                         {progress.attempts > 0 ? (
                           <p className="text-teks-samar text-sm">
-                            percobaan: {progress.attempts} · gagal beruntun:{' '}
+                            percobaan: {progress.attempts}, gagal beruntun:{' '}
                             {progress.consecutiveFailures}
                           </p>
                         ) : null}
@@ -394,7 +394,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                     <p className="mb-3 font-bold">
                       Balas dengan isyarat: {prettify(task.sign)}
                       {engine.attemptsAtCurrent() > 0
-                        ? ` · percobaan gagal: ${engine.attemptsAtCurrent()}`
+                        ? `, percobaan gagal: ${engine.attemptsAtCurrent()}`
                         : ''}
                     </p>
                     <PracticeBlock
@@ -507,7 +507,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                           .filter((sign) => !needsRepeat.includes(sign))
                           .map((sign) => <li key={sign}>{prettify(sign)}</li>)
                       ) : (
-                        <li>—</li>
+                        <li>tidak ada</li>
                       )}
                     </ul>
                   </section>
@@ -519,7 +519,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                       {needsRepeat.length > 0 ? (
                         needsRepeat.map((sign) => <li key={sign}>{prettify(sign)}</li>)
                       ) : (
-                        <li>—</li>
+                        <li>tidak ada</li>
                       )}
                     </ul>
                   </section>

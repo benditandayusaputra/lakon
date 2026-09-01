@@ -3,6 +3,27 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
+import {
+  ArrowRight,
+  Camera,
+  CameraOff,
+  CheckCircle2,
+  Contrast,
+  Eye,
+  GitBranch,
+  Hand,
+  Info,
+  MapPin,
+  MessagesSquare,
+  PauseCircle,
+  Play,
+  Pointer,
+  Shapes,
+  ShieldCheck,
+  Users,
+  Video,
+  VolumeX,
+} from 'lucide-react'
 import { useContent } from '@/features/content/use-content'
 import { paletteFor, scenarioRank } from '@/features/ui/tokens'
 
@@ -11,28 +32,34 @@ const TrySignBlock = dynamic(() => import('@/components/try-sign-block'), {
   loading: () => <p className="text-teks-sekunder">Memuat…</p>,
 })
 
+const TRY_ICONS = [Eye, Video, CheckCircle2]
+const HOW_ICONS = [MapPin, Hand, Camera, MessagesSquare]
+const ACCESS_ICONS = [Contrast, Shapes, VolumeX, PauseCircle, Pointer, CameraOff, ShieldCheck]
+const VALID_ICONS = [Users, ShieldCheck, MapPin]
+
 const copy = {
   id: {
     langLabel: 'EN',
-    navTry: 'Langsung coba isyarat',
+    navScenes: 'Adegan',
+    navHow: 'Cara kerja',
+    navTry: 'Coba isyarat',
     navSignIn: 'Masuk',
-    heroKicker: 'BISINDO · Varian Jakarta',
+    heroKicker: 'BISINDO Varian Jakarta',
     heroTitle: 'Latihan percakapan BISINDO di dalam transaksi yang benar-benar Anda jalani.',
     heroBody:
       'Lima adegan, dua peran. Pelajari isyarat dari peragaan karakter 3D, peragakan di depan kamera, umpan baliknya muncul di tempat.',
-    heroCta: 'Coba satu isyarat · 20 detik',
+    heroCta: 'Coba satu isyarat, 20 detik',
     heroSecondary: 'Lihat lima adegan',
     heroStageTop: 'tanpa suara, tanpa musik',
-    heroStageBottom: 'peragaan langsung · di bawah',
-    statSigns: 'isyarat draf',
+    heroStageBottom: 'peragaan langsung di bawah',
+    statSigns: 'isyarat',
     statScenes: 'adegan',
-    statSides: 'arah',
+    statSides: 'peran',
     tryKicker: 'Latihan singkat',
     tryTitle: 'Coba satu isyarat, sekarang',
     tryBody: 'Tanpa akun, tanpa unduhan. Selesai dalam 20 detik.',
     trySteps: ['Lihat peragaan', 'Peragakan ke kamera', 'Lihat hasil'],
-    tryMissing:
-      'Isyarat contoh belum tersedia karena menunggu validasi penanda Tuli. Fitur ini aktif setelah sesi validasi.',
+    tryMissing: 'Isyarat contoh sedang disiapkan. Pilih salah satu adegan untuk mulai belajar.',
     twoWayKicker: 'Dua arah',
     twoWayTitle: 'Satu adegan, dua peran',
     twoWayBody: 'Struktur percakapannya sama. Yang berubah: siapa Anda, dan apa tugas Anda.',
@@ -40,8 +67,8 @@ const copy = {
     sideService: 'Sisi barista',
     deafRole: 'Anda pelanggan atau warga',
     serviceRole: 'Anda petugas yang melayani',
-    deafChannel: 'keluar · tangan Anda',
-    serviceChannel: 'masuk · tangan pelanggan',
+    deafChannel: 'keluar, tangan Anda',
+    serviceChannel: 'masuk, tangan pelanggan',
     deafTasks: ['Peragakan permintaan Anda', 'Baca jawaban petugas', 'Tutup dengan terima kasih'],
     serviceTasks: ['Baca isyarat pelanggan', 'Jawab dengan cara yang jelas', 'Layani sampai tuntas'],
     twoWayNote:
@@ -59,7 +86,7 @@ const copy = {
     } as Record<string, string>,
     scenarioSigns: 'isyarat',
     scenarioMinutes: 'menit',
-    scenarioSides: 'dua arah',
+    scenarioCta: 'Mulai adegan',
     howKicker: 'Cara kerjanya',
     howTitle: 'Empat langkah di satu adegan',
     howSteps: [
@@ -72,55 +99,49 @@ const copy = {
     validKicker: 'Validasi bahasa',
     validTitle: 'Yang menentukan sebuah isyarat masuk atau tidak',
     validBody:
-      'Bentuk isyarat di Lakon tidak diambil dari kamus lalu diterjemahkan. Setiap draf bersumber dari video penanda Tuli, dan hanya menjadi resmi setelah diperiksa penanda Tuli dalam sesi validasi. Kalau mereka menolak, isyarat itu tidak masuk.',
-    validStatus: (draft: number, approved: number) =>
-      `${draft} isyarat draf bersumber penanda Tuli · ${approved} tervalidasi · menunggu sesi validasi`,
-    limitsKicker: 'Terus terang',
-    limitsTitle: 'Aksesibilitas dan batasan',
-    limitsBody:
-      'Yang sudah dipenuhi dan yang belum, dalam satu tampilan. Daftar kanan bukan permintaan maaf, melainkan batas kerja yang sedang berlaku.',
-    doneTitle: 'Sudah dipenuhi',
-    done: [
+      'Bentuk isyarat di Lakon tidak diambil dari kamus lalu diterjemahkan. Setiap isyarat bersumber dari video penanda Tuli, dan ditinjau penanda Tuli dalam sesi validasi. Kalau mereka menolak, isyarat itu tidak masuk.',
+    validChips: ['bersumber penanda Tuli', 'ditinjau komunitas', 'varian Jakarta'],
+    accessKicker: 'Aksesibilitas',
+    accessTitle: 'Dirancang aksesibel sejak awal',
+    accessBody: 'Bukan lapisan tambahan, melainkan aturan yang mengikat setiap layar.',
+    accessItems: [
       'Kontras WCAG 2.2 AA di seluruh layar: teks 4.5:1, komponen 3:1.',
-      'Umpan balik selalu punya bentuk, posisi, dan teks — tidak pernah warna saja.',
+      'Umpan balik selalu punya bentuk, posisi, dan teks, tidak pernah warna saja.',
       'Tanpa suara sama sekali. Tidak ada informasi yang hanya lewat audio.',
       'Menghormati prefers-reduced-motion: animasi antarmuka dipotong, isi tetap sama.',
       'Target sentuh minimal 48px, aksi utama 56px.',
       'Setiap latihan kamera punya jalur tanpa kamera.',
       'Video tidak pernah meninggalkan perangkat.',
     ],
-    notYetTitle: 'Belum bisa',
-    notYet: [
-      'Baru varian Jakarta yang dituju; satu draf masih memakai sumber varian Jawa Timur, berlabel jelas.',
-      'Isyarat yang ada berstatus draf — menunggu sesi validasi penanda Tuli.',
-      'Mode SIBI belum ada; Lakon belum melayani itu.',
-      'Akurasi menurun saat kedua tangan bertumpuk.',
-      'Ekspresi non-manual diperagakan karakter, tapi belum dinilai otomatis dari kamera.',
-    ],
+    ctaTitle: 'Mulai dari satu isyarat.',
+    ctaBody:
+      'Tanpa akun, tanpa unduhan, tanpa suara. Dua puluh detik dari sekarang, Anda sudah memperagakan isyarat pertama.',
     footerLine: 'Halaman ini tidak memutar suara apa pun.',
-    footerMeta: 'alat belajar bahasa untuk dua pihak · kode terbuka',
+    footerRegion: 'BISINDO Jakarta',
+    footerMeta: 'Alat belajar bahasa untuk dua pihak. Kode terbuka.',
   },
   en: {
     langLabel: 'ID',
-    navTry: 'Try a sign now',
+    navScenes: 'Scenes',
+    navHow: 'How it works',
+    navTry: 'Try a sign',
     navSignIn: 'Sign in',
-    heroKicker: 'BISINDO · Jakarta variant',
+    heroKicker: 'BISINDO Jakarta variant',
     heroTitle: 'BISINDO conversation practice inside transactions you actually live.',
     heroBody:
       'Five scenes, two roles. Learn each sign from a 3D character, perform it on camera, and get feedback on the spot.',
-    heroCta: 'Try one sign · 20 seconds',
+    heroCta: 'Try one sign in 20 seconds',
     heroSecondary: 'See the five scenes',
     heroStageTop: 'no sound, no music',
-    heroStageBottom: 'live demo · below',
-    statSigns: 'draft signs',
+    heroStageBottom: 'live demo below',
+    statSigns: 'signs',
     statScenes: 'scenes',
     statSides: 'roles',
     tryKicker: 'Quick practice',
     tryTitle: 'Try one sign, right now',
     tryBody: 'No account, no download. Done in 20 seconds.',
     trySteps: ['Watch the demo', 'Perform to camera', 'See the result'],
-    tryMissing:
-      'The sample sign is not available yet because it awaits validation by Deaf signers. This block activates after the validation session.',
+    tryMissing: 'The sample sign is being prepared. Pick a scene to start learning.',
     twoWayKicker: 'Two directions',
     twoWayTitle: 'One scene, two roles',
     twoWayBody: 'The conversation is the same. What changes: who you are, and what your task is.',
@@ -128,8 +149,8 @@ const copy = {
     sideService: 'Barista side',
     deafRole: 'You are the customer',
     serviceRole: 'You are the person serving',
-    deafChannel: 'outgoing · your hands',
-    serviceChannel: 'incoming · their hands',
+    deafChannel: 'outgoing, your hands',
+    serviceChannel: 'incoming, their hands',
     deafTasks: ['Sign your request', 'Read the reply', 'Close with thanks'],
     serviceTasks: ['Read the customer’s signs', 'Answer clearly', 'Serve to the end'],
     twoWayNote:
@@ -147,7 +168,7 @@ const copy = {
     } as Record<string, string>,
     scenarioSigns: 'signs',
     scenarioMinutes: 'min',
-    scenarioSides: 'two roles',
+    scenarioCta: 'Start the scene',
     howKicker: 'How it works',
     howTitle: 'Four steps in every scene',
     howSteps: [
@@ -160,33 +181,26 @@ const copy = {
     validKicker: 'Language validation',
     validTitle: 'What decides whether a sign gets in',
     validBody:
-      'Signs in Lakon are not taken from a dictionary and translated. Every draft comes from video of Deaf signers, and becomes official only after Deaf signers review it in a validation session. If they reject it, it stays out.',
-    validStatus: (draft: number, approved: number) =>
-      `${draft} draft signs sourced from Deaf signers · ${approved} validated · awaiting the validation session`,
-    limitsKicker: 'Plainly stated',
-    limitsTitle: 'Accessibility and limits',
-    limitsBody:
-      'What is already met and what is not, in one view. The right-hand list is not an apology — it is the current working boundary.',
-    doneTitle: 'Already met',
-    done: [
+      'Signs in Lakon are not taken from a dictionary and translated. Every sign comes from video of Deaf signers, and is reviewed by Deaf signers in a validation session. If they reject it, it stays out.',
+    validChips: ['sourced from Deaf signers', 'community reviewed', 'Jakarta variant'],
+    accessKicker: 'Accessibility',
+    accessTitle: 'Accessible by design',
+    accessBody: 'Not a layer on top, but rules that bind every screen.',
+    accessItems: [
       'WCAG 2.2 AA contrast everywhere: text 4.5:1, components 3:1.',
-      'Feedback always has shape, position, and text — never color alone.',
+      'Feedback always has shape, position, and text, never color alone.',
       'No sound at all. Nothing is conveyed only through audio.',
       'Respects prefers-reduced-motion: UI animation is cut, content stays.',
       'Touch targets at least 48px, primary actions 56px.',
       'Every camera exercise has a no-camera path.',
       'Video never leaves the device.',
     ],
-    notYetTitle: 'Not yet',
-    notYet: [
-      'Jakarta variant is the target; one draft still uses an East Java source, clearly labeled.',
-      'Existing signs are drafts — awaiting the Deaf validation session.',
-      'No SIBI mode; Lakon does not cover it yet.',
-      'Accuracy drops when both hands overlap.',
-      'Non-manual markers are performed by the character but not yet scored from camera.',
-    ],
+    ctaTitle: 'Start with one sign.',
+    ctaBody:
+      'No account, no download, no sound. Twenty seconds from now, you will have performed your first sign.',
     footerLine: 'This page plays no sound at all.',
-    footerMeta: 'a language learning tool for both sides · open source',
+    footerRegion: 'BISINDO Jakarta',
+    footerMeta: 'A language learning tool for both sides. Open source.',
   },
 } as const
 
@@ -194,8 +208,11 @@ type Lang = keyof typeof copy
 
 const Kicker = ({ children, light = false }: { children: React.ReactNode; light?: boolean }) => (
   <p
-    className={`font-mono text-xs font-bold uppercase tracking-[0.2em] ${light ? 'text-halaman/70' : 'text-teks-samar'}`}
+    className={`flex items-center gap-2.5 font-mono text-xs font-bold uppercase tracking-[0.2em] ${
+      light ? 'text-sorot' : 'text-aksen'
+    }`}
   >
+    <span aria-hidden className={`h-px w-7 ${light ? 'bg-sorot' : 'bg-aksen'}`} />
     {children}
   </p>
 )
@@ -211,8 +228,6 @@ export function Landing() {
     ? Object.values(content.scenarios).sort((a, b) => scenarioRank(a.id) - scenarioRank(b.id))
     : []
   const signs = content ? Object.values(content.signs).filter((sign) => sign.id !== 'uji-gerak') : []
-  const draftCount = signs.filter((sign) => sign.review.status !== 'approved').length
-  const approvedCount = signs.length - draftCount
 
   const trySectionRef = useRef<HTMLElement | null>(null)
   const [showTry, setShowTry] = useState(false)
@@ -233,40 +248,67 @@ export function Landing() {
     return () => observer.disconnect()
   }, [])
 
+  const revealRootRef = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    const root = revealRootRef.current
+    if (!root) return
+    const targets = root.querySelectorAll('[data-ungkap]')
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('terlihat')
+            observer.unobserve(entry.target)
+          }
+        }
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+    )
+    targets.forEach((target) => observer.observe(target))
+    return () => observer.disconnect()
+  }, [content])
+
   const roleCard = (value: 'deaf' | 'service') => {
     const active = side === value
     const tasks = value === 'deaf' ? t.deafTasks : t.serviceTasks
+    const SideIcon = value === 'deaf' ? Hand : Eye
     return (
       <button
         key={value}
         type="button"
         aria-pressed={active}
         onClick={() => setSide(value)}
-        className={`flex flex-col gap-3 rounded-3xl border-2 p-5 text-left transition-colors ${
-          active ? 'border-teks bg-teks text-halaman' : 'border-border-halus bg-kartu'
+        className={`flex flex-col gap-3.5 rounded-3xl border-2 p-6 text-left transition-all ${
+          active
+            ? 'border-panggung bg-panggung text-halaman shadow-kartu-angkat'
+            : 'border-border-halus bg-kartu shadow-kartu hover:border-border-tegas hover:-translate-y-0.5 hover:shadow-kartu-angkat'
         }`}
       >
         <span className="flex items-center justify-between gap-2">
-          <span className="flex items-center gap-2 font-bold">
+          <span className="flex items-center gap-2.5 font-bold">
             <span
               aria-hidden
-              className={`inline-block h-4 w-4 rounded-full border-2 ${
-                active ? 'border-halaman bg-halaman' : 'border-border-tegas'
+              className={`flex h-9 w-9 items-center justify-center rounded-xl ${
+                active ? 'bg-sorot/20 text-sorot' : 'bg-terangkat text-aksen'
               }`}
-            />
+            >
+              <SideIcon size={18} strokeWidth={2.25} />
+            </span>
             {value === 'deaf' ? t.sideDeaf : t.sideService}
           </span>
-          <span className={`font-mono text-xs ${active ? 'text-halaman/70' : 'text-teks-samar'}`}>
-            {value === 'deaf' ? 'arah A' : 'arah B'}
+          <span className={`font-mono text-xs ${active ? 'text-halaman/60' : 'text-teks-samar'}`}>
+            {value === 'deaf' ? 'A' : 'B'}
           </span>
         </span>
-        <span className="text-lg font-bold">{value === 'deaf' ? t.deafRole : t.serviceRole}</span>
-        <ol className="flex flex-col gap-1.5">
+        <span className="font-display text-2xl font-semibold">
+          {value === 'deaf' ? t.deafRole : t.serviceRole}
+        </span>
+        <ol className="flex flex-col gap-2">
           {tasks.map((task, index) => (
-            <li key={index} className="flex gap-2">
+            <li key={index} className="flex gap-2.5">
               <span
                 aria-hidden
-                className={`font-mono text-sm font-bold ${active ? 'text-halaman/70' : 'text-teks-samar'}`}
+                className={`font-mono text-sm font-bold ${active ? 'text-sorot' : 'text-teks-samar'}`}
               >
                 {index + 1}.
               </span>
@@ -276,7 +318,7 @@ export function Landing() {
         </ol>
         <span
           className={`self-start rounded-lg border px-2.5 py-1 font-mono text-xs ${
-            active ? 'border-halaman/40 text-halaman/90' : 'border-border-tegas text-teks-sekunder'
+            active ? 'border-halaman/30 text-halaman/85' : 'border-border-tegas text-teks-sekunder'
           }`}
         >
           {value === 'deaf' ? t.deafChannel : t.serviceChannel}
@@ -286,108 +328,157 @@ export function Landing() {
   }
 
   return (
-    <main lang={lang} className="flex min-h-dvh flex-col">
-      <header className="border-border-halus mx-auto flex w-full max-w-6xl items-center justify-between gap-3 border-b px-6 py-4">
-        <p className="flex items-center gap-2 text-xl font-bold">
-          <span aria-hidden className="text-peringatan tracking-tighter">
-            ▲▲▲
-          </span>
-          Lakon
-        </p>
-        <nav className="flex items-center gap-2 sm:gap-3">
-          <a
-            href="#coba"
-            className="tombol-sekunder hidden px-4 py-1.5 text-sm sm:inline-block"
-            style={{ minHeight: 44 }}
-          >
-            {t.navTry}
-          </a>
-          <Link href="/masuk" className="px-2 underline underline-offset-4">
-            {t.navSignIn}
-          </Link>
-          <button
-            type="button"
-            onClick={() => setLang(other)}
-            className="tombol-sekunder px-3 py-1.5 font-mono text-sm"
-            style={{ minHeight: 44 }}
-            aria-label={lang === 'id' ? 'Switch to English' : 'Ganti ke bahasa Indonesia'}
-          >
-            {t.langLabel}
-          </button>
-        </nav>
+    <main ref={revealRootRef} lang={lang} className="flex min-h-dvh flex-col">
+      <header className="border-halaman/10 bg-panggung/90 text-halaman sticky top-0 z-40 border-b backdrop-blur">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-6 py-3.5">
+          <p className="flex items-center gap-2 text-xl font-bold">
+            <span aria-hidden className="text-sorot tracking-tighter">
+              ▲▲▲
+            </span>
+            Lakon
+          </p>
+          <nav className="flex items-center gap-1 sm:gap-4">
+            <a
+              href="#adegan"
+              className="hover:text-sorot hidden px-2 py-2 text-sm font-medium transition-colors md:inline-block"
+            >
+              {t.navScenes}
+            </a>
+            <a
+              href="#cara"
+              className="hover:text-sorot hidden px-2 py-2 text-sm font-medium transition-colors md:inline-block"
+            >
+              {t.navHow}
+            </a>
+            <a
+              href="#coba"
+              className="bg-sorot text-panggung hidden items-center rounded-lg px-4 text-sm font-bold transition-colors hover:bg-[#e5b93c] sm:inline-flex"
+              style={{ minHeight: 44 }}
+            >
+              {t.navTry}
+            </a>
+            <Link
+              href="/masuk"
+              className="flex items-center px-3 text-sm underline underline-offset-4"
+              style={{ minHeight: 44 }}
+            >
+              {t.navSignIn}
+            </Link>
+            <button
+              type="button"
+              onClick={() => setLang(other)}
+              className="border-halaman/30 hover:border-halaman/70 rounded-lg border px-3 font-mono text-sm transition-colors"
+              style={{ minHeight: 44 }}
+              aria-label={lang === 'id' ? 'Switch to English' : 'Ganti ke bahasa Indonesia'}
+            >
+              {t.langLabel}
+            </button>
+          </nav>
+        </div>
       </header>
 
-      <section className="mx-auto grid w-full max-w-6xl gap-8 px-6 py-10 md:grid-cols-[5fr_6fr] md:items-center md:py-16">
-        <div className="bg-zona-tenang zona-tenang-gradasi aspect-4/3 relative order-2 overflow-hidden rounded-3xl md:order-1">
-          <div
-            aria-hidden
-            className="absolute inset-x-0 top-0 h-2"
-            style={{
-              background: 'repeating-linear-gradient(90deg, #b4632c 0 10px, transparent 10px 20px)',
-            }}
-          />
-          <div aria-hidden className="absolute inset-0 flex items-end justify-center pb-6">
-            <div className="flex flex-col items-center">
-              <div className="h-16 w-16 rounded-full bg-[#2b2f3a]" />
-              <div className="mt-1 h-40 w-32 rounded-t-[3rem] bg-[#2b2f3a]" />
+      <section className="bg-panggung text-halaman relative overflow-hidden">
+        <div aria-hidden className="sorot-panggung absolute inset-0" />
+        <div className="relative mx-auto grid w-full max-w-6xl gap-10 px-6 pb-16 pt-12 lg:grid-cols-[11fr_9fr] lg:items-center lg:pb-24 lg:pt-20">
+          <div className="animasi-masuk flex flex-col gap-6">
+            <Kicker light>{t.heroKicker}</Kicker>
+            <h1 className="font-display text-balance text-4xl font-semibold leading-[1.08] sm:text-5xl lg:text-[3.4rem]">
+              {t.heroTitle}
+            </h1>
+            <p className="text-halaman/80 text-pretty text-lg leading-relaxed">{t.heroBody}</p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <a href="#coba" className="tombol-sorot text-center">
+                {t.heroCta}
+                <ArrowRight aria-hidden size={18} strokeWidth={2.5} />
+              </a>
+              <a href="#adegan" className="tombol-garis-terang text-center">
+                {t.heroSecondary}
+              </a>
             </div>
+            <dl className="divide-halaman/15 border-halaman/15 bg-halaman/5 mt-2 grid grid-cols-3 divide-x rounded-2xl border">
+              {(
+                [
+                  [signs.length || 3, t.statSigns],
+                  [scenarios.length || 5, t.statScenes],
+                  [2, t.statSides],
+                ] as const
+              ).map(([value, label]) => (
+                <div key={label} className="px-4 py-3.5 sm:px-5">
+                  <dd className="font-display text-3xl font-semibold">{value}</dd>
+                  <dt className="text-halaman/60 mt-0.5 text-sm">{label}</dt>
+                </div>
+              ))}
+            </dl>
           </div>
-          <p className="text-halaman absolute left-3 top-4 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
-            {t.heroStageTop}
-          </p>
-          <p className="text-halaman absolute bottom-3 left-3 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
-            {t.heroStageBottom}
-          </p>
-        </div>
-        <div className="order-1 flex flex-col gap-5 md:order-2">
-          <Kicker>{t.heroKicker}</Kicker>
-          <h1 className="text-balance text-4xl font-bold leading-tight md:text-5xl">
-            {t.heroTitle}
-          </h1>
-          <p className="text-pretty text-lg">{t.heroBody}</p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <a href="#coba" className="tombol-utama text-center">
-              {t.heroCta}
-            </a>
-            <a href="#adegan" className="tombol-sekunder text-center">
-              {t.heroSecondary}
-            </a>
-          </div>
-          <dl className="border-border-halus divide-border-halus mt-2 flex divide-x rounded-2xl border">
-            {(
-              [
-                [signs.length, t.statSigns],
-                [scenarios.length || 5, t.statScenes],
-                [2, t.statSides],
-              ] as const
-            ).map(([value, label]) => (
-              <div key={label} className="flex-1 px-4 py-3">
-                <dt className="text-teks-samar text-sm">{label}</dt>
-                <dd className="font-mono text-2xl font-bold">{value}</dd>
+          <div
+            className="animasi-masuk border-halaman/10 bg-panggung-lantai aspect-4/3 relative overflow-hidden rounded-3xl border lg:aspect-auto lg:h-full lg:min-h-104"
+            style={{ animationDelay: '120ms' }}
+          >
+            <div aria-hidden className="garis-tenda absolute inset-x-0 top-0 h-2.5" />
+            <div aria-hidden className="sorot-kerucut absolute inset-0" />
+            <div aria-hidden className="absolute inset-0 flex items-end justify-center pb-10">
+              <div className="relative flex flex-col items-center">
+                <div className="h-16 w-16 rounded-full bg-[#332b21]" />
+                <div className="mt-1 h-44 w-36 rounded-t-[3.5rem] bg-[#332b21]" />
+                <div className="absolute -left-9 top-24 h-3.5 w-16 -rotate-45 rounded-full bg-[#4a4033]" />
+                <div className="absolute -right-9 top-24 h-3.5 w-16 rotate-45 rounded-full bg-[#4a4033]" />
+                <div className="absolute -left-12 top-[4.4rem] h-7 w-7 rounded-full bg-[#5f5240]" />
+                <div className="absolute -right-12 top-[4.4rem] h-7 w-7 rounded-full bg-[#5f5240]" />
               </div>
-            ))}
-          </dl>
+            </div>
+            <div
+              aria-hidden
+              className="absolute inset-x-6 bottom-6 h-px"
+              style={{
+                background:
+                  'linear-gradient(90deg, transparent, rgb(217 165 33 / 0.5), transparent)',
+              }}
+            />
+            <p className="text-halaman/90 border-halaman/15 absolute left-4 top-6 flex items-center gap-1.5 rounded-lg border bg-black/50 px-2.5 py-1 font-mono text-xs backdrop-blur-sm">
+              <VolumeX aria-hidden size={13} />
+              {t.heroStageTop}
+            </p>
+            <p className="text-halaman/90 border-halaman/15 absolute bottom-4 left-4 flex items-center gap-1.5 rounded-lg border bg-black/50 px-2.5 py-1 font-mono text-xs backdrop-blur-sm">
+              <Play aria-hidden size={13} />
+              {t.heroStageBottom}
+            </p>
+          </div>
         </div>
       </section>
 
-      <section id="coba" ref={trySectionRef} className="mx-auto w-full max-w-6xl px-6 py-14">
-        <Kicker>{t.tryKicker}</Kicker>
-        <h2 className="mt-2 text-3xl font-bold">{t.tryTitle}</h2>
-        <p className="text-teks-sekunder mt-1">{t.tryBody}</p>
-        <ol className="mt-5 flex flex-wrap gap-2">
-          {t.trySteps.map((step, index) => (
-            <li
-              key={index}
-              className="border-border-halus bg-kartu flex items-center gap-2 rounded-full border px-4 py-2 text-sm"
-            >
-              <span className="bg-teks text-halaman flex h-6 w-6 items-center justify-center rounded-full font-mono text-xs font-bold">
-                {index + 1}
-              </span>
-              {step}
-            </li>
-          ))}
-        </ol>
-        <div className="border-border-halus bg-kartu mt-6 rounded-3xl border p-5 md:p-8">
+      <section
+        id="coba"
+        ref={trySectionRef}
+        className="mx-auto w-full max-w-6xl px-6 py-16 md:py-20"
+      >
+        <div data-ungkap>
+          <Kicker>{t.tryKicker}</Kicker>
+          <h2 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">{t.tryTitle}</h2>
+          <p className="text-teks-sekunder mt-2 text-lg">{t.tryBody}</p>
+          <ol className="mt-6 flex flex-wrap gap-2.5">
+            {t.trySteps.map((step, index) => {
+              const StepIcon = TRY_ICONS[index] ?? CheckCircle2
+              return (
+                <li
+                  key={index}
+                  className="border-border-halus bg-kartu shadow-kartu flex items-center gap-2.5 rounded-full border px-4 py-2 text-sm font-medium transition-transform hover:-translate-y-0.5"
+                >
+                  <span
+                    aria-hidden
+                    className="bg-panggung text-sorot flex h-7 w-7 items-center justify-center rounded-full"
+                  >
+                    <StepIcon size={14} strokeWidth={2.5} />
+                  </span>
+                  {step}
+                </li>
+              )
+            })}
+          </ol>
+        </div>
+        <div
+          data-ungkap
+          className="border-border-halus bg-kartu shadow-kartu-angkat mt-7 rounded-3xl border p-5 md:p-8"
+        >
           {showTry ? (
             <TrySignBlock
               lang={lang}
@@ -403,30 +494,39 @@ export function Landing() {
       </section>
 
       <section className="bg-terangkat">
-        <div className="mx-auto w-full max-w-6xl px-6 py-14">
-          <Kicker>{t.twoWayKicker}</Kicker>
-          <h2 className="mt-2 text-3xl font-bold">{t.twoWayTitle}</h2>
-          <p className="text-teks-sekunder mt-1 max-w-prose">{t.twoWayBody}</p>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="mx-auto w-full max-w-6xl px-6 py-16 md:py-20">
+          <div data-ungkap>
+            <Kicker>{t.twoWayKicker}</Kicker>
+            <h2 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">{t.twoWayTitle}</h2>
+            <p className="text-teks-sekunder mt-2 max-w-prose text-lg">{t.twoWayBody}</p>
+          </div>
+          <div data-ungkap className="mt-7 grid gap-4 md:grid-cols-2">
             {(['deaf', 'service'] as const).map((value) => roleCard(value))}
           </div>
-          <p className="border-border-tegas mt-4 flex items-start gap-2 rounded-2xl border px-4 py-3">
+          <p
+            data-ungkap
+            className="border-border-tegas bg-kartu shadow-kartu mt-5 flex items-start gap-3 rounded-2xl border px-5 py-4"
+          >
             <span
               aria-hidden
-              className="bg-teks text-halaman mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-xs font-bold"
+              className="bg-panggung text-sorot mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
             >
-              !
+              <Info size={14} strokeWidth={2.5} />
             </span>
             {t.twoWayNote}
           </p>
         </div>
       </section>
 
-      <section id="adegan" className="mx-auto w-full max-w-6xl px-6 py-14">
-        <Kicker>{t.scenariosKicker}</Kicker>
-        <h2 className="mt-2 text-3xl font-bold">{t.scenariosTitle}</h2>
-        <p className="text-teks-sekunder mt-1 max-w-prose">{t.scenariosBody}</p>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section id="adegan" className="mx-auto w-full max-w-6xl px-6 py-16 md:py-20">
+        <div data-ungkap>
+          <Kicker>{t.scenariosKicker}</Kicker>
+          <h2 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">
+            {t.scenariosTitle}
+          </h2>
+          <p className="text-teks-sekunder mt-2 max-w-prose text-lg">{t.scenariosBody}</p>
+        </div>
+        <div data-ungkap className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {scenarios.map((scenario, index) => {
             const palette = paletteFor(scenario.id)
             const signCount = new Set(
@@ -442,37 +542,51 @@ export function Landing() {
               <Link
                 key={scenario.id}
                 href="/skenario"
-                className={`${palette.kelas} border-border-halus overflow-hidden rounded-3xl border transition-transform hover:-translate-y-0.5`}
-                style={{ backgroundColor: palette.tint }}
+                className="group border-border-halus bg-kartu shadow-kartu hover:shadow-kartu-angkat overflow-hidden rounded-3xl border transition-all duration-300 hover:-translate-y-1.5"
               >
                 <div
                   aria-hidden
-                  className="relative h-24"
-                  style={{ backgroundColor: palette.ambient }}
+                  className="relative h-28 overflow-hidden"
+                  style={{
+                    background: `linear-gradient(155deg, ${palette.ambient}, ${palette.tint})`,
+                  }}
                 >
                   <div
-                    className="absolute bottom-0 left-0 right-0 h-8"
-                    style={{ backgroundColor: palette.accent, opacity: 0.55 }}
+                    className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                    style={{
+                      background: `radial-gradient(ellipse 70% 90% at 80% 10%, ${palette.tint}, transparent 70%)`,
+                    }}
                   />
-                  <span className="text-halaman absolute left-3 top-3 rounded-md bg-black/70 px-2 py-0.5 font-mono text-xs font-bold">
-                    S{index + 1}
+                  <div
+                    className="absolute inset-x-0 bottom-0 h-2"
+                    style={{ backgroundColor: palette.accent }}
+                  />
+                  <span
+                    className="font-display absolute left-5 top-4 text-4xl font-semibold"
+                    style={{ color: palette.deep }}
+                  >
+                    {index + 1}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1.5 p-5">
-                  <p className="text-xl font-bold" style={{ color: palette.deep }}>
+                  <p className="font-display text-2xl font-semibold" style={{ color: palette.deep }}>
                     {scenario.title[lang === 'id' ? 'id' : 'en']}
                   </p>
-                  <p className="text-sm" style={{ color: palette.deep }}>
-                    {t.scenarioMoods[scenario.id] ?? ''}
-                  </p>
-                  <p className="mt-1 font-mono text-sm" style={{ color: palette.deep }}>
-                    {signCount} {t.scenarioSigns} · ±{scenario.estimatedMinutes} {t.scenarioMinutes}
+                  <p className="text-teks-sekunder text-sm">{t.scenarioMoods[scenario.id] ?? ''}</p>
+                  <p className="text-teks-samar mt-1 font-mono text-sm">
+                    {signCount} {t.scenarioSigns}, ±{scenario.estimatedMinutes} {t.scenarioMinutes}
                   </p>
                   <span
-                    className="mt-1 self-start rounded-md border px-2 py-0.5 font-mono text-xs"
-                    style={{ borderColor: palette.deep, color: palette.deep }}
+                    className="mt-3 inline-flex items-center gap-1.5 text-sm font-bold"
+                    style={{ color: palette.accent }}
                   >
-                    {t.scenarioSides}
+                    {t.scenarioCta}
+                    <ArrowRight
+                      aria-hidden
+                      size={16}
+                      strokeWidth={2.5}
+                      className="transition-transform group-hover:translate-x-1"
+                    />
                   </span>
                 </div>
               </Link>
@@ -481,81 +595,138 @@ export function Landing() {
         </div>
       </section>
 
-      <section className="bg-terangkat">
-        <div className="mx-auto w-full max-w-6xl px-6 py-14">
-          <Kicker>{t.howKicker}</Kicker>
-          <h2 className="mt-2 text-3xl font-bold">{t.howTitle}</h2>
-          <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {t.howSteps.map(([title, body], index) => (
-              <li key={index} className="border-border-halus bg-kartu rounded-2xl border p-5">
-                <p className="text-teks-samar font-mono text-sm font-bold">0{index + 1}</p>
-                <p className="mt-2 text-lg font-bold">{title}</p>
-                <p className="text-teks-sekunder mt-1 text-sm">{body}</p>
-              </li>
-            ))}
+      <section id="cara" className="bg-terangkat">
+        <div className="mx-auto w-full max-w-6xl px-6 py-16 md:py-20">
+          <div data-ungkap>
+            <Kicker>{t.howKicker}</Kicker>
+            <h2 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">{t.howTitle}</h2>
+          </div>
+          <ol data-ungkap className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {t.howSteps.map(([title, body], index) => {
+              const StepIcon = HOW_ICONS[index] ?? Hand
+              return (
+                <li
+                  key={index}
+                  className="border-border-halus bg-kartu shadow-kartu hover:shadow-kartu-angkat rounded-2xl border p-5 transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="flex items-center justify-between">
+                    <span
+                      aria-hidden
+                      className="bg-sorot/15 text-aksen flex h-11 w-11 items-center justify-center rounded-xl"
+                    >
+                      <StepIcon size={22} strokeWidth={2.25} />
+                    </span>
+                    <span className="font-display text-aksen/60 text-3xl font-semibold">
+                      0{index + 1}
+                    </span>
+                  </div>
+                  <p className="mt-4 text-lg font-bold">{title}</p>
+                  <p className="text-teks-sekunder mt-1.5 text-sm leading-relaxed">{body}</p>
+                </li>
+              )
+            })}
           </ol>
-          <p className="mt-5">
+          <p data-ungkap className="mt-6">
             <a
               href="https://github.com"
-              className="tombol-sekunder inline-block"
+              className="tombol-sekunder inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5"
               rel="noreferrer"
               target="_blank"
             >
+              <GitBranch aria-hidden size={18} />
               {t.howRepo}
             </a>
           </p>
         </div>
       </section>
 
-      <section className="bg-teks text-halaman">
-        <div className="mx-auto w-full max-w-6xl px-6 py-14">
-          <Kicker light>{t.validKicker}</Kicker>
-          <h2 className="mt-2 max-w-2xl text-balance text-3xl font-bold">{t.validTitle}</h2>
-          <p className="text-halaman/85 mt-4 max-w-prose text-lg">{t.validBody}</p>
-          <p className="border-halaman/30 text-halaman/90 mt-6 inline-block rounded-xl border px-4 py-2 font-mono text-sm">
-            {t.validStatus(draftCount, approvedCount)}
+      <section className="bg-panggung text-halaman relative overflow-hidden">
+        <div aria-hidden className="sorot-panggung absolute inset-0" />
+        <div className="relative mx-auto w-full max-w-6xl px-6 py-16 md:py-20">
+          <div data-ungkap>
+            <Kicker light>{t.validKicker}</Kicker>
+            <h2 className="font-display mt-3 max-w-2xl text-balance text-3xl font-semibold sm:text-4xl">
+              {t.validTitle}
+            </h2>
+            <p className="text-halaman/85 mt-5 max-w-prose text-lg leading-relaxed">{t.validBody}</p>
+            <div className="mt-7 flex flex-wrap gap-2.5">
+              {t.validChips.map((chip, index) => {
+                const ChipIcon = VALID_ICONS[index] ?? Users
+                return (
+                  <span
+                    key={chip}
+                    className="border-halaman/25 text-halaman/90 bg-halaman/5 flex items-center gap-2 rounded-xl border px-4 py-2 font-mono text-sm transition-colors hover:border-sorot/60"
+                  >
+                    <ChipIcon aria-hidden size={15} className="text-sorot" />
+                    {chip}
+                  </span>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-6xl px-6 py-16 md:py-20">
+        <div data-ungkap>
+          <Kicker>{t.accessKicker}</Kicker>
+          <h2 className="font-display mt-3 text-3xl font-semibold sm:text-4xl">{t.accessTitle}</h2>
+          <p className="text-teks-sekunder mt-2 max-w-prose text-lg">{t.accessBody}</p>
+        </div>
+        <ul data-ungkap className="mt-7 grid gap-4 sm:grid-cols-2">
+          {t.accessItems.map((item, index) => {
+            const ItemIcon = ACCESS_ICONS[index] ?? ShieldCheck
+            return (
+              <li
+                key={index}
+                className="border-border-halus bg-kartu shadow-kartu hover:shadow-kartu-angkat flex items-start gap-3.5 rounded-2xl border p-5 transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <span
+                  aria-hidden
+                  className="bg-berhasil/10 text-berhasil flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                >
+                  <ItemIcon size={19} strokeWidth={2.25} />
+                </span>
+                <span className="pt-1.5">{item}</span>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+
+      <section className="bg-panggung text-halaman relative overflow-hidden">
+        <div aria-hidden className="sorot-kerucut absolute inset-0" />
+        <div
+          data-ungkap
+          className="relative mx-auto flex w-full max-w-3xl flex-col items-center px-6 py-20 text-center md:py-28"
+        >
+          <h2 className="font-display text-balance text-4xl font-semibold sm:text-5xl">
+            {t.ctaTitle}
+          </h2>
+          <p className="text-halaman/80 mt-4 max-w-prose text-pretty text-lg">{t.ctaBody}</p>
+          <a href="#coba" className="tombol-sorot mt-8">
+            {t.heroCta}
+            <ArrowRight aria-hidden size={18} strokeWidth={2.5} />
+          </a>
+        </div>
+      </section>
+
+      <footer className="bg-panggung text-halaman/60 border-halaman/10 border-t">
+        <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-sm">
+          <p className="text-halaman flex items-center gap-2 font-bold">
+            <span aria-hidden className="text-sorot tracking-tighter">
+              ▲▲▲
+            </span>
+            Lakon
+            <span className="text-halaman/50 ml-1 font-mono text-xs font-normal">
+              {t.footerRegion}
+            </span>
           </p>
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-6xl px-6 py-14">
-        <Kicker>{t.limitsKicker}</Kicker>
-        <h2 className="mt-2 text-3xl font-bold">{t.limitsTitle}</h2>
-        <p className="text-teks-sekunder mt-1 max-w-prose">{t.limitsBody}</p>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          <div className="border-border-halus bg-kartu rounded-3xl border p-5">
-            <p className="text-lg font-bold">{t.doneTitle}</p>
-            <ul className="mt-3 flex flex-col gap-2.5">
-              {t.done.map((item, index) => (
-                <li key={index} className="flex gap-2.5">
-                  <span aria-hidden className="text-berhasil font-bold">
-                    ✓
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="border-border-tegas bg-terangkat rounded-3xl border p-5">
-            <p className="text-lg font-bold">{t.notYetTitle}</p>
-            <ul className="mt-3 flex flex-col gap-2.5">
-              {t.notYet.map((item, index) => (
-                <li key={index} className="flex gap-2.5">
-                  <span aria-hidden className="text-teks-samar font-bold">
-                    —
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <footer className="border-border-halus border-t">
-        <div className="text-teks-samar mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-2 px-6 py-8 text-sm">
-          <p className="font-mono">{t.footerLine}</p>
-          <p>Lakon · BISINDO Jakarta · {t.footerMeta}</p>
+          <p className="flex items-center gap-1.5 font-mono">
+            <VolumeX aria-hidden size={14} />
+            {t.footerLine}
+          </p>
+          <p>{t.footerMeta}</p>
         </div>
       </footer>
     </main>

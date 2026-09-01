@@ -160,7 +160,7 @@ export function ScenarioPicker() {
                 {scenario.title.id}
               </p>
               <p className="text-sm" style={{ color: palette.deep }}>
-                {signCount} isyarat · ± {scenario.estimatedMinutes} menit
+                {signCount} isyarat, ± {scenario.estimatedMinutes} menit
               </p>
               {runsByScenario[scenario.id] ? (
                 <p className="text-sm" style={{ color: palette.deep }}>

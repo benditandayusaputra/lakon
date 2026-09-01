@@ -200,7 +200,7 @@ export function PracticeBlock({
         <div className="bg-zona-tenang zona-tenang-gradasi aspect-4/3 relative w-full overflow-hidden rounded-2xl">
           <AvatarStage compiled={compiled} className="absolute inset-0" mirrorDefault />
           <p className="text-halaman absolute bottom-3 left-3 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
-            peraga · {signLabel}
+            peraga: {signLabel}
           </p>
         </div>
         <div className="bg-zona-tenang aspect-4/3 relative w-full overflow-hidden rounded-2xl">
