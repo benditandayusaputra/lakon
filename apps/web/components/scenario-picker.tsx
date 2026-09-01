@@ -76,19 +76,21 @@ const Kicker = ({ children, light = false }: { children: React.ReactNode; light?
 )
 
 const scenarioSignIds = (scenario: {
+  vocab: string[]
   nodes: {
     task?: { deaf: { type: string; sign?: string }; service: { type: string; sign?: string } }
   }[]
 }) =>
-  new Set(
-    scenario.nodes.flatMap((node) =>
+  new Set([
+    ...scenario.vocab,
+    ...scenario.nodes.flatMap((node) =>
       node.task
         ? [node.task.deaf, node.task.service].flatMap((task) =>
             task.type === 'point' || !task.sign ? [] : [task.sign],
           )
         : [],
     ),
-  )
+  ])
 
 export function ScenarioPicker() {
   const { content, error } = useContent()
