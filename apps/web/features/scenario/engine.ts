@@ -51,9 +51,10 @@ export const createScenarioEngine = (
   const record = (outcome: ScenarioEvent['outcome'], at: number) => {
     const active = node()
     if (!active) return
+    const task = active.task ? active.task[direction] : null
     events.push({
       nodeId: active.id,
-      sign: active.task ? active.task[direction].sign : null,
+      sign: task && task.type !== 'point' ? task.sign : null,
       outcome,
       at,
     })

@@ -333,6 +333,26 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
               >
                 Lanjut
               </button>
+            ) : task.type === 'point' ? (
+              <div className="rounded-3xl bg-white/90 p-4">
+                <p className="mb-3 font-bold">{task.prompt}</p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {task.options.map((option, index) => (
+                    <button
+                      key={option}
+                      type="button"
+                      onClick={() => {
+                        const moved = engine.answer(index === task.correct ? 'benar' : 'salah')
+                        if (moved === 'selesai') finishExam()
+                        forceUpdate()
+                      }}
+                      className="tombol-sekunder bg-white text-left"
+                    >
+                      ☝️ {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ) : task.type === 'produce' ? (
               (() => {
                 const compiled = getCompiled(task.sign)

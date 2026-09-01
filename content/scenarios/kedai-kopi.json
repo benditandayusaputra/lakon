@@ -4,7 +4,9 @@
     "id": "Memesan minuman di kedai kopi",
     "en": "Ordering a drink at a coffee shop"
   },
-  "sdg": [10],
+  "sdg": [
+    10
+  ],
   "vocab": [],
   "estimatedMinutes": 12,
   "nodes": [
@@ -22,7 +24,11 @@
         "service": {
           "type": "receptive",
           "sign": "halo",
-          "options": ["halo", "maaf", "tolong"]
+          "options": [
+            "halo",
+            "maaf",
+            "tolong"
+          ]
         }
       },
       "next": "pesan",
@@ -45,17 +51,29 @@
       },
       "task": {
         "deaf": {
-          "type": "produce",
-          "sign": "kopi"
+          "type": "point",
+          "prompt": "Tunjuk menu: minuman apa yang mau kamu pesan?",
+          "options": [
+            "Kopi",
+            "Teh",
+            "Cokelat"
+          ],
+          "correct": 0
         },
         "service": {
-          "type": "receptive",
-          "sign": "kopi",
-          "options": ["kopi", "teh", "susu"]
+          "type": "point",
+          "prompt": "Pelanggan menunjuk menu. Minuman apa yang ditunjuk?",
+          "options": [
+            "Kopi",
+            "Teh",
+            "Cokelat"
+          ],
+          "correct": 0
         }
       },
       "next": "suhu",
-      "onFail": "repair-pesan"
+      "onFail": "repair-pesan",
+      "hint": "Menunjuk menu adalah cara yang lazim dan sopan di kedai kopi ramah Tuli."
     },
     {
       "id": "repair-pesan",
@@ -80,7 +98,10 @@
         "service": {
           "type": "receptive",
           "sign": "panas",
-          "options": ["panas", "dingin"]
+          "options": [
+            "panas",
+            "dingin"
+          ]
         }
       },
       "next": "harga",
@@ -109,7 +130,11 @@
         "service": {
           "type": "receptive",
           "sign": "berapa",
-          "options": ["berapa", "bayar", "tidak"]
+          "options": [
+            "berapa",
+            "bayar",
+            "tidak"
+          ]
         }
       },
       "next": "bayar",
@@ -138,7 +163,11 @@
         "service": {
           "type": "receptive",
           "sign": "bayar",
-          "options": ["bayar", "berapa", "ya"]
+          "options": [
+            "bayar",
+            "berapa",
+            "ya"
+          ]
         }
       },
       "next": "tutup",
@@ -167,7 +196,11 @@
         "service": {
           "type": "receptive",
           "sign": "terima-kasih",
-          "options": ["terima-kasih", "halo", "maaf"]
+          "options": [
+            "terima-kasih",
+            "halo",
+            "maaf"
+          ]
         }
       },
       "next": null,

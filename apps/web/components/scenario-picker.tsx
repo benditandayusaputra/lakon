@@ -135,7 +135,11 @@ export function ScenarioPicker() {
           const palette = paletteFor(scenario.id)
           const signCount = new Set(
             scenario.nodes.flatMap((node) =>
-              node.task ? [node.task.deaf.sign, node.task.service.sign] : [],
+              node.task
+                  ? [node.task.deaf, node.task.service].flatMap((task) =>
+                      task.type === 'point' ? [] : [task.sign],
+                    )
+                  : [],
             ),
           ).size
           return (

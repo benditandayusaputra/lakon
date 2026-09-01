@@ -27,8 +27,9 @@ export const learningOrder = (scenario: Scenario): string[] => {
   for (const node of scenario.nodes) {
     if (node.task) {
       for (const role of ['deaf', 'service'] as const) {
-        const sign = node.task[role].sign
-        if (!inNodeOrder.includes(sign)) inNodeOrder.push(sign)
+        const task = node.task[role]
+        if (task.type === 'point') continue
+        if (!inNodeOrder.includes(task.sign)) inNodeOrder.push(task.sign)
       }
     }
   }

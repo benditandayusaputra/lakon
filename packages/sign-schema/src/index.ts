@@ -162,7 +162,14 @@ const receptiveTask = z.object({
   options: z.array(kebabId).min(2),
 })
 
-export const taskSchema = z.discriminatedUnion('type', [produceTask, receptiveTask])
+const pointTask = z.object({
+  type: z.literal('point'),
+  prompt: z.string().min(1),
+  options: z.array(z.string().min(1)).min(2),
+  correct: z.number().int().min(0),
+})
+
+export const taskSchema = z.discriminatedUnion('type', [produceTask, receptiveTask, pointTask])
 
 export const scenarioNodeSchema = z.object({
   id: kebabId,
@@ -327,6 +334,16 @@ const validateScenario = (
     if (node.task) {
       for (const role of ['deaf', 'service'] as const) {
         const task = node.task[role]
+        if (task.type === 'point') {
+          if (task.correct >= task.options.length) {
+            issues.push({
+              file,
+              path: `nodes.${index}.task.${role}.correct`,
+              message: `indeks jawaban ${task.correct} di luar jumlah pilihan`,
+            })
+          }
+          continue
+        }
         if (scenario.vocab.length > 0 && !scenario.vocab.includes(task.sign)) {
           issues.push({
             file,
