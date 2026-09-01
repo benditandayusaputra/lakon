@@ -99,7 +99,7 @@ test.describe('alur inti', () => {
     await page.goto('/daftar')
     await page.getByLabel('Nama panggilan').fill('Penguji E2E')
     await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Kata sandi').fill('sandi-uji-123')
+    await page.getByLabel('Kata sandi', { exact: true }).fill('sandi-uji-123')
     await page.getByRole('button', { name: 'Buat akun' }).click()
     await page.waitForURL('**/skenario')
     await expect(page.getByText('Penguji E2E')).toBeVisible()
@@ -109,11 +109,11 @@ test.describe('alur inti', () => {
 
     await page.goto('/masuk')
     await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Kata sandi').fill('sandi-salah-99')
+    await page.getByLabel('Kata sandi', { exact: true }).fill('sandi-salah-99')
     await page.getByRole('button', { name: 'Masuk' }).click()
     await expect(page.getByText('Email atau kata sandi tidak cocok.')).toBeVisible()
 
-    await page.getByLabel('Kata sandi').fill('sandi-uji-123')
+    await page.getByLabel('Kata sandi', { exact: true }).fill('sandi-uji-123')
     await page.getByRole('button', { name: 'Masuk' }).click()
     await page.waitForURL('**/skenario')
   })
@@ -121,7 +121,7 @@ test.describe('alur inti', () => {
   test('3. masuk dengan akun demo yang berprogres', async ({ page }) => {
     await page.goto('/masuk')
     await page.getByLabel('Email').fill(DEMO.email)
-    await page.getByLabel('Kata sandi').fill(DEMO.sandi)
+    await page.getByLabel('Kata sandi', { exact: true }).fill(DEMO.sandi)
     await page.getByRole('button', { name: 'Masuk' }).click()
     await page.waitForURL('**/skenario')
     await expect(page.getByText('Akun Demo')).toBeVisible()
