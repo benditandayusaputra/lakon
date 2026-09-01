@@ -10,7 +10,7 @@ import {
   pullFromServer,
 } from '@/features/progress/store'
 import { SyncBadge } from '@/components/sync-badge'
-import { paletteFor } from '@/features/ui/tokens'
+import { paletteFor, scenarioRank } from '@/features/ui/tokens'
 
 export function ScenarioPicker() {
   const { content, error } = useContent()
@@ -51,7 +51,9 @@ export function ScenarioPicker() {
     })
   }
 
-  const scenarios = content ? Object.values(content.scenarios) : []
+  const scenarios = content
+    ? Object.values(content.scenarios).sort((a, b) => scenarioRank(a.id) - scenarioRank(b.id))
+    : []
 
   return (
     <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 py-10">

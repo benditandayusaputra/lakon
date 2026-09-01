@@ -55,6 +55,19 @@ export const DEFAULT_PALETTE: ScenarioPalette = {
 export const paletteFor = (scenarioId: string): ScenarioPalette =>
   SCENARIO_PALETTES[scenarioId] ?? DEFAULT_PALETTE
 
+export const SCENARIO_ORDER = [
+  'kedai-kopi',
+  'puskesmas',
+  'transportasi',
+  'wawancara-kerja',
+  'darurat',
+] as const
+
+export const scenarioRank = (scenarioId: string): number => {
+  const index = SCENARIO_ORDER.indexOf(scenarioId as (typeof SCENARIO_ORDER)[number])
+  return index === -1 ? SCENARIO_ORDER.length : index
+}
+
 export type MoodStage = 1 | 2 | 3
 
 export const MOOD_STAGE_CLASS: Record<MoodStage, string> = {

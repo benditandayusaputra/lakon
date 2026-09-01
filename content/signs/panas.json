@@ -7,7 +7,7 @@
   "dialect": "bisindo-jatim",
   "structure": "dominant-only",
   "dominance": "right",
-  "duration": 1950,
+  "duration": 2200,
   "recognitionMode": true,
   "phases": [
     {
@@ -32,8 +32,8 @@
     },
     {
       "name": "stroke",
-      "duration": 1000,
-      "easing": "ease-in-out",
+      "duration": 1250,
+      "easing": "linear",
       "dominant": {
         "handshape": "five-spread",
         "location": {
@@ -53,8 +53,8 @@
       "path": {
         "shape": "gelombang",
         "plane": "horizontal",
-        "repeat": 3,
-        "curvature": 0.5
+        "repeat": 2,
+        "curvature": 0.65
       }
     },
     {

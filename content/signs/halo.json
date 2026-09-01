@@ -7,7 +7,7 @@
   "dialect": "bisindo-jakarta",
   "structure": "dominant-only",
   "dominance": "right",
-  "duration": 1620,
+  "duration": 1870,
   "recognitionMode": true,
   "phases": [
     {
@@ -32,8 +32,8 @@
     },
     {
       "name": "stroke",
-      "duration": 700,
-      "easing": "ease-in-out",
+      "duration": 950,
+      "easing": "linear",
       "dominant": {
         "handshape": "five-spread",
         "location": {
@@ -54,7 +54,7 @@
         "shape": "gelombang",
         "plane": "frontal",
         "repeat": 2,
-        "curvature": 0.35
+        "curvature": 0.5
       }
     },
     {
