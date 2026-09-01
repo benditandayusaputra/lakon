@@ -2,6 +2,17 @@ import { expect, test, type Page } from '@playwright/test'
 
 const DEMO = { email: 'demo@lakon.id', sandi: 'CobaLakon2026' }
 
+const masukAkunBaru = async (page: Page) => {
+  const response = await page.request.post('/api/auth/daftar', {
+    data: {
+      nama: 'Penguji Alur',
+      email: `uji-alur-${Date.now()}-${Math.floor(Math.random() * 1e6)}@lakon.id`,
+      sandi: 'sandi-uji-123',
+    },
+  })
+  expect(response.ok()).toBe(true)
+}
+
 const skipAllLearning = async (page: Page) => {
   for (let i = 0; i < 24; i++) {
     if (
@@ -118,6 +129,13 @@ test.describe('alur inti', () => {
     await page.waitForURL('**/skenario')
   })
 
+  test('2b. tanpa login, /skenario dialihkan ke /masuk', async ({ page }) => {
+    await page.goto('/skenario')
+    await page.waitForURL('**/masuk')
+    await page.goto('/skenario/kedai-kopi?arah=deaf')
+    await page.waitForURL('**/masuk')
+  })
+
   test('3. masuk dengan akun demo yang berprogres', async ({ page }) => {
     await page.goto('/masuk')
     await page.getByLabel('Email').fill(DEMO.email)
@@ -129,6 +147,7 @@ test.describe('alur inti', () => {
   })
 
   test('4+6. arah A: fase belajar lalu ujian sampai ringkasan', async ({ page }) => {
+    await masukAkunBaru(page)
     await page.goto('/skenario')
     await page.getByRole('link', { name: /Memesan minuman/ }).click()
     await page.getByRole('button', { name: 'Mulai belajar' }).click()
@@ -168,6 +187,7 @@ test.describe('alur inti', () => {
   })
 
   test('7. arah B: tugas reseptif sampai ringkasan', async ({ page }) => {
+    await masukAkunBaru(page)
     await page.goto('/skenario')
     await page.getByText('Sisi pekerja layanan', { exact: false }).click()
     await page.getByRole('link', { name: /Memesan minuman/ }).click()
@@ -199,6 +219,7 @@ test.describe('alur inti', () => {
 
   test('9. offline: seluruh skenario masih bisa dijalankan', async ({ page, context }) => {
     test.slow()
+    await masukAkunBaru(page)
     await page.goto('/')
     await page.waitForFunction(
       async () => Boolean((await navigator.serviceWorker.getRegistration())?.active),
@@ -219,6 +240,7 @@ test.describe('alur inti', () => {
   })
 
   test('10. progres bertahan setelah muat ulang', async ({ page }) => {
+    await masukAkunBaru(page)
     await enterScenario(page, 'deaf')
     await page.getByRole('button', { name: 'Lanjut ke praktik' }).click()
     await page.getByRole('button', { name: 'Tanpa kamera' }).click()

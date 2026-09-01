@@ -195,7 +195,9 @@ export function ScenarioPicker() {
                 <button
                   type="button"
                   onClick={() => {
-                    void fetch('/api/auth/keluar', { method: 'POST' }).then(() => setAccount(null))
+                    void fetch('/api/auth/keluar', { method: 'POST' }).then(() => {
+                      window.location.assign('/')
+                    })
                   }}
                   className="border-halaman/30 hover:border-halaman/70 flex items-center gap-1.5 rounded-lg border px-3 text-sm transition-colors"
                   style={{ minHeight: 44 }}
