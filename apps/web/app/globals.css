@@ -298,6 +298,288 @@ input[type='range'] {
   animation: naik-halus var(--gerak-tahap) ease-out both;
 }
 
+.kk-font-kapur {
+  font-family: var(--font-kapur), 'Bradley Hand', 'Segoe Print', cursive;
+}
+
+.kk-langit {
+  background:
+    radial-gradient(ellipse 55% 38% at 76% 24%, rgb(255 206 138 / 0.16), transparent 70%),
+    radial-gradient(ellipse 90% 50% at 50% 108%, rgb(232 154 91 / 0.5), transparent 72%),
+    linear-gradient(180deg, #221a36 0%, #43274a 30%, #86403a 58%, #c26e3e 80%, #e0955a 100%);
+}
+
+.kk-aspal {
+  background: linear-gradient(180deg, #3a2a20 0%, #241811 100%);
+}
+
+.kk-bata {
+  background-color: #4a2b1b;
+  background-image:
+    linear-gradient(rgb(0 0 0 / 0.14) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgb(0 0 0 / 0.1) 1.5px, transparent 1.5px),
+    radial-gradient(ellipse 120% 90% at 50% 0%, rgb(255 184 92 / 0.12), transparent 60%);
+  background-size:
+    100% 30px,
+    82px 30px,
+    100% 100%;
+}
+
+.kk-kayu {
+  background-color: #6b4226;
+  background-image:
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.1) 0 2px, transparent 2px 52px),
+    linear-gradient(180deg, rgb(255 255 255 / 0.1), transparent 40%);
+}
+
+.kk-kayu-gelap {
+  background-color: #452817;
+  background-image:
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.16) 0 2px, transparent 2px 44px),
+    linear-gradient(180deg, rgb(255 255 255 / 0.07), transparent 35%);
+}
+
+.kk-ubin {
+  background-color: #57392a;
+  background-image:
+    radial-gradient(ellipse 90% 70% at 50% 0%, rgb(255 184 92 / 0.2), transparent 65%),
+    linear-gradient(rgb(0 0 0 / 0.16) 2px, transparent 2px),
+    linear-gradient(90deg, rgb(0 0 0 / 0.16) 2px, transparent 2px);
+  background-size:
+    100% 100%,
+    100% 34px,
+    52px 34px;
+}
+
+.kk-interior {
+  background:
+    radial-gradient(ellipse 85% 50% at 50% -8%, rgb(255 184 92 / 0.3), transparent 68%),
+    radial-gradient(ellipse 60% 40% at 12% 30%, rgb(255 160 75 / 0.1), transparent 70%),
+    linear-gradient(180deg, #4c331f 0%, #5c3f26 42%, #3d2716 76%, #2b1a0e 100%);
+}
+
+.kk-kertas {
+  background-color: #f8efdf;
+  background-image: radial-gradient(ellipse 120% 80% at 50% 0%, rgb(255 255 255 / 0.55), transparent 70%);
+}
+
+.kk-papan-kapur {
+  background:
+    radial-gradient(ellipse 70% 55% at 28% 18%, rgb(255 255 255 / 0.06), transparent 60%),
+    #26301f;
+  border: 5px solid #7a4d2a;
+  box-shadow:
+    inset 0 0 34px rgb(0 0 0 / 0.4),
+    0 12px 28px -14px rgb(0 0 0 / 0.55);
+}
+
+.kk-tenda {
+  background: repeating-linear-gradient(90deg, #b4632c 0 34px, #f5e9d7 34px 68px);
+}
+
+.kk-tenda-gigi {
+  background-image:
+    radial-gradient(circle at 17px 1px, #b4632c 0 15px, transparent 16px),
+    radial-gradient(circle at 51px 1px, #f5e9d7 0 15px, transparent 16px);
+  background-size: 68px 17px;
+  background-repeat: repeat-x;
+}
+
+.kk-jalan-pintu {
+  perspective: 1100px;
+}
+
+.kk-pintu {
+  transform-origin: left center;
+  transition: transform 950ms cubic-bezier(0.66, 0.02, 0.35, 1);
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .kk-jalan-pintu:hover .kk-pintu {
+    transform: rotateY(-16deg);
+  }
+}
+
+.kk-jalan-pintu:focus-visible .kk-pintu {
+  transform: rotateY(-16deg);
+}
+
+.kk-membuka .kk-pintu,
+.kk-membuka .kk-jalan-pintu:hover .kk-pintu {
+  transform: rotateY(-108deg);
+}
+
+.kk-ruang-dalam {
+  opacity: 0;
+  transition: opacity 550ms ease-out 120ms;
+}
+
+.kk-membuka .kk-ruang-dalam {
+  opacity: 1;
+}
+
+.kk-fasad-zoom {
+  transition:
+    transform 1200ms cubic-bezier(0.6, 0.02, 0.9, 0.45),
+    opacity 950ms ease-in 350ms;
+}
+
+.kk-membuka .kk-fasad-zoom {
+  transform: scale(3);
+  opacity: 0;
+}
+
+.kk-uap path {
+  animation: kk-uap 2.6s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  opacity: 0;
+}
+
+.kk-uap path:nth-child(2) {
+  animation-delay: 0.9s;
+}
+
+.kk-uap path:nth-child(3) {
+  animation-delay: 1.7s;
+}
+
+@keyframes kk-uap {
+  0% {
+    opacity: 0;
+    transform: translateY(5px) scaleX(0.8);
+  }
+  25% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scaleX(1.25);
+  }
+}
+
+.kk-mata {
+  animation: kk-kedip 4.8s infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes kk-kedip {
+  0%,
+  90%,
+  100% {
+    transform: scaleY(1);
+  }
+  93%,
+  96% {
+    transform: scaleY(0.1);
+  }
+}
+
+.kk-nafas {
+  animation: kk-nafas 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes kk-nafas {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(2.5px);
+  }
+}
+
+.kk-lambai {
+  animation: kk-lambai 1.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 20% 90%;
+}
+
+@keyframes kk-lambai {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(14deg);
+  }
+}
+
+.kk-lampu-nyala {
+  animation: kk-lampu 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes kk-lampu {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.kk-goyang {
+  animation: kk-goyang 4.5s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+@keyframes kk-goyang {
+  0%,
+  100% {
+    transform: rotate(-2.5deg);
+  }
+  50% {
+    transform: rotate(2.5deg);
+  }
+}
+
+.kk-muncul {
+  animation: kk-muncul 340ms cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+}
+
+@keyframes kk-muncul {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.kk-kartu-menu {
+  transition:
+    transform var(--gerak-cepat) ease-out,
+    box-shadow var(--gerak-cepat) ease-out,
+    border-color var(--gerak-cepat) ease-out;
+}
+
+.kk-kartu-menu:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 36px -16px rgb(43 26 14 / 0.55);
+  border-color: #b4632c;
+}
+
+.kk-kartu-menu:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.kk-gerigi-atas {
+  height: 12px;
+  background:
+    linear-gradient(135deg, #fdfbf3 6px, transparent 0) 0 0 / 12px 12px repeat-x,
+    linear-gradient(-135deg, #fdfbf3 6px, transparent 0) 6px 0 / 12px 12px repeat-x;
+}
+
+.kk-gerigi-bawah {
+  height: 12px;
+  background:
+    linear-gradient(45deg, #fdfbf3 6px, transparent 0) 0 0 / 12px 12px repeat-x,
+    linear-gradient(-45deg, #fdfbf3 6px, transparent 0) 6px 0 / 12px 12px repeat-x;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

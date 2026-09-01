@@ -14,10 +14,10 @@ const masukAkunBaru = async (page: Page) => {
 }
 
 const skipAllLearning = async (page: Page) => {
-  for (let i = 0; i < 24; i++) {
+  for (let i = 0; i < 48; i++) {
     if (
       await page
-        .getByRole('button', { name: 'Mulai ujian percakapan' })
+        .getByRole('button', { name: 'Menuju kasir' })
         .isVisible()
         .catch(() => false)
     ) {
@@ -40,14 +40,14 @@ const skipAllLearning = async (page: Page) => {
     }
     if (!clicked) await page.waitForTimeout(300)
   }
-  await expect(page.getByRole('button', { name: 'Mulai ujian percakapan' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Menuju kasir' })).toBeVisible()
 }
 
 const finishExam = async (page: Page) => {
   for (let i = 0; i < 60; i++) {
     if (
       await page
-        .getByRole('heading', { name: 'Ringkasan' })
+        .getByRole('button', { name: 'Ulangi kunjungan' })
         .isVisible()
         .catch(() => false)
     ) {
@@ -71,7 +71,7 @@ const finishExam = async (page: Page) => {
       await page.waitForTimeout(250)
       continue
     }
-    const option = page.locator('.grid button.tombol-sekunder').first()
+    const option = page.locator('button.kk-kartu-menu').first()
     if (await option.isVisible().catch(() => false)) {
       await option.click()
       await page.waitForTimeout(250)
@@ -85,12 +85,12 @@ const finishExam = async (page: Page) => {
     }
     await page.waitForTimeout(300)
   }
-  await expect(page.getByRole('heading', { name: 'Ringkasan' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Ulangi kunjungan' })).toBeVisible()
 }
 
 const enterScenario = async (page: Page, direction: 'deaf' | 'service') => {
   await page.goto(`/skenario/kedai-kopi?arah=${direction}`)
-  await page.getByRole('button', { name: 'Mulai belajar' }).click()
+  await page.getByRole('button', { name: 'Buka pintu & masuk' }).click()
   await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
 }
 
@@ -150,15 +150,15 @@ test.describe('alur inti', () => {
     await masukAkunBaru(page)
     await page.goto('/skenario')
     await page.getByRole('link', { name: /Memesan minuman/ }).click()
-    await page.getByRole('button', { name: 'Mulai belajar' }).click()
-    await expect(page.getByText(/isyarat 1 dari/)).toBeVisible({ timeout: 60_000 })
+    await page.getByRole('button', { name: 'Buka pintu & masuk' }).click()
+    await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
 
     await skipAllLearning(page)
-    await page.getByRole('button', { name: 'Mulai ujian percakapan' }).click()
+    await page.getByRole('button', { name: 'Menuju kasir' }).click()
     await expect(page.getByText('Selamat pagi, mau pesan apa?')).toBeVisible()
     await finishExam(page)
-    await expect(page.getByRole('heading', { name: 'Perlu diulang', exact: false })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Ulangi skenario' })).toBeVisible()
+    await expect(page.getByText('Perlu diulang', { exact: false })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Ulangi kunjungan' })).toBeVisible()
   })
 
   test('5. tiga kali belum tepat memunculkan jalan keluar', async ({ page }) => {
@@ -191,14 +191,14 @@ test.describe('alur inti', () => {
     await page.goto('/skenario')
     await page.getByText('Sisi pekerja layanan', { exact: false }).click()
     await page.getByRole('link', { name: /Memesan minuman/ }).click()
-    await page.getByRole('button', { name: 'Mulai belajar' }).click()
-    await expect(page.getByText(/isyarat 1 dari/)).toBeVisible({ timeout: 60_000 })
+    await page.getByRole('button', { name: 'Buka pintu & masuk' }).click()
+    await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
 
     await skipAllLearning(page)
-    await page.getByRole('button', { name: 'Mulai ujian percakapan' }).click()
-    await expect(page.getByText('Apa makna isyarat ini?')).toBeVisible()
+    await page.getByRole('button', { name: 'Menuju kasir' }).click()
+    await expect(page.getByText('Pelanggan berisyarat. Apa maknanya?')).toBeVisible()
     await finishExam(page)
-    await expect(page.getByRole('button', { name: 'Ulangi skenario' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Ulangi kunjungan' })).toBeVisible()
   })
 
   test('8. izin kamera ditolak: jalur alternatif berfungsi', async ({ page }) => {
@@ -233,9 +233,9 @@ test.describe('alur inti', () => {
     await context.setOffline(true)
     await enterScenario(page, 'deaf')
     await skipAllLearning(page)
-    await page.getByRole('button', { name: 'Mulai ujian percakapan' }).click()
+    await page.getByRole('button', { name: 'Menuju kasir' }).click()
     await finishExam(page)
-    await expect(page.getByRole('button', { name: 'Ulangi skenario' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Ulangi kunjungan' })).toBeVisible()
     await context.setOffline(false)
   })
 
