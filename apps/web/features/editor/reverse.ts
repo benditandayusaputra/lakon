@@ -38,7 +38,7 @@ const normalize = (v: Point3): Point3 => {
   return { x: v.x / length, y: v.y / length, z: v.z / length }
 }
 
-const POSE_WRIST: Record<'left' | 'right', number> = { left: 16, right: 15 }
+const POSE_WRIST: Record<'left' | 'right', number> = { left: 15, right: 16 }
 const POSE_SHOULDERS = { left: 11, right: 12 }
 
 export const reverseFramesFromRecording = (
