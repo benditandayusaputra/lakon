@@ -9,10 +9,17 @@
   ],
   "vocab": [
     "halo",
+    "kopi",
+    "minum",
     "panas",
-    "terima-kasih"
+    "dingin",
+    "manis",
+    "pahit",
+    "maaf",
+    "terima-kasih",
+    "sama-sama"
   ],
-  "estimatedMinutes": 12,
+  "estimatedMinutes": 20,
   "nodes": [
     {
       "id": "sapa",
