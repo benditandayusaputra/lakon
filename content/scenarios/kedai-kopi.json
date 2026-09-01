@@ -7,7 +7,11 @@
   "sdg": [
     10
   ],
-  "vocab": [],
+  "vocab": [
+    "halo",
+    "panas",
+    "terima-kasih"
+  ],
   "estimatedMinutes": 12,
   "nodes": [
     {
@@ -120,21 +124,28 @@
       "id": "harga",
       "actor": "barista",
       "line": {
-        "id": "Ada lagi?"
+        "id": "Ada lagi? Ini totalnya di layar kasir."
       },
       "task": {
         "deaf": {
-          "type": "produce",
-          "sign": "berapa"
+          "type": "point",
+          "prompt": "Layar kasir menunjukkan total. Berapa yang harus kamu bayar?",
+          "options": [
+            "Rp20.000",
+            "Rp12.000",
+            "Rp25.000"
+          ],
+          "correct": 0
         },
         "service": {
-          "type": "receptive",
-          "sign": "berapa",
+          "type": "point",
+          "prompt": "Pelanggan selesai memesan. Bagaimana kamu menyampaikan totalnya?",
           "options": [
-            "berapa",
-            "bayar",
-            "tidak"
-          ]
+            "Tunjukkan angka di layar kasir",
+            "Sebutkan dengan suara",
+            "Menulis di udara"
+          ],
+          "correct": 0
         }
       },
       "next": "bayar",
@@ -144,30 +155,37 @@
       "id": "repair-harga",
       "actor": "barista",
       "line": {
-        "id": "Silakan tanya harganya."
+        "id": "Totalnya ada di layar kasir."
       },
-      "hint": "Tanyakan berapa harganya.",
+      "hint": "Lihat angka di layar kasir.",
       "next": "harga"
     },
     {
       "id": "bayar",
       "actor": "barista",
       "line": {
-        "id": "Semuanya dua puluh ribu rupiah."
+        "id": "Semuanya dua puluh ribu rupiah. Bayarnya bagaimana?"
       },
       "task": {
         "deaf": {
-          "type": "produce",
-          "sign": "bayar"
+          "type": "point",
+          "prompt": "Kasir menunjuk stiker QRIS di meja. Apa yang kamu lakukan?",
+          "options": [
+            "Pindai QRIS, lalu tunjukkan bukti bayar",
+            "Menyerahkan ponsel ke kasir",
+            "Menunggu kasir bicara lagi"
+          ],
+          "correct": 0
         },
         "service": {
-          "type": "receptive",
-          "sign": "bayar",
+          "type": "point",
+          "prompt": "Pelanggan mau membayar. Cara paling jelas menyampaikan metode bayar?",
           "options": [
-            "bayar",
-            "berapa",
-            "ya"
-          ]
+            "Tunjuk stiker QRIS atau mesin kartu",
+            "Menjelaskan dengan suara",
+            "Membiarkan pelanggan menebak"
+          ],
+          "correct": 0
         }
       },
       "next": "tutup",
@@ -177,9 +195,9 @@
       "id": "repair-bayar",
       "actor": "barista",
       "line": {
-        "id": "Pembayarannya bagaimana?"
+        "id": "Bisa pindai QRIS di stiker meja."
       },
-      "hint": "Sampaikan kamu mau membayar.",
+      "hint": "Tunjukkan bukti pembayaranmu.",
       "next": "bayar"
     },
     {
