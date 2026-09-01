@@ -196,42 +196,42 @@ export function PracticeBlock({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className={`grid gap-4 ${compact ? '' : 'lg:grid-cols-2'}`}>
-        <div className="flex flex-col gap-2">
-          <p className="text-teks-sekunder text-sm font-bold">Kamu</p>
-          <div className="bg-zona-tenang aspect-4/3 relative w-full overflow-hidden rounded-2xl">
-            <video
-              ref={videoRef}
-              className="absolute inset-0 h-full w-full -scale-x-100 object-cover"
-              playsInline
-              muted
-            />
-            <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" />
-            {phase === 'hitung-mundur' || phase === 'merekam' ? (
-              <p
-                ref={progressEl}
-                aria-live="assertive"
-                className="absolute inset-x-0 top-3 text-center text-3xl font-bold text-white drop-shadow"
-              />
-            ) : null}
-            <div className="absolute inset-x-4 bottom-3">
-              <div className="h-2 overflow-hidden rounded-full bg-white/25">
-                <div
-                  ref={meterEl}
-                  data-state="mencari"
-                  className="bg-berhasil h-full w-[12%] rounded-full transition-[width] duration-500"
-                />
-              </div>
-              <p className="mt-1 text-center text-xs text-white/90">
-                penuh berarti tanganmu terlihat sistem
-              </p>
-            </div>
-          </div>
+      <div className={`grid gap-3 ${compact ? '' : 'lg:grid-cols-2'}`}>
+        <div className="bg-zona-tenang zona-tenang-gradasi aspect-4/3 relative w-full overflow-hidden rounded-2xl">
+          <AvatarStage compiled={compiled} className="absolute inset-0" mirrorDefault />
+          <p className="text-halaman absolute bottom-3 left-3 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
+            peraga · {signLabel}
+          </p>
         </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-teks-sekunder text-sm font-bold">Peraga: {signLabel}</p>
-          <div className="bg-zona-tenang zona-tenang-gradasi aspect-4/3 relative w-full overflow-hidden rounded-2xl">
-            <AvatarStage compiled={compiled} className="absolute inset-0" mirrorDefault />
+        <div className="bg-zona-tenang aspect-4/3 relative w-full overflow-hidden rounded-2xl">
+          <video
+            ref={videoRef}
+            className="absolute inset-0 h-full w-full -scale-x-100 object-cover"
+            playsInline
+            muted
+          />
+          <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" />
+          {phase === 'hitung-mundur' || phase === 'merekam' ? (
+            <p
+              ref={progressEl}
+              aria-live="assertive"
+              className="absolute inset-x-0 top-3 text-center text-3xl font-bold text-white drop-shadow"
+            />
+          ) : null}
+          <p className="text-halaman absolute bottom-14 left-3 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
+            {cameraRunning ? 'kamu' : 'kamera belum menyala'}
+          </p>
+          <div className="absolute inset-x-4 bottom-3">
+            <div className="h-2 overflow-hidden rounded-full bg-white/25">
+              <div
+                ref={meterEl}
+                data-state="mencari"
+                className="bg-berhasil h-full w-[12%] rounded-full transition-[width] duration-500"
+              />
+            </div>
+            <p className="mt-1 text-center text-xs text-white/90">
+              penuh berarti tanganmu terlihat sistem
+            </p>
           </div>
         </div>
       </div>
@@ -239,10 +239,6 @@ export function PracticeBlock({
       <div aria-live="polite" className="flex min-h-14 flex-col gap-3">
         {phase === 'kamera-mati' ? (
           <div className="flex flex-col gap-2">
-            <p className="text-sm">
-              🔒 Video tidak pernah meninggalkan perangkatmu. Yang diproses hanya titik-titik
-              kerangka tangan, langsung di peramban.
-            </p>
             <div className="flex flex-wrap gap-3">
               <button type="button" onClick={startCamera} className="tombol-utama">
                 Nyalakan kamera

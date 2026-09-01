@@ -10,12 +10,16 @@ export function AvatarStage({
   showControls = false,
   mirrorDefault = false,
   className = '',
+  stageClassName = '',
+  signLabel,
   onRigReady,
 }: {
   compiled: CompiledSign | null
   showControls?: boolean
   mirrorDefault?: boolean
   className?: string
+  stageClassName?: string
+  signLabel?: string
   onRigReady?: (rig: CompilerRig) => void
 }) {
   const playbackRef = useRef<Playback>({ compiled: null, playing: true, speed: 1, time: 0 })
@@ -51,16 +55,23 @@ export function AvatarStage({
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      <div className={`relative min-h-0 flex-1 ${mirror ? '-scale-x-100' : ''}`}>
-        <Canvas camera={{ fov: 30, position: [0, 1.35, 1.7] }}>
-          <CompiledAvatar
-            playbackRef={playbackRef}
-            timeEl={timeEl}
-            sliderEl={sliderEl}
-            onRigReady={(rig) => onRigReadyRef.current?.(rig)}
-            onRigError={setRigError}
-          />
-        </Canvas>
+      <div className={`relative min-h-0 flex-1 ${stageClassName}`}>
+        <div className={`absolute inset-0 ${mirror ? '-scale-x-100' : ''}`}>
+          <Canvas camera={{ fov: 30, position: [0, 1.35, 1.7] }}>
+            <CompiledAvatar
+              playbackRef={playbackRef}
+              timeEl={timeEl}
+              sliderEl={sliderEl}
+              onRigReady={(rig) => onRigReadyRef.current?.(rig)}
+              onRigError={setRigError}
+            />
+          </Canvas>
+        </div>
+        {signLabel ? (
+          <p className="text-halaman absolute bottom-3 left-3 rounded-lg bg-black/60 px-3 py-1.5 font-mono text-sm font-bold uppercase tracking-wide">
+            {signLabel}
+          </p>
+        ) : null}
       </div>
       {rigError ? (
         <p role="alert" className="text-galat text-sm">
@@ -68,12 +79,12 @@ export function AvatarStage({
         </p>
       ) : null}
       {showControls ? (
-        <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
+        <div className="border-border-halus bg-kartu flex flex-wrap items-center justify-center gap-2 rounded-2xl border p-2 text-sm">
           <button
             type="button"
             onClick={() => setPlaying((value) => !value)}
-            className="tombol-sekunder px-3 py-1.5"
-            style={{ minHeight: 44 }}
+            className={playing ? 'tombol-utama px-4 py-1.5' : 'tombol-sekunder px-4 py-1.5'}
+            style={{ minHeight: 48 }}
           >
             {playing ? '⏸ Jeda' : '▶ Putar'}
           </button>
@@ -81,41 +92,43 @@ export function AvatarStage({
             type="button"
             onClick={() => stepFrame(-1)}
             className="tombol-sekunder px-3 py-1.5"
-            style={{ minHeight: 44 }}
+            style={{ minHeight: 48 }}
             aria-label="Mundur satu frame"
           >
-            ⏮ frame
+            ⏮
           </button>
           <button
             type="button"
             onClick={() => stepFrame(1)}
             className="tombol-sekunder px-3 py-1.5"
-            style={{ minHeight: 44 }}
+            style={{ minHeight: 48 }}
             aria-label="Maju satu frame"
           >
-            frame ⏭
+            ⏭
           </button>
-          <label className="flex items-center gap-1">
-            <span>Kecepatan</span>
-            <select
-              value={speed}
-              onChange={(event) => setSpeed(Number(event.target.value))}
-              className="border-border-tegas rounded-md border px-2 py-1.5"
+          <span aria-hidden className="bg-border-halus mx-1 hidden h-6 w-px sm:block" />
+          {[1, 0.5, 0.25].map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setSpeed(value)}
+              aria-pressed={speed === value}
+              className={speed === value ? 'tombol-utama px-3 py-1.5' : 'tombol-sekunder px-3 py-1.5'}
+              style={{ minHeight: 48 }}
             >
-              <option value={1}>1×</option>
-              <option value={0.5}>0.5×</option>
-              <option value={0.25}>0.25×</option>
-            </select>
-          </label>
-          <label className="flex items-center gap-1.5">
-            <input
-              type="checkbox"
-              checked={mirror}
-              onChange={(event) => setMirror(event.target.checked)}
-            />
-            <span>Mode cermin</span>
-          </label>
-          <span className="text-teks-samar text-xs">seret avatar untuk memutar sudut</span>
+              {value === 1 ? '1×' : `${value}×`}
+            </button>
+          ))}
+          <span aria-hidden className="bg-border-halus mx-1 hidden h-6 w-px sm:block" />
+          <button
+            type="button"
+            onClick={() => setMirror((value) => !value)}
+            aria-pressed={mirror}
+            className={mirror ? 'tombol-utama px-3 py-1.5' : 'tombol-sekunder px-3 py-1.5'}
+            style={{ minHeight: 48 }}
+          >
+            🪞 Cermin
+          </button>
           <span ref={timeEl} className="sr-only" aria-live="off" />
           <input
             ref={sliderEl}

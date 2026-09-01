@@ -196,48 +196,59 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
               const sign = content.signs[currentSignId]
               return (
                 <div className="flex flex-col gap-4">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <h1 className="text-3xl font-bold">{prettify(currentSignId)}</h1>
-                    <p className="text-teks-sekunder">
-                      isyarat {orderIndex + 1} dari {learning.order().length}
-                    </p>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h1 className="text-2xl font-bold sm:text-3xl">{prettify(currentSignId)}</h1>
+                    <div className="flex items-center gap-3">
+                      <p className="text-teks-sekunder font-mono text-sm">
+                        isyarat {orderIndex + 1} dari {learning.order().length}
+                      </p>
+                      <div aria-hidden className="flex items-center gap-1">
+                        {learning.order().map((id, index) => (
+                          <span
+                            key={id}
+                            className={`h-2.5 w-5 rounded-sm ${
+                              index < orderIndex
+                                ? 'bg-teks'
+                                : index === orderIndex
+                                  ? 'bg-peringatan'
+                                  : 'border-border-tegas border'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
                   </div>
 
                   {compiled && sign ? (
                     learnView === 'demo' ? (
-                      <div className="flex flex-col gap-4">
-                        <SceneBackdrop
-                          paletteClass={palette.kelas}
-                          stage={2}
-                          quietZone
-                          className="rounded-3xl"
-                        >
-                          <div className="h-[52vh] min-h-80">
-                            <AvatarStage
-                              compiled={compiled}
-                              showControls
-                              className="h-full [&_.text-teks-samar]:text-white/70 [&_label]:text-white [&_span]:text-white"
-                            />
-                          </div>
-                        </SceneBackdrop>
-                        <div className="grid gap-4 md:grid-cols-[1fr_auto]">
-                          <div>
-                            <p className="text-lg">
-                              <span className="font-bold">{sign.gloss.id}</span> · {sign.gloss.en}
+                      <div className="flex flex-col gap-3">
+                        <AvatarStage
+                          compiled={compiled}
+                          showControls
+                          signLabel={sign.gloss.id}
+                          stageClassName="bg-zona-tenang zona-tenang-gradasi overflow-hidden rounded-3xl"
+                          className="h-[56vh] min-h-96 sm:h-[62vh]"
+                        />
+                        <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-stretch">
+                          <div className="border-border-halus bg-kartu rounded-2xl border p-4">
+                            <p className="text-teks-samar font-mono text-xs uppercase tracking-wider">
+                              Isyarat ini
                             </p>
-                            <p className="text-teks-sekunder text-sm">
+                            <p className="mt-1 text-xl font-bold">{sign.gloss.id}</p>
+                            <p className="text-teks-sekunder">{sign.gloss.en}</p>
+                            <p className="text-teks-sekunder mt-2 text-sm">
                               Status:{' '}
                               {sign.review.status === 'approved'
-                                ? 'tervalidasi'
+                                ? 'tervalidasi penanda Tuli'
                                 : 'draf, belum divalidasi penanda Tuli'}
                             </p>
                           </div>
                           <button
                             type="button"
                             onClick={() => setLearnView('praktik')}
-                            className="tombol-utama self-start"
+                            className="tombol-utama w-full min-h-14 text-lg md:w-auto md:self-end md:px-10"
                           >
-                            Lanjut ke praktik
+                            Lanjut ke praktik →
                           </button>
                         </div>
                       </div>

@@ -88,10 +88,9 @@ test.describe('alur inti', () => {
     await page.goto('/')
     await expect(page.getByRole('heading', { level: 1 })).toContainText('BISINDO')
     await page.locator('#coba').scrollIntoViewIfNeeded()
-    await expect(
-      page.getByText('Video tidak pernah meninggalkan perangkatmu', { exact: false }),
-    ).toBeVisible({ timeout: 30_000 })
-    await expect(page.getByRole('button', { name: 'Nyalakan kamera' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Nyalakan kamera' })).toBeVisible({
+      timeout: 30_000,
+    })
     await expect(page.getByRole('button', { name: 'Tanpa kamera' })).toBeVisible()
   })
 

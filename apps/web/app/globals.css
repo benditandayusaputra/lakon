@@ -128,7 +128,7 @@ body {
 }
 
 .zona-tenang-gradasi {
-  background: radial-gradient(
+  background-image: radial-gradient(
     ellipse 55% 48% at 50% 42%,
     color-mix(in srgb, var(--color-zona-tenang) 85%, transparent) 0%,
     color-mix(in srgb, var(--color-zona-tenang) 55%, transparent) 60%,
