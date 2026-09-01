@@ -1,0 +1,98 @@
+{
+  "id": "tangan",
+  "gloss": {
+    "id": "tangan",
+    "en": "hand"
+  },
+  "dialect": "bisindo-jatim",
+  "structure": "asymmetric",
+  "dominance": "right",
+  "duration": 1850,
+  "recognitionMode": true,
+  "phases": [
+    {
+      "name": "onset",
+      "duration": 400,
+      "easing": "ease-out",
+      "dominant": {
+        "handshape": "b-flat",
+        "location": {
+          "anchor": "lengan-bawah",
+          "offset": [0.0, 0.25, 0.2]
+        },
+        "orientation": {
+          "palm": "down",
+          "fingers": "out"
+        }
+      },
+      "nonDominant": {
+        "handshape": "b-flat",
+        "location": {
+          "anchor": "ruang-netral",
+          "offset": [-0.2, -0.15, 0.4]
+        },
+        "orientation": {
+          "palm": "up",
+          "fingers": "forward"
+        }
+      }
+    },
+    {
+      "name": "stroke",
+      "duration": 900,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "b-flat",
+        "location": {
+          "anchor": "lengan-bawah",
+          "offset": [0.0, 0.1, 0.15]
+        },
+        "orientation": {
+          "palm": "down",
+          "fingers": "out"
+        }
+      },
+      "hold": 100,
+      "path": {
+        "shape": "busur",
+        "plane": "horizontal",
+        "repeat": 2,
+        "curvature": 0.3
+      }
+    },
+    {
+      "name": "retraction",
+      "duration": 450,
+      "easing": "ease-in",
+      "dominant": {
+        "handshape": "b-flat",
+        "location": {
+          "anchor": "bahu",
+          "offset": [0.0, -1.2, 0.08]
+        },
+        "orientation": {
+          "palm": "in",
+          "fingers": "down"
+        }
+      }
+    }
+  ],
+  "contact": {
+    "activePart": "telapak",
+    "passivePart": "lengan-bawah",
+    "type": "brush"
+  },
+  "nonManual": {
+    "brow": null,
+    "mouth": null,
+    "head": null,
+    "gaze": "melihat ke tangan"
+  },
+  "review": {
+    "status": "draft",
+    "validatedBy": null,
+    "role": null,
+    "date": null
+  },
+  "notes": "Draf dari impor video, BELUM divalidasi penanda Tuli. Sumber: Balai Bahasa Provinsi Jawa Timur (Kemendikdasmen), Video Kosaisyarat BISINDO \"TANGAN\", https://balaibahasajatim.kemendikdasmen.go.id/storage/videos/01K9NVB45899A50XV8GFJ0K1W7.mp4 (halaman: https://balaibahasajatim.kemendikdasmen.go.id/video), penanda tidak disebutkan namanya, diakses 1 Sep 2026. Varian Jawa Timur; ganti bila tersedia sumber varian Jakarta. Isyarat di klip 2,3-5,3 dtk: kedua tangan terbuka di depan dada, telapak dominan mengusap area lengan bawah tangan satunya dua kali."
+}
