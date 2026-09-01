@@ -1,0 +1,108 @@
+{
+  "id": "panas",
+  "gloss": {
+    "id": "panas",
+    "en": "hot"
+  },
+  "dialect": "bisindo-jatim",
+  "structure": "dominant-only",
+  "dominance": "right",
+  "duration": 2413,
+  "recognitionMode": true,
+  "phases": [
+    {
+      "name": "onset",
+      "duration": 582,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "c-curve",
+        "location": {
+          "anchor": "dahi",
+          "offset": [
+            0.61,
+            0.01,
+            0.74
+          ]
+        },
+        "orientation": {
+          "palm": "up",
+          "fingers": "up"
+        }
+      }
+    },
+    {
+      "name": "stroke",
+      "duration": 1199,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "c-curve",
+        "location": {
+          "anchor": "hidung",
+          "offset": [
+            0.5,
+            0.12,
+            0.71
+          ]
+        },
+        "orientation": {
+          "palm": "up",
+          "fingers": "out"
+        }
+      }
+    },
+    {
+      "name": "hold",
+      "duration": 270,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "c-curve",
+        "location": {
+          "anchor": "hidung",
+          "offset": [
+            0.49,
+            0.08,
+            0.69
+          ]
+        },
+        "orientation": {
+          "palm": "up",
+          "fingers": "out"
+        }
+      }
+    },
+    {
+      "name": "retraction",
+      "duration": 362,
+      "easing": "ease-in-out",
+      "dominant": {
+        "handshape": "c-curve",
+        "location": {
+          "anchor": "lengan-atas",
+          "offset": [
+            -0.19,
+            -0.16,
+            0.91
+          ]
+        },
+        "orientation": {
+          "palm": "up",
+          "fingers": "forward"
+        }
+      }
+    }
+  ],
+  "contact": null,
+  "nonManual": {
+    "brow": null,
+    "mouth": null,
+    "head": null,
+    "gaze": null
+  },
+  "review": {
+    "status": "draft",
+    "validatedBy": null,
+    "role": null,
+    "date": null
+  },
+  "notes": "Draf dari impor video, BELUM divalidasi penanda Tuli. Sumber: Balai Bahasa Provinsi Jawa Timur (Kemendikdasmen), Video Kosaisyarat BISINDO \"PANAS\", https://balaibahasajatim.kemendikdasmen.go.id/storage/videos/01K9MCTSN98SM1Z56XJ4T9HZZH.mp4 (halaman: https://balaibahasajatim.kemendikdasmen.go.id/video), penanda tidak disebutkan namanya, diakses 1 Sep 2026. Varian Jawa Timur; ganti bila tersedia sumber varian Jakarta. Isyarat di klip: tangan kanan terbuka dikibas di samping kepala, 2,3-4,8 dtk."
+}
