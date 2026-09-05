@@ -1063,6 +1063,346 @@ input[type='range'] {
   }
 }
 
+.dr-langit {
+  background:
+    radial-gradient(ellipse 50% 32% at 82% 10%, rgb(255 243 207 / 0.8), transparent 70%),
+    linear-gradient(180deg, #8fb3cc 0%, #b9d3e3 38%, #dbe7ee 72%, #e9eef2 100%);
+}
+
+.dr-jalan {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.35), transparent 6%),
+    linear-gradient(180deg, #6b7178 0%, #565c63 12%, #4a5057 100%);
+}
+
+.dr-zebra {
+  background: repeating-linear-gradient(90deg, #eef2f5 0 12px, transparent 12px 26px);
+}
+
+.dr-tembok-pos {
+  background-color: #f6f2ea;
+  background-image:
+    linear-gradient(rgb(31 45 58 / 0.05) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgb(31 45 58 / 0.04) 1.5px, transparent 1.5px),
+    radial-gradient(ellipse 120% 90% at 50% 0%, rgb(255 255 255 / 0.6), transparent 60%);
+  background-size:
+    100% 44px,
+    120px 44px,
+    100% 100%;
+}
+
+.dr-atap {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.18), transparent 40%),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.12) 0 2px, transparent 2px 28px),
+    linear-gradient(180deg, #3c5164 0%, #2c3a47 100%);
+}
+
+.dr-garis-siaga {
+  background: repeating-linear-gradient(
+    -45deg,
+    #f2a93b 0 14px,
+    #1f2d3a 14px 28px
+  );
+}
+
+.dr-kaca {
+  background: linear-gradient(
+    115deg,
+    rgb(255 255 255 / 0.55) 0%,
+    rgb(214 235 250 / 0.35) 36%,
+    rgb(255 255 255 / 0.4) 62%,
+    rgb(214 235 250 / 0.3) 100%
+  ),
+  linear-gradient(180deg, #dcecf7 0%, #bcd9ee 100%);
+}
+
+.dr-papan-info {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%, rgb(255 255 255 / 0.9), transparent 70%), #f6f2ea;
+  border: 4px solid #33465a;
+  box-shadow:
+    inset 0 0 0 2px #ffffff,
+    0 12px 28px -14px rgb(31 45 58 / 0.55);
+}
+
+.dr-papan-tulis {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 0%, rgb(255 255 255 / 0.9), transparent 70%), #fbfcfd;
+  border: 3px solid #8fa3b5;
+  box-shadow: 0 8px 20px -10px rgb(31 45 58 / 0.45);
+}
+
+.dr-papan-nomor {
+  background:
+    radial-gradient(ellipse 70% 55% at 28% 18%, rgb(255 255 255 / 0.08), transparent 60%), #1f2d3a;
+  border: 4px solid #f2a93b;
+  box-shadow:
+    inset 0 0 30px rgb(0 0 0 / 0.35),
+    0 12px 28px -14px rgb(0 0 0 / 0.5);
+}
+
+.dr-ruang {
+  background:
+    radial-gradient(ellipse 85% 50% at 50% -8%, rgb(255 255 255 / 0.9), transparent 68%),
+    linear-gradient(180deg, #e6edf2 0%, #d3dee7 48%, #bfcdd9 100%);
+}
+
+.dr-dinding {
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 0.04), transparent 12%),
+    linear-gradient(
+      180deg,
+      #f1f5f8 0%,
+      #e4ecf2 61.5%,
+      #33465a 62%,
+      #33465a 63.5%,
+      #c7d3dd 64%,
+      #b7c6d2 100%
+    );
+}
+
+.dr-kertas {
+  background-color: #fbfcfd;
+  background-image: radial-gradient(
+    ellipse 120% 80% at 50% 0%,
+    rgb(255 255 255 / 0.9),
+    transparent 70%
+  );
+}
+
+.dr-meja {
+  background-color: #33465a;
+  background-image:
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.12) 0 2px, transparent 2px 48px),
+    linear-gradient(180deg, rgb(255 255 255 / 0.12), transparent 40%);
+}
+
+.dr-tombol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #f2a93b;
+  color: #1f2d3a;
+  border-radius: var(--radius-kontrol);
+  padding: 1rem 1.75rem;
+  min-height: 56px;
+  font-weight: 700;
+  box-shadow: 0 10px 28px -10px rgb(242 169 59 / 0.7);
+  transition:
+    background-color var(--gerak-cepat) ease-out,
+    transform var(--gerak-cepat) ease-out;
+}
+
+.dr-tombol:hover {
+  background-color: #f7b955;
+  transform: translateY(-2px);
+}
+
+.dr-tombol:active {
+  transform: translateY(0);
+}
+
+.dr-tombol:disabled {
+  opacity: 0.5;
+}
+
+.dr-tombol-garis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid rgb(31 45 58 / 0.4);
+  color: #1f2d3a;
+  border-radius: var(--radius-kontrol);
+  padding: 1rem 1.75rem;
+  min-height: 56px;
+  font-weight: 600;
+  transition: border-color var(--gerak-cepat) ease-out;
+}
+
+.dr-tombol-garis:hover {
+  border-color: rgb(31 45 58 / 0.9);
+}
+
+.dr-jalan-pintu {
+  perspective: 1100px;
+}
+
+.dr-pintu {
+  transform-origin: left center;
+  transition: transform 950ms cubic-bezier(0.66, 0.02, 0.35, 1);
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  .dr-jalan-pintu:hover .dr-pintu {
+    transform: rotateY(-16deg);
+  }
+}
+
+.dr-jalan-pintu:focus-visible .dr-pintu {
+  transform: rotateY(-16deg);
+}
+
+.dr-membuka .dr-pintu,
+.dr-membuka .dr-jalan-pintu:hover .dr-pintu {
+  transform: rotateY(-108deg);
+}
+
+.dr-ruang-dalam {
+  opacity: 0;
+  transition: opacity 550ms ease-out 120ms;
+}
+
+.dr-membuka .dr-ruang-dalam {
+  opacity: 1;
+}
+
+.dr-cahaya-pintu {
+  background: radial-gradient(
+    ellipse 90% 70% at 50% 40%,
+    rgba(255, 255, 255, 0.95),
+    transparent 75%
+  );
+  opacity: 0;
+  transition: opacity 700ms ease-out 150ms;
+}
+
+.dr-membuka .dr-cahaya-pintu {
+  opacity: 1;
+  animation: kk-cahaya 1100ms ease-out 150ms both;
+}
+
+.dr-fasad-zoom {
+  transition:
+    transform 1200ms cubic-bezier(0.6, 0.02, 0.9, 0.45),
+    opacity 950ms ease-in 350ms;
+}
+
+.dr-membuka .dr-fasad-zoom {
+  transform: scale(3);
+  opacity: 0;
+}
+
+.dr-sirene {
+  animation: dr-sirene 2.4s linear infinite;
+}
+
+@keyframes dr-sirene {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dr-jarum-detik {
+  animation: dr-sirene 60s linear infinite;
+}
+
+.dr-denyut {
+  animation: dr-denyut 1.6s ease-out infinite;
+}
+
+@keyframes dr-denyut {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.dr-cincin::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 3px solid rgb(95 208 164 / 0.7);
+  animation: dr-denyut 1.4s ease-out infinite;
+}
+
+.dr-gelombang {
+  animation: dr-gelombang 1s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+@keyframes dr-gelombang {
+  from {
+    transform: scaleY(0.4);
+    opacity: 0.5;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+.dr-kabel {
+  stroke-dasharray: 4 3;
+  animation: dr-kabel 1.2s linear infinite;
+}
+
+@keyframes dr-kabel {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+.dr-jempol {
+  animation: dr-jempol 1.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 10% 80%;
+}
+
+@keyframes dr-jempol {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-6deg) translateY(-3px);
+  }
+}
+
+.dr-lampu-biru {
+  animation: dr-kedip-lampu 0.8s step-end infinite;
+}
+
+.dr-lampu-merah {
+  animation: dr-kedip-lampu 0.8s step-end 0.4s infinite;
+}
+
+@keyframes dr-kedip-lampu {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.dr-ambulans-datang {
+  animation: tp-bus-datang 1600ms cubic-bezier(0.2, 0.7, 0.3, 1) 300ms both;
+}
+
+.dr-klip {
+  animation: dr-klip 700ms cubic-bezier(0.2, 0.9, 0.3, 1.1) 200ms both;
+}
+
+@keyframes dr-klip {
+  from {
+    opacity: 0;
+    transform: translateY(-24px) rotate(-1deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

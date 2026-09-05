@@ -5,8 +5,8 @@
     "en": "Asking for help in an emergency"
   },
   "sdg": [3, 11],
-  "vocab": [],
-  "estimatedMinutes": 10,
+  "vocab": ["halo", "sakit", "tangan", "terima-kasih"],
+  "estimatedMinutes": 15,
   "nodes": [
     {
       "id": "panggil",
@@ -17,24 +17,25 @@
       "task": {
         "deaf": {
           "type": "produce",
-          "sign": "tolong"
+          "sign": "halo"
         },
         "service": {
           "type": "receptive",
-          "sign": "tolong",
-          "options": ["tolong", "halo", "maaf"]
+          "sign": "halo",
+          "options": ["halo", "sakit", "terima-kasih"]
         }
       },
       "next": "kejadian",
-      "onFail": "repair-panggil"
+      "onFail": "repair-panggil",
+      "hint": "Tarik perhatian dulu dengan sapaan yang jelas, baru jelaskan kejadiannya."
     },
     {
       "id": "repair-panggil",
       "actor": "warga",
       "line": {
-        "id": "Tenang, ada apa?"
+        "id": "Tenang, pelan-pelan. Ada apa?"
       },
-      "hint": "Minta tolong lebih dulu.",
+      "hint": "Sapa dulu supaya warga tahu kamu butuh bantuan.",
       "next": "panggil"
     },
     {
@@ -45,148 +46,173 @@
       },
       "task": {
         "deaf": {
-          "type": "produce",
-          "sign": "kecelakaan"
+          "type": "point",
+          "prompt": "Tunjuk kartu kejadian: apa yang terjadi padamu?",
+          "options": ["Kehilangan dompet", "Jatuh dari sepeda", "Tersesat"],
+          "correct": 1
         },
         "service": {
-          "type": "receptive",
-          "sign": "kecelakaan",
-          "options": ["kecelakaan", "sakit", "telepon"]
+          "type": "point",
+          "prompt": "Warga Tuli menunjuk kartu kejadian. Apa yang terjadi?",
+          "options": ["Kehilangan dompet", "Jatuh dari sepeda", "Tersesat"],
+          "correct": 1
         }
       },
-      "next": "lokasi",
-      "onFail": "repair-kejadian"
+      "next": "luka",
+      "onFail": "repair-kejadian",
+      "hint": "Kartu bergambar di pos siaga membantu menjelaskan kejadian tanpa suara."
     },
     {
       "id": "repair-kejadian",
       "actor": "warga",
       "line": {
-        "id": "Coba jelaskan kejadiannya."
+        "id": "Coba tunjuk lagi kartunya."
       },
-      "hint": "Jelaskan apa yang terjadi.",
+      "hint": "Ingat, kamu terjatuh dari sepeda di perempatan.",
       "next": "kejadian"
+    },
+    {
+      "id": "luka",
+      "actor": "warga",
+      "line": {
+        "id": "Kamu terluka? Ada yang sakit?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "sakit"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "sakit",
+          "options": ["sakit", "halo", "tangan"]
+        }
+      },
+      "next": "bagian",
+      "onFail": "repair-luka"
+    },
+    {
+      "id": "repair-luka",
+      "actor": "warga",
+      "line": {
+        "id": "Bilang kalau ada yang sakit."
+      },
+      "hint": "Beri tahu bahwa kamu kesakitan.",
+      "next": "luka"
+    },
+    {
+      "id": "bagian",
+      "actor": "warga",
+      "line": {
+        "id": "Bagian mana yang sakit?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "tangan"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "tangan",
+          "options": ["tangan", "sakit", "halo"]
+        }
+      },
+      "next": "lokasi",
+      "onFail": "repair-bagian"
+    },
+    {
+      "id": "repair-bagian",
+      "actor": "warga",
+      "line": {
+        "id": "Tunjukkan bagian yang sakit."
+      },
+      "hint": "Tanganmu yang terluka.",
+      "next": "bagian"
     },
     {
       "id": "lokasi",
       "actor": "warga",
       "line": {
-        "id": "Di mana kejadiannya?"
+        "id": "Di mana kejadiannya? Sepedamu masih di sana?"
       },
       "task": {
         "deaf": {
-          "type": "produce",
-          "sign": "di-sini"
+          "type": "point",
+          "prompt": "Tunjuk di peta lingkungan: di mana kamu terjatuh?",
+          "options": ["Taman RW", "Perempatan depan pos", "Warung ujung jalan"],
+          "correct": 1
         },
         "service": {
-          "type": "receptive",
-          "sign": "di-sini",
-          "options": ["di-sini", "ke-mana", "turun"]
+          "type": "point",
+          "prompt": "Warga Tuli menunjuk peta di dinding pos. Di mana kejadiannya?",
+          "options": ["Taman RW", "Perempatan depan pos", "Warung ujung jalan"],
+          "correct": 1
         }
       },
-      "next": "telepon",
-      "onFail": "repair-lokasi"
+      "next": "pihak",
+      "onFail": "repair-lokasi",
+      "hint": "Peta di dinding pos punya tanda lokasi kejadian."
     },
     {
       "id": "repair-lokasi",
       "actor": "warga",
       "line": {
-        "id": "Tunjukkan tempatnya."
+        "id": "Coba tunjuk lagi tempatnya di peta."
       },
-      "hint": "Tunjukkan lokasi kejadian.",
+      "hint": "Lihat tanda di peta, dekat perempatan depan pos.",
       "next": "lokasi"
-    },
-    {
-      "id": "telepon",
-      "actor": "warga",
-      "line": {
-        "id": "Saya bantu hubungi bantuan ya?"
-      },
-      "task": {
-        "deaf": {
-          "type": "produce",
-          "sign": "telepon"
-        },
-        "service": {
-          "type": "receptive",
-          "sign": "telepon",
-          "options": ["telepon", "polisi", "rumah-sakit"]
-        }
-      },
-      "next": "pihak",
-      "onFail": "repair-telepon"
-    },
-    {
-      "id": "repair-telepon",
-      "actor": "warga",
-      "line": {
-        "id": "Perlu saya telepon?"
-      },
-      "hint": "Minta dia menelepon.",
-      "next": "telepon"
     },
     {
       "id": "pihak",
       "actor": "warga",
       "line": {
-        "id": "Hubungi siapa dulu?"
+        "id": "Saya bantu telepon. Hubungi siapa dulu?"
       },
       "task": {
         "deaf": {
-          "type": "produce",
-          "sign": "rumah-sakit"
+          "type": "point",
+          "prompt": "Tunjuk papan nomor darurat: siapa yang perlu dihubungi dulu?",
+          "options": ["Ambulans", "Polisi", "Damkar"],
+          "correct": 0
         },
         "service": {
-          "type": "receptive",
-          "sign": "rumah-sakit",
-          "options": ["rumah-sakit", "polisi", "telepon"]
+          "type": "point",
+          "prompt": "Kamu akan menelepon bantuan. Cara paling jelas menyampaikannya ke warga Tuli?",
+          "options": [
+            "Tunjuk nomor di papan darurat, lalu telepon di depannya",
+            "Menjelaskan dengan suara sambil menelepon",
+            "Pergi menelepon tanpa memberi tahu"
+          ],
+          "correct": 0
         }
       },
-      "next": "cepat",
-      "onFail": "repair-pihak"
+      "next": "telepon",
+      "onFail": "repair-pihak",
+      "hint": "Untuk luka, ambulans didahulukan."
     },
     {
       "id": "repair-pihak",
       "actor": "warga",
       "line": {
-        "id": "Polisi atau rumah sakit?"
+        "id": "Untuk luka, ambulans dulu ya?"
       },
-      "hint": "Pilih pihak yang dihubungi.",
+      "hint": "Pilih pihak yang menangani orang terluka.",
       "next": "pihak"
     },
     {
-      "id": "cepat",
+      "id": "telepon",
       "actor": "warga",
       "line": {
-        "id": "Baik, saya telepon sekarang."
+        "id": "Saya telepon 119 sekarang. Tarik napas, saya di sini."
       },
-      "task": {
-        "deaf": {
-          "type": "produce",
-          "sign": "cepat"
-        },
-        "service": {
-          "type": "receptive",
-          "sign": "cepat",
-          "options": ["cepat", "tunggu", "ya"]
-        }
-      },
-      "next": "tutup",
-      "onFail": "repair-cepat"
-    },
-    {
-      "id": "repair-cepat",
-      "actor": "warga",
-      "line": {
-        "id": "Segera ya."
-      },
-      "hint": "Minta dia bergegas.",
-      "next": "cepat"
+      "hint": "Warga menelepon di depanmu supaya kamu tahu bantuan sedang dipanggil.",
+      "next": "tutup"
     },
     {
       "id": "tutup",
       "actor": "warga",
       "line": {
-        "id": "Bantuan sedang ke sini. Bertahan ya."
+        "id": "Ambulans sedang ke sini. Bertahan ya."
       },
       "task": {
         "deaf": {
@@ -196,7 +222,7 @@
         "service": {
           "type": "receptive",
           "sign": "terima-kasih",
-          "options": ["terima-kasih", "tolong", "maaf"]
+          "options": ["terima-kasih", "halo", "sakit"]
         }
       },
       "next": null,
