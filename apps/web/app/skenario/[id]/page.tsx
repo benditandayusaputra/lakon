@@ -5,6 +5,7 @@ import { ScenarioFlow } from '@/components/scenario-flow'
 import { KedaiKopiFlow } from '@/components/scenes/kedai-kopi/flow'
 import { PuskesmasFlow } from '@/components/scenes/puskesmas/flow'
 import { TransportasiFlow } from '@/components/scenes/transportasi/flow'
+import { WawancaraKerjaFlow } from '@/components/scenes/wawancara-kerja/flow'
 import { DaruratFlow } from '@/components/scenes/darurat/flow'
 
 const caveat = Caveat({ subsets: ['latin'], variable: '--font-kapur' })
@@ -13,7 +14,13 @@ export const metadata: Metadata = { title: 'Skenario | Lakon' }
 
 export default async function ScenarioDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  if (id === 'kedai-kopi' || id === 'puskesmas' || id === 'transportasi' || id === 'darurat') {
+  if (
+    id === 'kedai-kopi' ||
+    id === 'puskesmas' ||
+    id === 'transportasi' ||
+    id === 'wawancara-kerja' ||
+    id === 'darurat'
+  ) {
     return (
       <div className={caveat.variable}>
         <Suspense fallback={<p className="p-10">Memuat…</p>}>
@@ -23,6 +30,8 @@ export default async function ScenarioDetailPage({ params }: { params: Promise<{
             <PuskesmasFlow />
           ) : id === 'transportasi' ? (
             <TransportasiFlow />
+          ) : id === 'wawancara-kerja' ? (
+            <WawancaraKerjaFlow />
           ) : (
             <DaruratFlow />
           )}

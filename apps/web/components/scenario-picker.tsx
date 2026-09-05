@@ -39,7 +39,7 @@ const SCENE_MOODS: Record<string, string> = {
   'kedai-kopi': 'Amber pagi, kayu jati',
   puskesmas: 'Hijau teduh, ruang tunggu',
   transportasi: 'Beton, biru peron',
-  'wawancara-kerja': 'Kayu terang, kertas',
+  'wawancara-kerja': 'Kedai pagi, kayu terang',
   darurat: 'Cahaya siang, paling tenang',
 }
 

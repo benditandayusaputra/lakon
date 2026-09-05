@@ -5,14 +5,14 @@
     "en": "A short job interview"
   },
   "sdg": [8],
-  "vocab": [],
+  "vocab": ["halo", "kopi", "panas", "maaf", "terima-kasih"],
   "estimatedMinutes": 15,
   "nodes": [
     {
       "id": "sapa",
       "actor": "pewawancara",
       "line": {
-        "id": "Selamat pagi, silakan duduk."
+        "id": "Selamat pagi! Kamu pelamar barista, ya? Silakan duduk."
       },
       "task": {
         "deaf": {
@@ -22,10 +22,10 @@
         "service": {
           "type": "receptive",
           "sign": "halo",
-          "options": ["halo", "terima-kasih", "maaf"]
+          "options": ["halo", "maaf", "terima-kasih"]
         }
       },
-      "next": "nama",
+      "next": "berkas",
       "onFail": "repair-sapa"
     },
     {
@@ -38,184 +38,171 @@
       "next": "sapa"
     },
     {
-      "id": "nama",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Namanya siapa?"
-      },
-      "task": {
-        "deaf": {
-          "type": "produce",
-          "sign": "nama"
-        },
-        "service": {
-          "type": "receptive",
-          "sign": "nama",
-          "options": ["nama", "umur", "kerja"]
-        }
-      },
-      "next": "umur",
-      "onFail": "repair-nama"
-    },
-    {
-      "id": "repair-nama",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Boleh perkenalkan diri?"
-      },
-      "hint": "Perkenalkan namamu.",
-      "next": "nama"
-    },
-    {
-      "id": "umur",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Umurnya berapa?"
-      },
-      "task": {
-        "deaf": {
-          "type": "produce",
-          "sign": "umur"
-        },
-        "service": {
-          "type": "receptive",
-          "sign": "umur",
-          "options": ["umur", "berapa", "nama"]
-        }
-      },
-      "next": "pengalaman",
-      "onFail": "repair-umur"
-    },
-    {
-      "id": "repair-umur",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Berapa umurnya?"
-      },
-      "hint": "Jawab soal umur.",
-      "next": "umur"
-    },
-    {
-      "id": "pengalaman",
+      "id": "berkas",
       "actor": "pewawancara",
       "line": {
         "id": "Sudah pernah bekerja sebelumnya?"
       },
       "task": {
         "deaf": {
-          "type": "produce",
-          "sign": "pengalaman"
+          "type": "point",
+          "prompt": "Kamu belum punya isyarat untuk menjawab ini. Cara paling jelas?",
+          "options": [
+            "Buka CV, tunjuk bagian pengalaman",
+            "Mengangguk saja tanpa bukti",
+            "Diam dan menunggu"
+          ],
+          "correct": 0
         },
         "service": {
-          "type": "receptive",
-          "sign": "pengalaman",
-          "options": ["pengalaman", "kerja", "belajar"]
+          "type": "point",
+          "prompt": "Pelamar Tuli menunjuk bagian pengalaman di CV-nya. Apa yang kamu lakukan?",
+          "options": [
+            "Baca bagian itu, angguk, lalu lanjut",
+            "Minta pelamar menjelaskan dengan suara",
+            "Abaikan CV dan ganti pertanyaan"
+          ],
+          "correct": 0
         }
       },
-      "next": "kemampuan",
-      "onFail": "repair-pengalaman"
+      "hint": "Berkas lamaranmu ada di meja. Menunjuk berkas itu cara yang sah.",
+      "next": "kopi",
+      "onFail": "repair-berkas"
     },
     {
-      "id": "repair-pengalaman",
+      "id": "repair-berkas",
       "actor": "pewawancara",
       "line": {
-        "id": "Ceritakan pengalaman kerjamu."
+        "id": "Boleh lihat berkas lamaranmu?"
       },
-      "hint": "Ceritakan pengalamanmu.",
-      "next": "pengalaman"
+      "hint": "Tunjukkan bagian pengalaman di CV.",
+      "next": "berkas"
     },
     {
-      "id": "kemampuan",
+      "id": "kopi",
       "actor": "pewawancara",
       "line": {
-        "id": "Apa yang kamu bisa?"
+        "id": "Kami di sini jual kopi. Kamu suka kopi?"
       },
       "task": {
         "deaf": {
           "type": "produce",
-          "sign": "bisa"
+          "sign": "kopi"
         },
         "service": {
           "type": "receptive",
-          "sign": "bisa",
-          "options": ["bisa", "belajar", "kerja"]
+          "sign": "kopi",
+          "options": ["kopi", "minum", "makan"]
         }
       },
-      "next": "belajar",
-      "onFail": "repair-kemampuan"
+      "next": "menu",
+      "onFail": "repair-kopi"
     },
     {
-      "id": "repair-kemampuan",
+      "id": "repair-kopi",
       "actor": "pewawancara",
       "line": {
-        "id": "Sebutkan kemampuanmu."
+        "id": "Kopi, suka?"
       },
-      "hint": "Sampaikan apa yang kamu bisa.",
-      "next": "kemampuan"
+      "hint": "Jawab dengan isyarat kopi.",
+      "next": "kopi"
     },
     {
-      "id": "belajar",
+      "id": "menu",
       "actor": "pewawancara",
       "line": {
-        "id": "Kalau ada hal baru, bagaimana?"
+        "id": "Tes kecil, ya. Pelanggan minta minuman paling laris kami. Tunjuk di menu!"
+      },
+      "task": {
+        "deaf": {
+          "type": "point",
+          "prompt": "Lihat papan menu. Minuman mana yang paling laris?",
+          "options": ["Kopi Susu Aren", "Teh Melati", "Cokelat Panas"],
+          "correct": 0
+        },
+        "service": {
+          "type": "point",
+          "prompt": "Pelamar menunjuk menu. Minuman mana yang paling laris?",
+          "options": ["Kopi Susu Aren", "Teh Melati", "Cokelat Panas"],
+          "correct": 0
+        }
+      },
+      "hint": "Minuman paling laris punya tanda favorit di menu.",
+      "next": "panas",
+      "onFail": "repair-menu"
+    },
+    {
+      "id": "repair-menu",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Yang paling laris ada tanda favorit di menu."
+      },
+      "hint": "Cari tanda favorit.",
+      "next": "menu"
+    },
+    {
+      "id": "panas",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Pelanggan minta kopinya panas. Bagaimana isyaratnya?"
       },
       "task": {
         "deaf": {
           "type": "produce",
-          "sign": "belajar"
+          "sign": "panas"
         },
         "service": {
           "type": "receptive",
-          "sign": "belajar",
-          "options": ["belajar", "bisa", "mulai"]
+          "sign": "panas",
+          "options": ["panas", "dingin", "manis"]
         }
       },
-      "next": "mulai",
-      "onFail": "repair-belajar"
+      "next": "maaf",
+      "onFail": "repair-panas"
     },
     {
-      "id": "repair-belajar",
+      "id": "repair-panas",
       "actor": "pewawancara",
       "line": {
-        "id": "Bagaimana sikapmu pada hal baru?"
+        "id": "Panas, bukan dingin."
       },
-      "hint": "Sampaikan kemauanmu belajar.",
-      "next": "belajar"
+      "hint": "Peragakan isyarat panas.",
+      "next": "panas"
     },
     {
-      "id": "mulai",
+      "id": "maaf",
       "actor": "pewawancara",
       "line": {
-        "id": "Kapan bisa mulai bekerja?"
+        "id": "Kalau pesanan salah, apa yang kamu sampaikan ke pelanggan?"
       },
       "task": {
         "deaf": {
           "type": "produce",
-          "sign": "mulai"
+          "sign": "maaf"
         },
         "service": {
           "type": "receptive",
-          "sign": "mulai",
-          "options": ["mulai", "kerja", "jam"]
+          "sign": "maaf",
+          "options": ["maaf", "terima-kasih", "halo"]
         }
       },
       "next": "tutup",
-      "onFail": "repair-mulai"
+      "onFail": "repair-maaf"
     },
     {
-      "id": "repair-mulai",
+      "id": "repair-maaf",
       "actor": "pewawancara",
       "line": {
-        "id": "Kapan siap mulai?"
+        "id": "Pelanggan kecewa. Kamu bilang apa?"
       },
-      "hint": "Jawab kapan kamu bisa mulai.",
-      "next": "mulai"
+      "hint": "Minta maaf dengan isyarat.",
+      "next": "maaf"
     },
     {
       "id": "tutup",
       "actor": "pewawancara",
       "line": {
-        "id": "Baik, nanti kami kabari. Terima kasih sudah datang."
+        "id": "Bagus sekali. Nanti kami kabari. Terima kasih sudah datang!"
       },
       "task": {
         "deaf": {
