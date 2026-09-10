@@ -137,6 +137,15 @@ export const nonManualSchema = z.object({
   gaze: z.string().min(1).nullable(),
 })
 
+export const mediaSchema = z.object({
+  video: z.object({
+    depan: z.string().min(1),
+    kanan: z.string().min(1).optional(),
+    kiri: z.string().min(1).optional(),
+  }),
+  poster: z.string().min(1).optional(),
+})
+
 export const signSchema = z.object({
   id: kebabId,
   gloss: bilingualLabel,
@@ -148,6 +157,7 @@ export const signSchema = z.object({
   phases: z.array(phaseSchema).min(1),
   contact: contactSchema.nullable(),
   nonManual: nonManualSchema,
+  media: mediaSchema.optional(),
   review: reviewSchema,
 })
 

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CheckCircle2, Clock3, Coffee, RotateCcw } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Clock3, Coffee, RotateCcw } from 'lucide-react'
 import { CangkirSaji } from './props'
 import { prettify, rupiah, type MenuTes } from './types'
 
@@ -145,13 +145,18 @@ export function SceneHasil({
         className="wk-muncul z-10 mt-8 flex flex-wrap justify-center gap-3"
         style={{ animationDelay: '900ms' }}
       >
-        <button type="button" onClick={onUlangi} className="tombol-sorot">
+        <Link href="/skenario" className="tombol-sorot">
+          <ArrowLeft aria-hidden className="h-4 w-4" />
+          Kembali ke skenario
+        </Link>
+        <button
+          type="button"
+          onClick={onUlangi}
+          className="tombol-sekunder inline-flex items-center bg-white/70"
+        >
           <RotateCcw aria-hidden className="h-4 w-4" />
           Ulangi wawancara
         </button>
-        <Link href="/skenario" className="tombol-sekunder inline-flex items-center bg-white/70">
-          Skenario lain
-        </Link>
       </div>
     </div>
   )

@@ -16,6 +16,10 @@ export type LoadedContent = {
   scenarios: Record<string, Scenario>
 }
 
+let terakhirDimuat: LoadedContent | null = null
+
+export const signTersimpan = (id: string): Sign | undefined => terakhirDimuat?.signs[id]
+
 export const useContent = () => {
   const [content, setContent] = useState<LoadedContent | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -44,7 +48,8 @@ export const useContent = () => {
             const parsed = scenarioSchema.safeParse(value)
             if (parsed.success) scenarios[id] = parsed.data
           }
-          setContent({ signs, handshapes, scenarios })
+          terakhirDimuat = { signs, handshapes, scenarios }
+          setContent(terakhirDimuat)
         },
       )
       .catch(() => setError('Konten gagal dimuat. Muat ulang halaman.'))

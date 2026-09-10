@@ -3,11 +3,28 @@
 import { useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { CompiledSign, CompilerRig } from '@lakon/sign-compiler'
+import type { Sign } from '@lakon/sign-schema'
 import { CompiledAvatar, type Playback } from '@/components/compile-lab'
+import { signTersimpan } from '@/features/content/use-content'
+import {
+  KAMERA_SUDUT,
+  SUDUT_PERAGA,
+  sudutTersedia,
+  sumberSudut,
+  type SudutPeraga,
+} from '@/features/ui/peraga'
+
+const LABEL_SUDUT: Record<SudutPeraga, string> = {
+  depan: 'Depan',
+  kanan: 'Kanan',
+  kiri: 'Kiri',
+}
 
 export function AvatarStage({
   compiled,
+  sign,
   showControls = false,
+  sudutKontrol,
   mirrorDefault = false,
   className = '',
   stageClassName = '',
@@ -15,7 +32,9 @@ export function AvatarStage({
   onRigReady,
 }: {
   compiled: CompiledSign | null
+  sign?: Sign
   showControls?: boolean
+  sudutKontrol?: boolean
   mirrorDefault?: boolean
   className?: string
   stageClassName?: string
@@ -25,12 +44,19 @@ export function AvatarStage({
   const playbackRef = useRef<Playback>({ compiled: null, playing: true, speed: 1, time: 0 })
   const timeEl = useRef<HTMLSpanElement | null>(null)
   const sliderEl = useRef<HTMLInputElement | null>(null)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
   const [playing, setPlaying] = useState(true)
   const [speed, setSpeed] = useState(1)
   const [mirror, setMirror] = useState(mirrorDefault)
+  const [sudut, setSudut] = useState<SudutPeraga>('depan')
   const [rigError, setRigError] = useState<string | null>(null)
+  const [videoGagal, setVideoGagal] = useState(false)
   const onRigReadyRef = useRef(onRigReady)
   onRigReadyRef.current = onRigReady
+
+  const isyarat = sign ?? (compiled ? signTersimpan(compiled.id) : undefined)
+  const video = isyarat?.media?.video
+  const sumber = videoGagal ? undefined : sumberSudut(video, sudut)
 
   useEffect(() => {
     playbackRef.current.compiled = compiled
@@ -42,14 +68,32 @@ export function AvatarStage({
     playbackRef.current.speed = speed
   }, [playing, speed])
 
-  const stepFrame = (direction: 1 | -1) => {
-    const active = playbackRef.current.compiled
-    if (!active) return
+  useEffect(() => {
+    setVideoGagal(false)
+  }, [isyarat?.id])
+
+  useEffect(() => {
+    const el = videoRef.current
+    if (!el) return
+    el.playbackRate = speed
+    if (playing) void el.play().catch(() => {})
+    else el.pause()
+  }, [playing, speed, sumber])
+
+  const langkahFrame = (arah: 1 | -1) => {
     setPlaying(false)
+    const el = videoRef.current
+    if (el) {
+      el.pause()
+      el.currentTime = Math.max(0, Math.min(el.duration || 0, el.currentTime + arah * 0.1))
+      return
+    }
+    const aktif = playbackRef.current.compiled
+    if (!aktif) return
     playbackRef.current.playing = false
     playbackRef.current.time = Math.min(
-      active.duration,
-      Math.max(0, playbackRef.current.time + (direction * 1000) / active.fps),
+      aktif.duration,
+      Math.max(0, playbackRef.current.time + (arah * 1000) / aktif.fps),
     )
   }
 
@@ -57,16 +101,37 @@ export function AvatarStage({
     <div className={`flex flex-col gap-2 ${className}`}>
       <div className={`relative min-h-0 flex-1 ${stageClassName}`}>
         <div className={`absolute inset-0 ${mirror ? '-scale-x-100' : ''}`}>
-          <Canvas camera={{ fov: 30, position: [0, 1.35, 1.7] }}>
-            <CompiledAvatar
-              playbackRef={playbackRef}
-              timeEl={timeEl}
-              sliderEl={sliderEl}
-              onRigReady={(rig) => onRigReadyRef.current?.(rig)}
-              onRigError={setRigError}
+          {sumber ? (
+            <video
+              key={sumber}
+              ref={videoRef}
+              src={sumber}
+              poster={isyarat?.media?.poster}
+              className="h-full w-full object-contain"
+              playsInline
+              muted
+              loop
+              autoPlay
+              onError={() => setVideoGagal(true)}
             />
-          </Canvas>
+          ) : (
+            <Canvas
+              camera={{ fov: 30, position: [...KAMERA_SUDUT[sudut]] as [number, number, number] }}
+            >
+              <CompiledAvatar
+                playbackRef={playbackRef}
+                timeEl={timeEl}
+                sliderEl={sliderEl}
+                sudut={KAMERA_SUDUT[sudut]}
+                onRigReady={(rig) => onRigReadyRef.current?.(rig)}
+                onRigError={setRigError}
+              />
+            </Canvas>
+          )}
         </div>
+        <p className="text-halaman absolute right-3 top-3 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
+          {sumber ? 'video penanda' : 'peraga 3D'} · {sudut}
+        </p>
         {signLabel ? (
           <p className="text-halaman absolute bottom-3 left-3 rounded-lg bg-black/60 px-3 py-1.5 font-mono text-sm font-bold uppercase tracking-wide">
             {signLabel}
@@ -75,8 +140,29 @@ export function AvatarStage({
       </div>
       {rigError ? (
         <p role="alert" className="text-galat text-sm">
-          Avatar gagal dimuat: {rigError}
+          Peraga gagal dimuat: {rigError}
         </p>
+      ) : null}
+      {(sudutKontrol ?? showControls) ? (
+        <div
+          role="group"
+          aria-label="Sudut pandang peragaan"
+          className="border-border-halus bg-kartu flex flex-wrap items-center justify-center gap-2 rounded-2xl border p-2 text-sm"
+        >
+          {SUDUT_PERAGA.map((id) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setSudut(id)}
+              aria-pressed={sudut === id}
+              disabled={sumber ? !sudutTersedia(video, id) : false}
+              className={sudut === id ? 'tombol-utama px-4 py-1.5' : 'tombol-sekunder px-4 py-1.5'}
+              style={{ minHeight: 48 }}
+            >
+              {LABEL_SUDUT[id]}
+            </button>
+          ))}
+        </div>
       ) : null}
       {showControls ? (
         <div className="border-border-halus bg-kartu flex flex-wrap items-center justify-center gap-2 rounded-2xl border p-2 text-sm">
@@ -90,7 +176,7 @@ export function AvatarStage({
           </button>
           <button
             type="button"
-            onClick={() => stepFrame(-1)}
+            onClick={() => langkahFrame(-1)}
             className="tombol-sekunder px-3 py-1.5"
             style={{ minHeight: 48 }}
             aria-label="Mundur satu frame"
@@ -99,7 +185,7 @@ export function AvatarStage({
           </button>
           <button
             type="button"
-            onClick={() => stepFrame(1)}
+            onClick={() => langkahFrame(1)}
             className="tombol-sekunder px-3 py-1.5"
             style={{ minHeight: 48 }}
             aria-label="Maju satu frame"
@@ -113,7 +199,9 @@ export function AvatarStage({
               type="button"
               onClick={() => setSpeed(value)}
               aria-pressed={speed === value}
-              className={speed === value ? 'tombol-utama px-3 py-1.5' : 'tombol-sekunder px-3 py-1.5'}
+              className={
+                speed === value ? 'tombol-utama px-3 py-1.5' : 'tombol-sekunder px-3 py-1.5'
+              }
               style={{ minHeight: 48 }}
             >
               {value === 1 ? '1×' : `${value}×`}
@@ -129,29 +217,10 @@ export function AvatarStage({
           >
             🪞 Cermin
           </button>
-          <span ref={timeEl} className="sr-only" aria-live="off" />
-          <input
-            ref={sliderEl}
-            type="range"
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden
-            readOnly
-          />
         </div>
-      ) : (
-        <>
-          <span ref={timeEl} className="sr-only" />
-          <input
-            ref={sliderEl}
-            type="range"
-            className="sr-only"
-            tabIndex={-1}
-            aria-hidden
-            readOnly
-          />
-        </>
-      )}
+      ) : null}
+      <span ref={timeEl} className="sr-only" aria-live="off" />
+      <input ref={sliderEl} type="range" className="sr-only" tabIndex={-1} aria-hidden readOnly />
     </div>
   )
 }

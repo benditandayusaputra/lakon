@@ -1,5 +1,7 @@
 'use client'
 
+import { useAsalZoom } from '@/features/ui/use-asal-zoom'
+
 import type { ReactNode } from 'react'
 import { AmbulansParkir } from '@/components/scenes/puskesmas/karakter'
 
@@ -11,7 +13,11 @@ function Awan({ className = '' }: { className?: string }) {
         fill="#ffffff"
         opacity="0.9"
       />
-      <path d="M70 34 q-8 0 -7 -7 q1 -6 8 -5 q3 -7 11 -5 q7 2 7 8 q8 0 8 6 q0 4 -7 3 Z" fill="#ffffff" opacity="0.7" />
+      <path
+        d="M70 34 q-8 0 -7 -7 q1 -6 8 -5 q3 -7 11 -5 q7 2 7 8 q8 0 8 6 q0 4 -7 3 Z"
+        fill="#ffffff"
+        opacity="0.7"
+      />
     </svg>
   )
 }
@@ -59,23 +65,35 @@ export function SceneLuarPuskesmas({
   onMasuk: () => void
   papanInfo: ReactNode
 }) {
+  const zoomRef = useAsalZoom(!membuka)
+
   return (
     <div className={`relative flex flex-1 flex-col overflow-hidden ${membuka ? 'pk-membuka' : ''}`}>
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <span className="absolute left-[12%] top-[7%] h-14 w-14 rounded-full bg-[#fff3c4] shadow-[0_0_60px_26px_rgba(255,240,180,0.55)] sm:h-20 sm:w-20" />
         <Awan className="absolute right-[8%] top-[6%] w-36 opacity-90 sm:w-48" />
         <Awan className="absolute left-[30%] top-[14%] w-24 opacity-60 sm:w-32" />
-        <svg viewBox="0 0 44 96" className="absolute right-[5%] top-[14%] hidden w-9 lg:block" aria-hidden>
+        <svg
+          viewBox="0 0 44 96"
+          className="absolute right-[5%] top-[14%] hidden w-9 lg:block"
+          aria-hidden
+        >
           <rect x="8" y="6" width="3.5" height="90" rx="1.5" fill="#8a95a0" />
           <circle cx="9.75" cy="4" r="3" fill="#c9a06a" />
           <path d="M11.5 8 h26 v9 h-26 Z" fill="#e0242a" className="kk-goyang" />
-          <path d="M11.5 17 h26 v9 h-26 Z" fill="#ffffff" stroke="#dcdcdc" strokeWidth="0.5" className="kk-goyang" />
+          <path
+            d="M11.5 17 h26 v9 h-26 Z"
+            fill="#ffffff"
+            stroke="#dcdcdc"
+            strokeWidth="0.5"
+            className="kk-goyang"
+          />
         </svg>
       </div>
 
       <div
+        ref={zoomRef}
         className="pk-fasad-zoom relative z-10 mx-auto flex w-full max-w-4xl flex-1 flex-col justify-end px-3 sm:px-6"
-        style={{ transformOrigin: '50% 74%' }}
       >
         <div className="relative">
           <AmbulansParkir className="absolute -left-2 bottom-0 z-10 hidden w-44 md:block lg:w-52" />
@@ -128,6 +146,7 @@ export function SceneLuarPuskesmas({
                 onClick={onMasuk}
                 disabled={membuka}
                 aria-label="Geser pintu kaca dan masuk ke puskesmas"
+                data-pintu
                 className="pk-jalan-pintu group relative z-20 block w-40 sm:w-52"
               >
                 <span className="relative block h-44 overflow-hidden rounded-t-sm border-4 border-[#4f8a68] bg-[#123324] sm:h-56">
@@ -144,10 +163,7 @@ export function SceneLuarPuskesmas({
                     <DaunPintu sisi="kiri" />
                     <DaunPintu sisi="kanan" />
                   </span>
-                  <span
-                    aria-hidden
-                    className="absolute inset-x-0 top-0 block h-3 bg-[#4f8a68]"
-                  />
+                  <span aria-hidden className="absolute inset-x-0 top-0 block h-3 bg-[#4f8a68]" />
                 </span>
                 <span className="pointer-events-none absolute -bottom-8 left-1/2 w-max -translate-x-1/2 rounded-full bg-[#1d442f]/90 px-3 py-1 text-xs font-bold text-[#c9ecd7] opacity-90 transition-opacity group-hover:opacity-100 sm:text-sm">
                   Klik pintu kaca untuk masuk

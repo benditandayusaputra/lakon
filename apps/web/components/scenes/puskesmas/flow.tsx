@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { ArrowLeft, DoorOpen, FileText } from 'lucide-react'
+import { ArrowLeft, FileText } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
+import { LANGKAH_PEMBUKA, PembukaAdegan } from '@/components/scenes/pembuka'
+import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
 import { SceneLuarPuskesmas } from '@/components/scenes/puskesmas/scene-luar'
 import { SceneBelajarPuskesmas } from '@/components/scenes/puskesmas/scene-belajar'
@@ -34,6 +36,7 @@ export function PuskesmasFlow() {
 
   const [tahap, setTahap] = useState<Tahap>('luar')
   const [membuka, setMembuka] = useState(false)
+  const [tirai, setTirai] = useState(false)
   const { rig, error: rigError } = useCompilerRig(tahap !== 'luar')
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [, forceUpdate] = useReducer((tick: number) => tick + 1, 0)
@@ -140,6 +143,8 @@ export function PuskesmasFlow() {
       needsRepeat: summary.needsRepeat,
       completedAt: Date.now(),
     })
+    setTirai(true)
+
     setTahap('resep')
   }
 
@@ -174,36 +179,19 @@ export function PuskesmasFlow() {
     return (
       <main className="pk-langit-pagi flex min-h-dvh flex-col">
         {kepala}
-        <SceneLuarPuskesmas
+        <SceneLuarPuskesmas membuka={membuka} onMasuk={masukPuskesmas} papanInfo={null} />
+        <PembukaAdegan
+          judul={scenario.title.id}
+          peran={directionLabel}
+          menit={scenario.estimatedMinutes ?? 20}
+          jumlahIsyarat={learning.order().length}
+          ringkasPercakapan="kunjungan berobat"
+          langkah={LANGKAH_PEMBUKA[direction]}
+          aksiLabel="Masuk puskesmas"
+          aksiLabelMembuka="Pintu terbuka…"
+          onMulai={masukPuskesmas}
           membuka={membuka}
-          onMasuk={masukPuskesmas}
-          papanInfo={
-            <div className="relative z-10 flex flex-col items-center gap-3 sm:flex-row sm:items-end sm:gap-8">
-              <div className="w-64 -rotate-1 rounded-lg border-4 border-[#2a6b48] bg-white p-4 shadow-xl">
-                <p className="border-b-2 border-[#2f7d52] pb-1.5 text-center text-xs font-black uppercase tracking-[0.2em] text-[#1d442f]">
-                  Papan Informasi
-                </p>
-                <p className="font-display mt-2 text-center text-lg font-bold leading-tight text-[#1d442f]">
-                  {scenario.title.id}
-                </p>
-                <ul className="mt-2 space-y-1 text-sm font-bold text-[#2b3a2e]">
-                  <li>✚ {learning.order().length} isyarat baru</li>
-                  <li>✚ 1 kunjungan berobat lengkap</li>
-                  <li>✚ ± {scenario.estimatedMinutes ?? 20} menit</li>
-                  <li>✚ peran: {directionLabel}</li>
-                </ul>
-              </div>
-              <button
-                type="button"
-                onClick={masukPuskesmas}
-                disabled={membuka}
-                className="pk-tombol text-lg"
-              >
-                <DoorOpen aria-hidden className="mr-2 inline h-5 w-5" />
-                {membuka ? 'Pintu terbuka…' : 'Masuk puskesmas'}
-              </button>
-            </div>
-          }
+          aksen="#5fc08a"
         />
       </main>
     )
@@ -221,6 +209,16 @@ export function PuskesmasFlow() {
     return (
       <main className="pk-dinding flex min-h-dvh flex-col">
         {kepala}
+        {tirai ? (
+          <TiraiSelesai
+            judul="Kunjunganmu tuntas!"
+            pesan="Kamu menyelesaikan satu kunjungan berobat dari awal sampai resep."
+            dikuasai={dikuasai.length}
+            menit={Math.max(1, Math.round(summary.durationMs / 60000))}
+            onSelesai={() => setTirai(false)}
+            aksen="#5fc08a"
+          />
+        ) : null}
         <SceneResepPuskesmas
           dikuasai={dikuasai}
           perluDiulang={perluDiulang}
@@ -230,6 +228,7 @@ export function PuskesmasFlow() {
             engine.reset()
             startedAtRef.current = Date.now()
             setMembuka(false)
+            setTirai(false)
             setLearnView('demo')
             setTahap('luar')
             forceUpdate()
@@ -251,6 +250,7 @@ export function PuskesmasFlow() {
           sign={currentSignId ? content.signs[currentSignId] : undefined}
           compiled={currentSignId ? getCompiled(currentSignId) : null}
           tampilan={learnView}
+          direction={direction}
           percobaan={currentSignId ? (learning.progressFor(currentSignId)?.attempts ?? 0) : 0}
           gagalBeruntun={
             currentSignId ? (learning.progressFor(currentSignId)?.consecutiveFailures ?? 0) : 0

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CheckCircle2, ClipboardCheck, Clock3, RotateCcw, Siren } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, ClipboardCheck, Clock3, RotateCcw, Siren } from 'lucide-react'
 import { Ambulans } from './props'
 import { KARTU_KEJADIAN, NOMOR_DARURAT, TITIK_PETA, prettify, type Laporan } from './types'
 
@@ -136,13 +136,14 @@ export function SceneLaporan({
         className="kk-muncul z-10 mt-8 flex flex-wrap justify-center gap-3"
         style={{ animationDelay: '900ms' }}
       >
-        <button type="button" onClick={onUlangi} className="dr-tombol">
+        <Link href="/skenario" className="dr-tombol">
+          <ArrowLeft aria-hidden className="h-4 w-4" />
+          Kembali ke skenario
+        </Link>
+        <button type="button" onClick={onUlangi} className="dr-tombol-garis">
           <RotateCcw aria-hidden className="h-4 w-4" />
           Ulangi simulasi
         </button>
-        <Link href="/skenario" className="dr-tombol-garis">
-          Skenario lain
-        </Link>
       </div>
     </div>
   )

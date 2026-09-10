@@ -4,7 +4,9 @@ import { Siren } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
+import { LatihanBaca } from '@/components/latihan-baca'
 import { PracticeBlock } from '@/components/practice-block'
+import type { Direction } from '@/features/scenario/engine'
 import type { LearningPhase } from '@/features/scenario/learning'
 import { KotakP3K, PapanNomorDarurat, RadioHT } from './props'
 import { prettify } from './types'
@@ -51,6 +53,7 @@ export function SceneBelajar({
   sign,
   compiled,
   learnView,
+  direction,
   directionLabel,
   onGantiView,
   onLulus,
@@ -64,6 +67,7 @@ export function SceneBelajar({
   sign: Sign | undefined
   compiled: CompiledSign | null
   learnView: 'demo' | 'praktik'
+  direction: Direction
   directionLabel: string
   onGantiView: (view: 'demo' | 'praktik') => void
   onLulus: () => void
@@ -137,6 +141,7 @@ export function SceneBelajar({
               <div>
                 <AvatarStage
                   compiled={compiled}
+                  sign={sign}
                   showControls
                   signLabel={sign.gloss.id}
                   stageClassName="bg-zona-tenang zona-tenang-gradasi overflow-hidden rounded-3xl border-4 border-[#33465a]/30 shadow-[0_24px_50px_-20px_rgba(31,45,58,0.6)]"
@@ -168,13 +173,26 @@ export function SceneBelajar({
             </div>
           ) : (
             <div className="kk-muncul dr-kertas flex flex-col gap-4 rounded-3xl p-4 shadow-xl sm:p-5">
-              <PracticeBlock
-                compiled={compiled}
-                signLabel={sign.gloss.id}
-                onPassed={onLulus}
-                onFailedAttempt={onGagal}
-                onSelfAssessed={onNilaiSendiri}
-              />
+              {direction === 'service' ? (
+                <LatihanBaca
+                  compiled={compiled}
+                  sign={sign}
+                  signId={currentSignId}
+                  kandidat={learning.order()}
+                  onLulus={onLulus}
+                  onGagal={onGagal}
+                  onLewati={onNilaiSendiri}
+                />
+              ) : (
+                <PracticeBlock
+                  compiled={compiled}
+                  sign={sign}
+                  signLabel={sign.gloss.id}
+                  onPassed={onLulus}
+                  onFailedAttempt={onGagal}
+                  onSelfAssessed={onNilaiSendiri}
+                />
+              )}
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"

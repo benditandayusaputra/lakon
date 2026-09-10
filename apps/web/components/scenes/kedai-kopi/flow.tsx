@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { ArrowLeft, Coffee, DoorOpen, ReceiptText } from 'lucide-react'
+import { ArrowLeft, Coffee, ReceiptText } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
+import { LANGKAH_PEMBUKA, PembukaAdegan } from '@/components/scenes/pembuka'
+import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
 import { useCompilerRig } from '@/features/avatar/use-rig'
 import { useContent } from '@/features/content/use-content'
@@ -34,6 +36,7 @@ export function KedaiKopiFlow() {
 
   const [tahap, setTahap] = useState<TahapKedai>('luar')
   const [membuka, setMembuka] = useState(false)
+  const [tirai, setTirai] = useState(false)
   const { rig, error: rigError } = useCompilerRig(tahap !== 'luar')
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [pesanan, setPesanan] = useState<MenuKedai | null>(null)
@@ -116,8 +119,7 @@ export function KedaiKopiFlow() {
     setMembuka(true)
     startedAtRef.current = Date.now()
     const cepat =
-      typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     pintuTimer.current = setTimeout(() => setTahap('belajar'), cepat ? 120 : 1250)
   }
 
@@ -142,6 +144,8 @@ export function KedaiKopiFlow() {
       needsRepeat: summary.needsRepeat,
       completedAt: Date.now(),
     })
+    setTirai(true)
+
     setTahap('struk')
   }
 
@@ -176,34 +180,19 @@ export function KedaiKopiFlow() {
     return (
       <main className="kk-langit flex min-h-dvh flex-col">
         {kepala}
-        <SceneLuar
+        <SceneLuar membuka={membuka} onMasuk={masukKedai} papanInfo={null} />
+        <PembukaAdegan
+          judul={scenario.title.id}
+          peran={directionLabel}
+          menit={scenario.estimatedMinutes ?? 12}
+          jumlahIsyarat={learning.order().length}
+          ringkasPercakapan="percakapan lengkap"
+          langkah={LANGKAH_PEMBUKA[direction]}
+          aksiLabel="Buka pintu & masuk"
+          aksiLabelMembuka="Membuka pintu…"
+          onMulai={masukKedai}
           membuka={membuka}
-          onMasuk={masukKedai}
-          papanInfo={
-            <div className="relative z-10 flex flex-col items-center gap-3 sm:flex-row sm:items-end sm:gap-8">
-              <div className="kk-papan-kapur w-60 -rotate-2 rounded-lg p-4 shadow-xl">
-                <p className="kk-font-kapur text-center text-xl leading-tight text-[#ece7d6]">
-                  {scenario.title.id}
-                </p>
-                <div className="mx-auto my-2 h-px w-20 bg-[#ece7d6]/40" />
-                <ul className="kk-font-kapur space-y-0.5 text-base text-[#d9d3bd]">
-                  <li>✎ {learning.order().length} isyarat baru</li>
-                  <li>✎ 1 percakapan lengkap</li>
-                  <li>✎ ± {scenario.estimatedMinutes ?? 12} menit</li>
-                  <li>✎ peran: {directionLabel}</li>
-                </ul>
-                <div className="mx-auto mt-2 flex justify-center gap-1" aria-hidden>
-                  <span className="h-1 w-1 rounded-full bg-[#ffce8a]" />
-                  <span className="h-1 w-1 rounded-full bg-[#ffce8a]" />
-                  <span className="h-1 w-1 rounded-full bg-[#ffce8a]" />
-                </div>
-              </div>
-              <button type="button" onClick={masukKedai} disabled={membuka} className="tombol-sorot">
-                <DoorOpen aria-hidden className="h-5 w-5" />
-                {membuka ? 'Membuka pintu…' : 'Buka pintu & masuk'}
-              </button>
-            </div>
-          }
+          aksen="#d9a521"
         />
       </main>
     )
@@ -220,6 +209,16 @@ export function KedaiKopiFlow() {
     return (
       <main className="kk-interior flex min-h-dvh flex-col">
         {kepala}
+        {tirai ? (
+          <TiraiSelesai
+            judul="Pesananmu tuntas!"
+            pesan="Kamu menyelesaikan satu percakapan penuh di kedai kopi."
+            dikuasai={dikuasai.length}
+            menit={Math.max(1, Math.round(summary.durationMs / 60000))}
+            onSelesai={() => setTirai(false)}
+            aksen="#d9a521"
+          />
+        ) : null}
         <SceneStruk
           pesanan={pesanan}
           dikuasai={dikuasai}
@@ -231,6 +230,7 @@ export function KedaiKopiFlow() {
             startedAtRef.current = Date.now()
             setPesanan(null)
             setMembuka(false)
+            setTirai(false)
             setLearnView('demo')
             setTahap('luar')
             forceUpdate()
@@ -261,6 +261,7 @@ export function KedaiKopiFlow() {
               sign={currentSignId ? content.signs[currentSignId] : undefined}
               compiled={currentSignId ? getCompiled(currentSignId) : null}
               learnView={learnView}
+              direction={direction}
               directionLabel={directionLabel}
               onGantiView={setLearnView}
               onLulus={() => {

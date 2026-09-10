@@ -4,7 +4,9 @@ import { Stethoscope } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
+import { LatihanBaca } from '@/components/latihan-baca'
 import { PracticeBlock } from '@/components/practice-block'
+import type { Direction } from '@/features/scenario/engine'
 import {
   JamDinding,
   KursiTunggu,
@@ -20,7 +22,10 @@ export function AmbienRuangTunggu({ children }: { children: React.ReactNode }) {
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
         <JamDinding className="absolute left-[4%] top-2 w-10 opacity-80 sm:w-12" />
         <KursiTunggu className="absolute bottom-0 left-[2%] w-52 opacity-45 lg:w-64" />
-        <PosterKesehatan varian="cuci-tangan" className="absolute right-[3%] top-4 hidden w-16 rotate-1 opacity-80 xl:block" />
+        <PosterKesehatan
+          varian="cuci-tangan"
+          className="absolute right-[3%] top-4 hidden w-16 rotate-1 opacity-80 xl:block"
+        />
       </div>
       <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-5 px-4 pb-12 pt-2 sm:px-6">
         {children}
@@ -66,6 +71,7 @@ export function SceneBelajarPuskesmas({
   sign,
   compiled,
   tampilan,
+  direction,
   percobaan,
   gagalBeruntun,
   arahLabel,
@@ -82,6 +88,7 @@ export function SceneBelajarPuskesmas({
   sign: Sign | undefined
   compiled: CompiledSign | null
   tampilan: 'demo' | 'praktik'
+  direction: Direction
   percobaan: number
   gagalBeruntun: number
   arahLabel: string
@@ -169,7 +176,13 @@ export function SceneBelajarPuskesmas({
                       width="5"
                       height="16"
                       rx="2"
-                      fill={index < orderIndex ? '#2f7d52' : index === orderIndex ? '#d9a521' : '#dde6dd'}
+                      fill={
+                        index < orderIndex
+                          ? '#2f7d52'
+                          : index === orderIndex
+                            ? '#d9a521'
+                            : '#dde6dd'
+                      }
                     />
                     <rect
                       x="2"
@@ -177,7 +190,13 @@ export function SceneBelajarPuskesmas({
                       width="16"
                       height="5"
                       rx="2"
-                      fill={index < orderIndex ? '#2f7d52' : index === orderIndex ? '#d9a521' : '#dde6dd'}
+                      fill={
+                        index < orderIndex
+                          ? '#2f7d52'
+                          : index === orderIndex
+                            ? '#d9a521'
+                            : '#dde6dd'
+                      }
                     />
                   </svg>
                 ))}
@@ -190,10 +209,11 @@ export function SceneBelajarPuskesmas({
               <div className="kk-muncul flex flex-col gap-4">
                 <AvatarStage
                   compiled={compiled}
+                  sign={sign}
                   showControls
                   signLabel={sign.gloss.id}
                   stageClassName="bg-zona-tenang zona-tenang-gradasi overflow-hidden rounded-3xl border-4 border-[#c4dcca] shadow-[0_24px_50px_-20px_rgba(29,68,47,0.4)]"
-                  className="h-[52vh] min-h-88 sm:h-[58vh]"
+                  className="min-h-88 h-[52vh] sm:h-[58vh]"
                 />
                 <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-stretch">
                   <div className="rounded-2xl border-2 border-[#c4dcca] bg-white p-4 shadow-lg">
@@ -219,13 +239,26 @@ export function SceneBelajarPuskesmas({
               </div>
             ) : (
               <div className="kk-muncul flex flex-col gap-4 rounded-3xl border-2 border-[#c4dcca] bg-white p-4 shadow-xl sm:p-5">
-                <PracticeBlock
-                  compiled={compiled}
-                  signLabel={sign.gloss.id}
-                  onPassed={onLulus}
-                  onFailedAttempt={onGagal}
-                  onSelfAssessed={onNilaiSendiri}
-                />
+                {direction === 'service' ? (
+                  <LatihanBaca
+                    compiled={compiled}
+                    sign={sign}
+                    signId={isyaratAktif}
+                    kandidat={urutan}
+                    onLulus={onLulus}
+                    onGagal={onGagal}
+                    onLewati={onNilaiSendiri}
+                  />
+                ) : (
+                  <PracticeBlock
+                    compiled={compiled}
+                    sign={sign}
+                    signLabel={sign.gloss.id}
+                    onPassed={onLulus}
+                    onFailedAttempt={onGagal}
+                    onSelfAssessed={onNilaiSendiri}
+                  />
+                )}
                 <div className="flex flex-wrap items-center gap-3">
                   <button
                     type="button"

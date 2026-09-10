@@ -25,24 +25,39 @@ export function CompiledAvatar({
   playbackRef,
   timeEl,
   sliderEl,
+  sudut,
   onRigReady,
   onRigError,
 }: {
   playbackRef: RefObject<Playback>
   timeEl: RefObject<HTMLSpanElement | null>
   sliderEl: RefObject<HTMLInputElement | null>
+  sudut?: readonly [number, number, number]
   onRigReady: (rig: CompilerRig) => void
   onRigError: (message: string) => void
 }) {
   const [avatar, setAvatar] = useState<AvatarRig | null>(null)
   const { camera, gl } = useThree()
+  const controlsRef = useRef<OrbitControls | null>(null)
 
   useEffect(() => {
     const controls = new OrbitControls(camera, gl.domElement)
     controls.target.set(0, 1.25, 0)
     controls.update()
-    return () => controls.dispose()
+    controlsRef.current = controls
+    return () => {
+      controlsRef.current = null
+      controls.dispose()
+    }
   }, [camera, gl])
+
+  useEffect(() => {
+    if (!sudut) return
+    camera.position.set(sudut[0], sudut[1], sudut[2])
+    const controls = controlsRef.current
+    if (controls) controls.update()
+    else camera.lookAt(0, 1.25, 0)
+  }, [camera, sudut])
 
   useEffect(() => {
     let cancelled = false

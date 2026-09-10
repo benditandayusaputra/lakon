@@ -1,5 +1,7 @@
 'use client'
 
+import { useAsalZoom } from '@/features/ui/use-asal-zoom'
+
 import type { ReactNode } from 'react'
 import { Siren } from 'lucide-react'
 import {
@@ -103,6 +105,7 @@ function PintuPos({ membuka, onMasuk }: { membuka: boolean; onMasuk: () => void 
       onClick={onMasuk}
       disabled={membuka}
       aria-label="Buka pintu dan masuk ke pos siaga"
+      data-pintu
       className="dr-jalan-pintu group relative z-20 block w-28 cursor-pointer rounded-t-[10px] sm:w-40"
     >
       <span className="relative block h-52 overflow-hidden rounded-t-[10px] border-4 border-[#33465a] bg-[#1f2d3a] sm:h-64">
@@ -156,13 +159,15 @@ export function SceneLuar({
   onMasuk: () => void
   papanInfo: ReactNode
 }) {
+  const zoomRef = useAsalZoom(!membuka)
+
   return (
     <div className={`relative flex flex-1 flex-col overflow-hidden ${membuka ? 'dr-membuka' : ''}`}>
       <LangitSiang />
 
       <div
+        ref={zoomRef}
         className="dr-fasad-zoom relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-end px-3 sm:px-6"
-        style={{ transformOrigin: '50% 72%' }}
       >
         <div className="relative z-10 mx-auto flex w-[92%] items-end justify-center">
           <LampuSirene className="relative z-10 -mb-1 w-16 sm:w-20" />

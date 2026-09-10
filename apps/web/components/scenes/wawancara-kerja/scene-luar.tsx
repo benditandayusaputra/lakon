@@ -1,5 +1,7 @@
 'use client'
 
+import { useAsalZoom } from '@/features/ui/use-asal-zoom'
+
 import type { ReactNode } from 'react'
 import {
   AwanPagi,
@@ -138,6 +140,7 @@ function PintuKedai({ membuka, onMasuk }: { membuka: boolean; onMasuk: () => voi
       onClick={onMasuk}
       disabled={membuka}
       aria-label="Buka pintu dan masuk ke kedai untuk wawancara"
+      data-pintu
       className="wk-jalan-pintu group relative z-20 block w-32 cursor-pointer rounded-t-[10px] sm:w-40"
     >
       <LoncengPintu className="absolute -top-1 right-1.5 z-30 w-5 sm:w-6" />
@@ -209,13 +212,15 @@ export function SceneLuar({
   papanInfo: ReactNode
   tombol: ReactNode
 }) {
+  const zoomRef = useAsalZoom(!membuka)
+
   return (
     <div className={`relative flex flex-1 flex-col overflow-hidden ${membuka ? 'wk-membuka' : ''}`}>
       <LangitPagi />
 
       <div
+        ref={zoomRef}
         className="wk-fasad-zoom relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-end px-3 sm:px-6"
-        style={{ transformOrigin: '50% 72%' }}
       >
         <div className="wk-kayu-tua relative z-10 -mb-1 h-3 rounded-t-md" aria-hidden />
         <div className="wk-dinding-luar relative z-10 rounded-t-lg px-[4%] pt-5 shadow-[0_-10px_40px_rgba(69,52,25,0.18)] sm:pt-7">
@@ -266,7 +271,7 @@ export function SceneLuar({
           <TanamanPot className="pointer-events-none absolute bottom-4 left-[4%] hidden w-16 lg:block" />
           <TanamanPot className="pointer-events-none absolute bottom-4 left-[11%] hidden w-11 xl:block" />
           <Sepeda className="pointer-events-none absolute bottom-4 right-[3%] hidden w-36 opacity-90 lg:block" />
-          <PapanA>{papanInfo}</PapanA>
+          {papanInfo ? <PapanA>{papanInfo}</PapanA> : null}
           {tombol}
         </div>
         <div

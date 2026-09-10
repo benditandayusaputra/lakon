@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { ArrowLeft, BadgeCheck, Briefcase, Coffee, DoorOpen } from 'lucide-react'
+import { ArrowLeft, BadgeCheck, Coffee } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
+import { LANGKAH_PEMBUKA, PembukaAdegan } from '@/components/scenes/pembuka'
+import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
 import { useCompilerRig } from '@/features/avatar/use-rig'
 import { useContent } from '@/features/content/use-content'
@@ -22,7 +24,7 @@ import { SceneBelajar } from './scene-belajar'
 import { SceneHasil } from './scene-hasil'
 import { SceneLuar } from './scene-luar'
 import { SceneWawancara } from './scene-wawancara'
-import { JAM_WAWANCARA, type MenuTes, type TahapWawancara } from './types'
+import { type MenuTes, type TahapWawancara } from './types'
 import './wawancara-kerja.css'
 
 function HiasanAtas() {
@@ -46,6 +48,7 @@ export function WawancaraKerjaFlow() {
 
   const [tahap, setTahap] = useState<TahapWawancara>('luar')
   const [membuka, setMembuka] = useState(false)
+  const [tirai, setTirai] = useState(false)
   const { rig, error: rigError } = useCompilerRig(tahap !== 'luar')
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [pilihanMenu, setPilihanMenu] = useState<MenuTes | null>(null)
@@ -167,6 +170,8 @@ export function WawancaraKerjaFlow() {
       needsRepeat: summary.needsRepeat,
       completedAt: Date.now(),
     })
+    setTirai(true)
+
     setTahap('hasil')
   }
 
@@ -201,43 +206,19 @@ export function WawancaraKerjaFlow() {
     return (
       <main className="wk-langit flex min-h-dvh flex-col">
         {kepala}
-        <SceneLuar
+        <SceneLuar membuka={membuka} onMasuk={masukKedai} papanInfo={null} tombol={null} />
+        <PembukaAdegan
+          judul={scenario.title.id}
+          peran={directionLabel}
+          menit={scenario.estimatedMinutes ?? 15}
+          jumlahIsyarat={learning.order().length}
+          ringkasPercakapan="wawancara lengkap"
+          langkah={LANGKAH_PEMBUKA[direction]}
+          aksiLabel="Buka pintu & masuk"
+          aksiLabelMembuka="Membuka pintu…"
+          onMulai={masukKedai}
           membuka={membuka}
-          onMasuk={masukKedai}
-          papanInfo={
-            <>
-              <p className="wk-font-kapur flex items-center justify-center gap-2 text-center text-base text-[#ffce8a]">
-                <Briefcase aria-hidden className="h-4 w-4" />
-                Wawancara barista · {JAM_WAWANCARA}
-              </p>
-              <p className="wk-font-kapur mt-1 text-center text-xl leading-tight text-[#ece7d6]">
-                {scenario.title.id}
-              </p>
-              <div className="mx-auto my-2 h-px w-20 bg-[#ece7d6]/40" />
-              <ul className="wk-font-kapur space-y-0.5 text-base text-[#d9d3bd]">
-                <li>✎ {learning.order().length} isyarat baru</li>
-                <li>✎ 1 wawancara lengkap</li>
-                <li>✎ ± {scenario.estimatedMinutes ?? 15} menit</li>
-                <li>✎ peran: {directionLabel}</li>
-              </ul>
-              <div className="mx-auto mt-2 flex justify-center gap-1" aria-hidden>
-                <span className="h-1 w-1 rounded-full bg-[#ffce8a]" />
-                <span className="h-1 w-1 rounded-full bg-[#ffce8a]" />
-                <span className="h-1 w-1 rounded-full bg-[#ffce8a]" />
-              </div>
-            </>
-          }
-          tombol={
-            <button
-              type="button"
-              onClick={masukKedai}
-              disabled={membuka}
-              className="tombol-sorot relative z-10"
-            >
-              <DoorOpen aria-hidden className="h-5 w-5" />
-              {membuka ? 'Membuka pintu…' : 'Buka pintu & masuk'}
-            </button>
-          }
+          aksen="#e0b98a"
         />
       </main>
     )
@@ -254,6 +235,16 @@ export function WawancaraKerjaFlow() {
     return (
       <main className="wk-interior flex min-h-dvh flex-col">
         {kepala}
+        {tirai ? (
+          <TiraiSelesai
+            judul="Wawancaramu selesai!"
+            pesan="Kamu menjalani satu wawancara kerja penuh tanpa juru bahasa."
+            dikuasai={dikuasai.length}
+            menit={Math.max(1, Math.round(summary.durationMs / 60000))}
+            onSelesai={() => setTirai(false)}
+            aksen="#e0b98a"
+          />
+        ) : null}
         <HiasanAtas />
         <SceneHasil
           nama={namaPelamar}
@@ -267,6 +258,7 @@ export function WawancaraKerjaFlow() {
             startedAtRef.current = Date.now()
             setPilihanMenu(null)
             setMembuka(false)
+            setTirai(false)
             setLearnView('demo')
             setTahap('luar')
             forceUpdate()
@@ -297,6 +289,7 @@ export function WawancaraKerjaFlow() {
               sign={currentSignId ? content.signs[currentSignId] : undefined}
               compiled={currentSignId ? getCompiled(currentSignId) : null}
               learnView={learnView}
+              direction={direction}
               directionLabel={directionLabel}
               onGantiView={setLearnView}
               onLulus={() => {

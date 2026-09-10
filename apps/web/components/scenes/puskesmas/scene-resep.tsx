@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CheckCircle2, Clock3, RotateCcw } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Clock3, RotateCcw } from 'lucide-react'
 
 const prettify = (id: string) => id.replace(/-/g, ' ')
 
@@ -115,14 +115,18 @@ export function SceneResepPuskesmas({
         </div>
       </div>
 
-      <div className="kk-muncul z-10 mt-8 flex flex-wrap justify-center gap-3" style={{ animationDelay: '160ms' }}>
-        <button type="button" onClick={onUlangi} className="pk-tombol">
-          <RotateCcw aria-hidden className="mr-2 inline h-4 w-4" />
+      <div
+        className="kk-muncul z-10 mt-8 flex flex-wrap justify-center gap-3"
+        style={{ animationDelay: '160ms' }}
+      >
+        <Link href="/skenario" className="pk-tombol">
+          <ArrowLeft aria-hidden className="h-4 w-4" />
+          Kembali ke skenario
+        </Link>
+        <button type="button" onClick={onUlangi} className="tombol-sekunder bg-white">
+          <RotateCcw aria-hidden className="h-4 w-4" />
           Ulangi kunjungan
         </button>
-        <Link href="/skenario" className="tombol-sekunder bg-white">
-          Skenario lain
-        </Link>
       </div>
     </div>
   )

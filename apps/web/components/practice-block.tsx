@@ -8,6 +8,7 @@ import {
   type Verdict,
 } from '@lakon/cv-core'
 import type { CompiledSign } from '@lakon/sign-compiler'
+import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
 import { createPipeline, type Pipeline, type PipelineState } from '@/features/practice/pipeline'
 import type { OverlayHighlight } from '@/features/practice/overlay'
@@ -32,8 +33,11 @@ export type PracticePhase =
 
 const DTW_THRESHOLD = 7
 
+export const PERAGA_SETELAH_GAGAL = 3
+
 export function PracticeBlock({
   compiled,
+  sign,
   signLabel,
   onPassed,
   onFailedAttempt,
@@ -41,6 +45,7 @@ export function PracticeBlock({
   compact = false,
 }: {
   compiled: CompiledSign
+  sign?: Sign
   signLabel: string
   onPassed?: (verdict: Verdict, result: VerifyResult) => void
   onFailedAttempt?: (result: VerifyResult) => void
@@ -60,6 +65,7 @@ export function PracticeBlock({
   const [result, setResult] = useState<VerifyResult | null>(null)
   const [verdict, setVerdict] = useState<Verdict | null>(null)
   const [failures, setFailures] = useState(0)
+  const [peragaTampil, setPeragaTampil] = useState(false)
 
   useEffect(() => {
     setPhase((current) =>
@@ -68,7 +74,16 @@ export function PracticeBlock({
     setFailures(0)
     setResult(null)
     setVerdict(null)
+    setPeragaTampil(false)
   }, [compiled.id])
+
+  useEffect(() => {
+    if (failures >= PERAGA_SETELAH_GAGAL) setPeragaTampil(true)
+  }, [failures])
+
+  useEffect(() => {
+    if (phase === 'jalan-keluar') setPeragaTampil(true)
+  }, [phase])
 
   useEffect(() => {
     const video = videoRef.current
@@ -194,16 +209,45 @@ export function PracticeBlock({
   const showEscape = failures >= 3 || phase === 'jalan-keluar'
   const cameraRunning = pipelineState.status === 'running'
 
+  const peragaWajib = failures >= PERAGA_SETELAH_GAGAL
+
   return (
     <div className="flex flex-col gap-4">
-      <div className={`grid gap-3 ${compact ? '' : 'lg:grid-cols-2'}`}>
-        <div className="bg-zona-tenang zona-tenang-gradasi aspect-4/3 relative w-full overflow-hidden rounded-2xl">
-          <AvatarStage compiled={compiled} className="absolute inset-0" mirrorDefault />
-          <p className="text-halaman absolute bottom-3 left-3 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
-            peraga: {signLabel}
-          </p>
-        </div>
-        <div className="bg-zona-tenang aspect-4/3 relative w-full overflow-hidden rounded-2xl">
+      <div className="flex flex-wrap items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setPeragaTampil((value) => !value)}
+          aria-pressed={peragaTampil}
+          className="tombol-sekunder"
+        >
+          {peragaTampil ? 'Sembunyikan peragaan' : 'Tampilkan peragaan'}
+        </button>
+        <p className="text-teks-sekunder text-sm">
+          {peragaWajib
+            ? `Sudah ${failures}× gagal, peragaan dibuka supaya bisa kamu tiru.`
+            : peragaTampil
+              ? 'Peragaan terbuka. Sembunyikan lagi kalau mau menguji ingatanmu.'
+              : 'Peragaan disembunyikan supaya kamu mengingat sendiri dulu.'}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {peragaTampil ? (
+          <div className="bg-zona-tenang zona-tenang-gradasi w-full overflow-hidden rounded-2xl">
+            <AvatarStage
+              compiled={compiled}
+              sign={sign}
+              showControls
+              signLabel={signLabel}
+              className="h-[46vh] min-h-72 sm:h-[54vh]"
+            />
+          </div>
+        ) : null}
+        <div
+          className={`bg-zona-tenang relative w-full overflow-hidden rounded-2xl ${
+            peragaTampil || compact ? 'aspect-4/3' : 'aspect-video'
+          }`}
+        >
           <video
             ref={videoRef}
             className="absolute inset-0 h-full w-full -scale-x-100 object-cover"
@@ -345,8 +389,8 @@ export function PracticeBlock({
           <div className="border-border-tegas flex flex-col gap-2 rounded-xl border-2 p-4">
             <p className="font-bold">Bandingkan sendiri</p>
             <p className="text-sm">
-              Perhatikan peraga di kanan{cameraRunning ? ' dan pratinjaumu di kiri' : ''}. Kamu yang
-              menilai. Ini cara belajar yang sah, bukan menyerah.
+              Perhatikan peraga di atas{cameraRunning ? ' dan pratinjaumu di bawahnya' : ''}. Kamu
+              yang menilai. Ini cara belajar yang sah, bukan menyerah.
             </p>
             <div className="flex flex-wrap gap-3">
               <button type="button" onClick={selfAssess} className="tombol-utama">

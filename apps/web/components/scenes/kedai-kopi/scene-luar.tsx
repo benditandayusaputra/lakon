@@ -1,5 +1,7 @@
 'use client'
 
+import { useAsalZoom } from '@/features/ui/use-asal-zoom'
+
 import type { ReactNode } from 'react'
 import { LampuGantung, LampuTali, LoncengPintu, Sepeda, TanamanPot, Uap } from './props'
 
@@ -32,7 +34,7 @@ function BintangLangit() {
         <span className="absolute left-[22%] top-[30%] h-3 w-3 rounded-full bg-[#e3c493] opacity-70" />
         <span className="absolute left-[55%] top-[55%] h-2 w-2 rounded-full bg-[#e3c493] opacity-60" />
       </span>
-      <span className="kk-awan absolute left-[12%] top-[14%] h-8 w-40 rounded-full bg-[#e3c493]/12 blur-md" />
+      <span className="kk-awan bg-[#e3c493]/12 absolute left-[12%] top-[14%] h-8 w-40 rounded-full blur-md" />
       <span
         className="kk-awan absolute left-[52%] top-[24%] h-6 w-52 rounded-full bg-[#e3c493]/10 blur-md"
         style={{ animationDelay: '-18s' }}
@@ -83,12 +85,34 @@ function JendelaKedai({ sisi }: { sisi: 'kiri' | 'kanan' }) {
         <svg viewBox="0 0 120 90" className="absolute inset-x-0 bottom-0 w-full opacity-80">
           <circle cx="34" cy="38" r="11" fill="#3d2412" />
           <path d="M23 48 q11 -8 22 0 l3 26 h-28 Z" fill="#3d2412" />
-          <path d="M45 52 q9 -8 12 -18" stroke="#3d2412" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <path d="M56 32 l-2 -6 M60 34 l1 -7 M63 38 l4 -5" stroke="#3d2412" strokeWidth="3" strokeLinecap="round" />
+          <path
+            d="M45 52 q9 -8 12 -18"
+            stroke="#3d2412"
+            strokeWidth="5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M56 32 l-2 -6 M60 34 l1 -7 M63 38 l4 -5"
+            stroke="#3d2412"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
           <circle cx="88" cy="40" r="11" fill="#3d2412" />
           <path d="M77 50 q11 -8 22 0 l3 24 h-28 Z" fill="#3d2412" />
-          <path d="M77 54 q-8 -6 -10 -16" stroke="#3d2412" strokeWidth="5" strokeLinecap="round" fill="none" />
-          <path d="M64 36 l2 -6 M60 40 l-2 -6" stroke="#3d2412" strokeWidth="3" strokeLinecap="round" />
+          <path
+            d="M77 54 q-8 -6 -10 -16"
+            stroke="#3d2412"
+            strokeWidth="5"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            d="M64 36 l2 -6 M60 40 l-2 -6"
+            stroke="#3d2412"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
           <rect x="48" y="70" width="28" height="6" rx="2" fill="#2b1a0e" />
           <path d="M58 62 h8 l-1.5 8 h-5 Z" fill="#2b1a0e" />
         </svg>
@@ -97,7 +121,13 @@ function JendelaKedai({ sisi }: { sisi: 'kiri' | 'kanan' }) {
           <rect x="12" y="66" width="96" height="7" rx="2" fill="#241811" />
           <path d="M30 44 h30 l-3 22 h-24 Z" fill="#241811" />
           <path d="M70 50 h20 l-2 16 h-16 Z" fill="#241811" />
-          <path d="M40 36 q4 -8 12 -6" stroke="#241811" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+          <path
+            d="M40 36 q4 -8 12 -6"
+            stroke="#241811"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            fill="none"
+          />
         </svg>
       )}
       <div className="absolute inset-x-0 top-1/2 h-1 bg-[#2b1a0e]/70" />
@@ -116,6 +146,7 @@ function PintuKedai({ membuka, onMasuk }: { membuka: boolean; onMasuk: () => voi
       onClick={onMasuk}
       disabled={membuka}
       aria-label="Buka pintu dan masuk ke kedai"
+      data-pintu
       className="kk-jalan-pintu group relative z-20 block w-32 cursor-pointer rounded-t-[14px] sm:w-40"
     >
       <LoncengPintu className="absolute -top-1 right-1.5 z-30 w-5 sm:w-6" />
@@ -171,13 +202,15 @@ export function SceneLuar({
   onMasuk: () => void
   papanInfo: ReactNode
 }) {
+  const zoomRef = useAsalZoom(!membuka)
+
   return (
     <div className={`relative flex flex-1 flex-col overflow-hidden ${membuka ? 'kk-membuka' : ''}`}>
       <BintangLangit />
 
       <div
+        ref={zoomRef}
         className="kk-fasad-zoom relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-end px-3 sm:px-6"
-        style={{ transformOrigin: '50% 72%' }}
       >
         <LampuTali className="relative z-10 -mb-1 h-6 w-full" />
         <div className="kk-bata relative z-10 rounded-t-lg px-[4%] pt-5 shadow-[0_-10px_40px_rgba(0,0,0,0.3)] sm:pt-7">

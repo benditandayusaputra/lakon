@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { ArrowLeft, ClipboardCheck, DoorOpen, Siren } from 'lucide-react'
+import { ArrowLeft, ClipboardCheck, Siren } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
+import { LANGKAH_PEMBUKA, PembukaAdegan } from '@/components/scenes/pembuka'
+import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
 import { useCompilerRig } from '@/features/avatar/use-rig'
 import { useContent } from '@/features/content/use-content'
@@ -34,6 +36,7 @@ export function DaruratFlow() {
 
   const [tahap, setTahap] = useState<TahapDarurat>('luar')
   const [membuka, setMembuka] = useState(false)
+  const [tirai, setTirai] = useState(false)
   const { rig, error: rigError } = useCompilerRig(tahap !== 'luar')
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [laporan, setLaporan] = useState<Laporan>(LAPORAN_KOSONG)
@@ -141,6 +144,8 @@ export function DaruratFlow() {
       needsRepeat: summary.needsRepeat,
       completedAt: Date.now(),
     })
+    setTirai(true)
+
     setTahap('laporan')
   }
 
@@ -175,37 +180,19 @@ export function DaruratFlow() {
     return (
       <main className="dr-langit flex min-h-dvh flex-col">
         {kepala}
-        <SceneLuar
+        <SceneLuar membuka={membuka} onMasuk={masukPos} papanInfo={null} />
+        <PembukaAdegan
+          judul={scenario.title.id}
+          peran={directionLabel}
+          menit={scenario.estimatedMinutes ?? 12}
+          jumlahIsyarat={learning.order().length}
+          ringkasPercakapan="percakapan lengkap"
+          langkah={LANGKAH_PEMBUKA[direction]}
+          aksiLabel="Buka pintu & masuk"
+          aksiLabelMembuka="Membuka pintu…"
+          onMulai={masukPos}
           membuka={membuka}
-          onMasuk={masukPos}
-          papanInfo={
-            <div className="relative z-10 flex flex-col items-center gap-3 sm:flex-row sm:items-end sm:gap-8">
-              <div className="dr-papan-info w-60 -rotate-2 rounded-lg p-4 shadow-xl">
-                <p className="flex items-center justify-center gap-1.5 text-[10px] font-black uppercase tracking-[0.3em] text-[#33465a]">
-                  <Siren aria-hidden className="h-3.5 w-3.5" /> papan info pos
-                </p>
-                <p className="kk-font-kapur mt-1 text-center text-xl leading-tight text-[#1f2d3a]">
-                  {scenario.title.id}
-                </p>
-                <div className="mx-auto my-2 h-px w-20 bg-[#33465a]/30" />
-                <ul className="kk-font-kapur space-y-0.5 text-base text-[#33465a]">
-                  <li>✎ {learning.order().length} isyarat baru</li>
-                  <li>✎ 1 percakapan lengkap</li>
-                  <li>✎ ± {scenario.estimatedMinutes ?? 12} menit</li>
-                  <li>✎ peran: {directionLabel}</li>
-                </ul>
-                <div className="mx-auto mt-2 flex justify-center gap-1" aria-hidden>
-                  <span className="h-1 w-1 rounded-full bg-[#c8553d]" />
-                  <span className="h-1 w-1 rounded-full bg-[#f2a93b]" />
-                  <span className="h-1 w-1 rounded-full bg-[#3e8e5e]" />
-                </div>
-              </div>
-              <button type="button" onClick={masukPos} disabled={membuka} className="dr-tombol">
-                <DoorOpen aria-hidden className="h-5 w-5" />
-                {membuka ? 'Membuka pintu…' : 'Buka pintu & masuk'}
-              </button>
-            </div>
-          }
+          aksen="#f2a93b"
         />
       </main>
     )
@@ -222,6 +209,16 @@ export function DaruratFlow() {
     return (
       <main className="dr-ruang flex min-h-dvh flex-col">
         {kepala}
+        {tirai ? (
+          <TiraiSelesai
+            judul="Laporanmu diterima!"
+            pesan="Kamu menyampaikan satu laporan darurat sampai lengkap."
+            dikuasai={dikuasai.length}
+            menit={Math.max(1, Math.round(summary.durationMs / 60000))}
+            onSelesai={() => setTirai(false)}
+            aksen="#f2a93b"
+          />
+        ) : null}
         <SceneLaporan
           laporan={laporan}
           dikuasai={dikuasai}
@@ -233,6 +230,7 @@ export function DaruratFlow() {
             startedAtRef.current = Date.now()
             setLaporan(LAPORAN_KOSONG)
             setMembuka(false)
+            setTirai(false)
             setLearnView('demo')
             setTahap('luar')
             forceUpdate()
@@ -263,6 +261,7 @@ export function DaruratFlow() {
               sign={currentSignId ? content.signs[currentSignId] : undefined}
               compiled={currentSignId ? getCompiled(currentSignId) : null}
               learnView={learnView}
+              direction={direction}
               directionLabel={directionLabel}
               onGantiView={setLearnView}
               onLulus={() => {

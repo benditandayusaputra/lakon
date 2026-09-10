@@ -1,5 +1,7 @@
 'use client'
 
+import { useAsalZoom } from '@/features/ui/use-asal-zoom'
+
 import type { ReactNode } from 'react'
 import { AwanPutih, BangkuTunggu, BusKota, Matahari, PapanLed, TiangRambu } from './props'
 
@@ -111,6 +113,7 @@ function PintuGeser({ membuka, onMasuk }: { membuka: boolean; onMasuk: () => voi
       onClick={onMasuk}
       disabled={membuka}
       aria-label="Buka pintu geser dan masuk ke halte"
+      data-pintu
       className="tp-jalan-pintu group relative z-20 block w-36 sm:w-44"
     >
       <span className="relative block h-52 overflow-hidden rounded-t-md border-4 border-[#1c3a55] bg-[#0d1f2e] sm:h-64">
@@ -162,13 +165,15 @@ export function SceneLuar({
   onMasuk: () => void
   papanInfo: ReactNode
 }) {
+  const zoomRef = useAsalZoom(!membuka)
+
   return (
     <div className={`relative flex flex-1 flex-col overflow-hidden ${membuka ? 'tp-membuka' : ''}`}>
       <LangitSiang />
 
       <div
+        ref={zoomRef}
         className="tp-fasad-zoom relative z-10 mx-auto flex w-full max-w-3xl flex-1 flex-col justify-end px-3 sm:px-6"
-        style={{ transformOrigin: '50% 72%' }}
       >
         <div className="tp-halte relative z-10 rounded-t-xl px-[4%] pt-5 shadow-[0_-10px_40px_rgba(28,58,85,0.25)] sm:pt-6">
           <div className="mx-auto w-fit rounded-lg border-2 border-[#12283c] bg-[#1c3a55] px-5 py-2.5 shadow-[0_6px_20px_rgba(13,31,46,0.4)] sm:px-8 sm:py-3.5">

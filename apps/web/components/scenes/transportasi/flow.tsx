@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { ArrowLeft, Bus, DoorOpen, Ticket } from 'lucide-react'
+import { ArrowLeft, Bus, Ticket } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
+import { LANGKAH_PEMBUKA, PembukaAdegan } from '@/components/scenes/pembuka'
+import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
 import { useCompilerRig } from '@/features/avatar/use-rig'
 import { useContent } from '@/features/content/use-content'
@@ -33,6 +35,7 @@ export function TransportasiFlow() {
 
   const [tahap, setTahap] = useState<TahapTransportasi>('luar')
   const [membuka, setMembuka] = useState(false)
+  const [tirai, setTirai] = useState(false)
   const { rig, error: rigError } = useCompilerRig(tahap !== 'luar')
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [, forceUpdate] = useReducer((tick: number) => tick + 1, 0)
@@ -139,6 +142,8 @@ export function TransportasiFlow() {
       needsRepeat: summary.needsRepeat,
       completedAt: Date.now(),
     })
+    setTirai(true)
+
     setTahap('tiket')
   }
 
@@ -173,44 +178,19 @@ export function TransportasiFlow() {
     return (
       <main className="tp-langit-siang flex min-h-dvh flex-col">
         {kepala}
-        <SceneLuar
+        <SceneLuar membuka={membuka} onMasuk={masukHalte} papanInfo={null} />
+        <PembukaAdegan
+          judul={scenario.title.id}
+          peran={directionLabel}
+          menit={scenario.estimatedMinutes ?? 15}
+          jumlahIsyarat={learning.order().length}
+          ringkasPercakapan="percakapan lengkap"
+          langkah={LANGKAH_PEMBUKA[direction]}
+          aksiLabel="Buka pintu & masuk"
+          aksiLabelMembuka="Membuka pintu…"
+          onMulai={masukHalte}
           membuka={membuka}
-          onMasuk={masukHalte}
-          papanInfo={
-            <div className="relative z-10 flex flex-col items-center gap-3 sm:flex-row sm:items-end sm:gap-8">
-              <div className="w-64 -rotate-1 rounded-lg border-4 border-[#1c3a55] bg-[#f4f8fb] p-4 shadow-xl">
-                <p className="flex items-center justify-center gap-2 text-center text-[10px] font-black uppercase tracking-[0.2em] text-[#1c3a55]">
-                  <Bus aria-hidden className="h-3.5 w-3.5" />
-                  Info perjalanan
-                </p>
-                <p className="font-display mt-1.5 text-center text-lg font-bold leading-tight text-[#12283c]">
-                  {scenario.title.id}
-                </p>
-                <div className="mx-auto my-2 h-px w-20 bg-[#8fb4d8]" />
-                <ul className="space-y-1 text-sm font-bold text-[#26496b]">
-                  <li className="flex items-center gap-2">
-                    <Ticket aria-hidden className="h-3.5 w-3.5 shrink-0" />
-                    {learning.order().length} isyarat baru
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Ticket aria-hidden className="h-3.5 w-3.5 shrink-0" />1 percakapan lengkap
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Ticket aria-hidden className="h-3.5 w-3.5 shrink-0" />±{' '}
-                    {scenario.estimatedMinutes ?? 15} menit
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <Ticket aria-hidden className="h-3.5 w-3.5 shrink-0" />
-                    peran: {directionLabel}
-                  </li>
-                </ul>
-              </div>
-              <button type="button" onClick={masukHalte} disabled={membuka} className="tp-tombol">
-                <DoorOpen aria-hidden className="h-5 w-5" />
-                {membuka ? 'Membuka pintu…' : 'Buka pintu & masuk'}
-              </button>
-            </div>
-          }
+          aksen="#f2b23e"
         />
       </main>
     )
@@ -227,6 +207,16 @@ export function TransportasiFlow() {
     return (
       <main className="tp-ruang flex min-h-dvh flex-col">
         {kepala}
+        {tirai ? (
+          <TiraiSelesai
+            judul="Tiketmu di tangan!"
+            pesan="Kamu menyelesaikan satu perjalanan dari loket sampai peron."
+            dikuasai={dikuasai.length}
+            menit={Math.max(1, Math.round(summary.durationMs / 60000))}
+            onSelesai={() => setTirai(false)}
+            aksen="#f2b23e"
+          />
+        ) : null}
         <SceneTiket
           dikuasai={dikuasai}
           perluUlang={perluUlang}
@@ -236,6 +226,7 @@ export function TransportasiFlow() {
             engine.reset()
             startedAtRef.current = Date.now()
             setMembuka(false)
+            setTirai(false)
             setLearnView('demo')
             setTahap('luar')
             forceUpdate()
@@ -269,6 +260,7 @@ export function TransportasiFlow() {
               sign={currentSignId ? content.signs[currentSignId] : undefined}
               compiled={currentSignId ? getCompiled(currentSignId) : null}
               learnView={learnView}
+              direction={direction}
               directionLabel={directionLabel}
               onGantiView={setLearnView}
               onLulus={() => {

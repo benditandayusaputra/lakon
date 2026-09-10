@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CheckCircle2, Clock3, Coffee, RotateCcw } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Clock3, Coffee, RotateCcw } from 'lucide-react'
 import { LampuTali } from './props'
 import { MENU_UTAMA, prettify, rupiah, type MenuKedai } from './types'
 
@@ -31,8 +31,14 @@ export function SceneStruk({
 
   return (
     <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col items-center px-4 pb-14 sm:px-6">
-      <LampuTali aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-7 w-full opacity-80" />
-      <div aria-hidden className="kk-kayu-gelap relative z-20 mt-4 h-4 w-full max-w-md rounded-md shadow-lg">
+      <LampuTali
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-7 w-full opacity-80"
+      />
+      <div
+        aria-hidden
+        className="kk-kayu-gelap relative z-20 mt-4 h-4 w-full max-w-md rounded-md shadow-lg"
+      >
         <span className="absolute inset-x-6 top-1/2 block h-1 -translate-y-1/2 rounded-full bg-[#1d120a]" />
       </div>
       <div className="kk-cetak-struk relative z-10 w-full max-w-md">
@@ -40,7 +46,7 @@ export function SceneStruk({
         <div className="relative bg-[#fdfbf3] px-6 py-6 font-mono text-sm text-[#2b2620] shadow-[0_30px_60px_-24px_rgba(0,0,0,0.7)] sm:px-8">
           <span
             aria-hidden
-            className="kk-stempel pointer-events-none absolute right-5 top-24 rotate-[-14deg] rounded-md border-4 border-[#256b45] px-3 py-1 font-display text-xl font-black tracking-[0.2em] text-[#256b45] opacity-80"
+            className="kk-stempel font-display pointer-events-none absolute right-5 top-24 rotate-[-14deg] rounded-md border-4 border-[#256b45] px-3 py-1 text-xl font-black tracking-[0.2em] text-[#256b45] opacity-80"
           >
             LUNAS
           </span>
@@ -112,14 +118,18 @@ export function SceneStruk({
         </div>
         <div className="kk-gerigi-bawah" aria-hidden />
       </div>
-      <div className="kk-muncul z-10 mt-8 flex flex-wrap justify-center gap-3" style={{ animationDelay: '900ms' }}>
-        <button type="button" onClick={onUlangi} className="tombol-sorot">
+      <div
+        className="kk-muncul z-10 mt-8 flex flex-wrap justify-center gap-3"
+        style={{ animationDelay: '900ms' }}
+      >
+        <Link href="/skenario" className="tombol-sorot">
+          <ArrowLeft aria-hidden className="h-4 w-4" />
+          Kembali ke skenario
+        </Link>
+        <button type="button" onClick={onUlangi} className="tombol-garis-terang">
           <RotateCcw aria-hidden className="h-4 w-4" />
           Ulangi kunjungan
         </button>
-        <Link href="/skenario" className="tombol-garis-terang">
-          Skenario lain
-        </Link>
       </div>
     </div>
   )

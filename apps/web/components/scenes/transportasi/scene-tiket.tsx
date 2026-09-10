@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Bus, CheckCircle2, Clock3, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Bus, CheckCircle2, Clock3, RotateCcw } from 'lucide-react'
 import { BusKota } from './props'
 import { HARGA_TIKET, TUJUAN, prettify, rupiah } from './types'
 
@@ -132,16 +132,18 @@ export function SceneTiket({
         className="kk-muncul z-10 mt-8 flex flex-wrap justify-center gap-3"
         style={{ animationDelay: '900ms' }}
       >
-        <button type="button" onClick={onUlangi} className="tp-tombol">
+        <Link href="/skenario" className="tp-tombol">
+          <ArrowLeft aria-hidden className="h-4 w-4" />
+          Kembali ke skenario
+        </Link>
+        <button
+          type="button"
+          onClick={onUlangi}
+          className="tombol-sekunder flex items-center border-[#33608c]/50 bg-white/70 font-bold"
+        >
           <RotateCcw aria-hidden className="h-4 w-4" />
           Ulangi perjalanan
         </button>
-        <Link
-          href="/skenario"
-          className="tombol-sekunder flex items-center border-[#33608c]/50 bg-white/70 font-bold"
-        >
-          Skenario lain
-        </Link>
       </div>
 
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0">

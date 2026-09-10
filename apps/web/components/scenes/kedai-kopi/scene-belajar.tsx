@@ -4,7 +4,9 @@ import { Coffee } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
+import { LatihanBaca } from '@/components/latihan-baca'
 import { PracticeBlock } from '@/components/practice-block'
+import type { Direction } from '@/features/scenario/engine'
 import type { LearningPhase } from '@/features/scenario/learning'
 import { PapanMenuKapur, TanamanGantung, Uap } from './props'
 import { prettify } from './types'
@@ -59,6 +61,7 @@ export function SceneBelajar({
   sign,
   compiled,
   learnView,
+  direction,
   directionLabel,
   onGantiView,
   onLulus,
@@ -72,6 +75,7 @@ export function SceneBelajar({
   sign: Sign | undefined
   compiled: CompiledSign | null
   learnView: 'demo' | 'praktik'
+  direction: Direction
   directionLabel: string
   onGantiView: (view: 'demo' | 'praktik') => void
   onLulus: () => void
@@ -87,7 +91,9 @@ export function SceneBelajar({
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#8a5f10]">
             Latihan selesai
           </p>
-          <h1 className="font-display text-3xl font-bold sm:text-4xl">Semua isyarat siap dipakai</h1>
+          <h1 className="font-display text-3xl font-bold sm:text-4xl">
+            Semua isyarat siap dipakai
+          </h1>
           <p className="max-w-prose text-lg">
             Sekarang giliranmu memesan sungguhan. Barista sudah menunggu di kasir. Kamu berperan
             sebagai {directionLabel}.
@@ -143,10 +149,11 @@ export function SceneBelajar({
               <div>
                 <AvatarStage
                   compiled={compiled}
+                  sign={sign}
                   showControls
                   signLabel={sign.gloss.id}
                   stageClassName="bg-zona-tenang zona-tenang-gradasi overflow-hidden rounded-3xl border-4 border-[#2b1a0e]/30 shadow-[0_24px_50px_-20px_rgba(0,0,0,0.6)]"
-                  className="h-[52vh] min-h-88 sm:h-[58vh]"
+                  className="min-h-88 h-[52vh] sm:h-[58vh]"
                 />
                 <MejaLatihan />
               </div>
@@ -174,13 +181,26 @@ export function SceneBelajar({
             </div>
           ) : (
             <div className="kk-muncul kk-kertas flex flex-col gap-4 rounded-3xl p-4 shadow-xl sm:p-5">
-              <PracticeBlock
-                compiled={compiled}
-                signLabel={sign.gloss.id}
-                onPassed={onLulus}
-                onFailedAttempt={onGagal}
-                onSelfAssessed={onNilaiSendiri}
-              />
+              {direction === 'service' ? (
+                <LatihanBaca
+                  compiled={compiled}
+                  sign={sign}
+                  signId={currentSignId}
+                  kandidat={learning.order()}
+                  onLulus={onLulus}
+                  onGagal={onGagal}
+                  onLewati={onNilaiSendiri}
+                />
+              ) : (
+                <PracticeBlock
+                  compiled={compiled}
+                  sign={sign}
+                  signLabel={sign.gloss.id}
+                  onPassed={onLulus}
+                  onFailedAttempt={onGagal}
+                  onSelfAssessed={onNilaiSendiri}
+                />
+              )}
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
@@ -203,7 +223,11 @@ export function SceneBelajar({
               Isyarat <span className="font-bold">{prettify(currentSignId)}</span> belum punya
               peragaan karena bentuknya belum divalidasi penanda Tuli.
             </p>
-            <button type="button" onClick={onLewati} className="tombol-sekunder self-start bg-white/70">
+            <button
+              type="button"
+              onClick={onLewati}
+              className="tombol-sekunder self-start bg-white/70"
+            >
               Lewati dulu
             </button>
           </div>

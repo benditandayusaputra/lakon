@@ -13,8 +13,23 @@ const masukAkunBaru = async (page: Page) => {
   expect(response.ok()).toBe(true)
 }
 
+const jawabLatihanBaca = async (page: Page) => {
+  const soal = page.getByText('Pelanggan berisyarat. Apa maknanya?')
+  if (!(await soal.isVisible().catch(() => false))) return false
+  const judul = (await page.getByRole('heading', { level: 1 }).textContent()) ?? ''
+  const jawaban = page.getByRole('button', {
+    name: new RegExp(`^${judul.trim()}$`, 'i'),
+  })
+  if (await jawaban.isVisible().catch(() => false)) {
+    await jawaban.click()
+    await page.waitForTimeout(250)
+    return true
+  }
+  return false
+}
+
 const skipAllLearning = async (page: Page) => {
-  for (let i = 0; i < 48; i++) {
+  for (let i = 0; i < 64; i++) {
     if (
       await page
         .getByRole('button', { name: 'Menuju kasir' })
@@ -23,12 +38,14 @@ const skipAllLearning = async (page: Page) => {
     ) {
       break
     }
+    if (await jawabLatihanBaca(page)) continue
     let clicked = false
     for (const name of [
       'Lewati dulu',
       'Lanjut ke praktik',
       'Tanpa kamera',
       'Sudah cukup mirip, lanjut',
+      'Sudah paham, lanjut',
     ]) {
       const button = page.getByRole('button', { name })
       if (await button.isVisible().catch(() => false)) {
@@ -52,6 +69,12 @@ const finishExam = async (page: Page) => {
         .catch(() => false)
     ) {
       return
+    }
+    const tirai = page.getByRole('button', { name: 'Lihat ringkasan' })
+    if (await tirai.isVisible().catch(() => false)) {
+      await tirai.click()
+      await page.waitForTimeout(250)
+      continue
     }
     const produce = page.getByRole('button', { name: 'Sudah kuperagakan, lanjut' })
     if (await produce.isVisible().catch(() => false)) {
@@ -113,8 +136,10 @@ test.describe('alur inti', () => {
     await page.getByLabel('Kata sandi', { exact: true }).fill('sandi-uji-123')
     await page.getByRole('button', { name: 'Buat akun' }).click()
     await page.waitForURL('**/skenario')
-    await expect(page.getByText('Penguji E2E')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Penguji E2E' })).toBeVisible()
 
+    await page.getByRole('link', { name: 'Penguji E2E' }).click()
+    await page.waitForURL('**/profil')
     await page.getByRole('button', { name: 'Keluar' }).click()
     await expect(page.getByRole('link', { name: 'Masuk' })).toBeVisible()
 
@@ -142,7 +167,7 @@ test.describe('alur inti', () => {
     await page.getByLabel('Kata sandi', { exact: true }).fill(DEMO.sandi)
     await page.getByRole('button', { name: 'Masuk' }).click()
     await page.waitForURL('**/skenario')
-    await expect(page.getByText('Akun Demo')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'Akun Demo' })).toBeVisible()
     await expect(page.getByText(/Isyarat yang sudah dipelajari: [1-9]/)).toBeVisible()
   })
 
@@ -251,5 +276,56 @@ test.describe('alur inti', () => {
     await expect(page.getByText(/Isyarat yang sudah dipelajari: [1-9]/)).toBeVisible()
     await page.reload()
     await expect(page.getByText(/Isyarat yang sudah dipelajari: [1-9]/)).toBeVisible()
+  })
+
+  test('11. sudah masuk: landing dan /masuk dialihkan ke /skenario', async ({ page }) => {
+    await masukAkunBaru(page)
+    await page.goto('/')
+    await page.waitForURL('**/skenario')
+    await page.goto('/masuk')
+    await page.waitForURL('**/skenario')
+    await page.goto('/daftar')
+    await page.waitForURL('**/skenario')
+  })
+
+  test('12. adegan kedua terkunci sebelum adegan pertama selesai', async ({ page }) => {
+    await masukAkunBaru(page)
+    await page.goto('/skenario')
+    await expect(page.getByRole('link', { name: /Memesan minuman/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: /puskesmas/i })).toHaveCount(0)
+    await expect(page.getByText(/Selesaikan .* dulu untuk membukanya/).first()).toBeVisible()
+  })
+
+  test('13. profil memuat tombol keluar dan hapus data', async ({ page }) => {
+    await masukAkunBaru(page)
+    await page.goto('/skenario')
+    await expect(page.getByRole('button', { name: 'Hapus seluruh data belajarku' })).toHaveCount(0)
+    await page.goto('/profil')
+    await expect(page.getByRole('button', { name: 'Keluar' })).toBeVisible()
+    await page.getByRole('button', { name: 'Hapus seluruh data belajarku' }).click()
+    await page.getByRole('button', { name: 'Ya, hapus sekarang' }).click()
+    await expect(page.getByText('Seluruh data belajarmu sudah dihapus.')).toBeVisible()
+  })
+
+  test('14. pembuka adegan menerangkan langkah sebelum masuk', async ({ page }) => {
+    await masukAkunBaru(page)
+    await page.goto('/skenario/kedai-kopi?arah=deaf')
+    await expect(page.getByRole('heading', { name: /Memesan minuman/ })).toBeVisible()
+    await expect(page.getByText('Kamu berperan sebagai sisi Tuli.')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Buka pintu & masuk' })).toBeVisible()
+  })
+
+  test('15. praktik menyembunyikan peragaan sampai ditoggle', async ({ page }) => {
+    await masukAkunBaru(page)
+    await enterScenario(page, 'deaf')
+    await page.getByRole('button', { name: 'Lanjut ke praktik' }).click()
+    const toggle = page.getByRole('button', { name: 'Tampilkan peragaan' })
+    await expect(toggle).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Depan' })).toHaveCount(0)
+    await toggle.click()
+    await expect(page.getByRole('button', { name: 'Sembunyikan peragaan' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Depan' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Kanan' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Kiri' })).toBeVisible()
   })
 })
