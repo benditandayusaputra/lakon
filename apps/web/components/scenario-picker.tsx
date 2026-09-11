@@ -44,16 +44,19 @@ export function ScenarioPicker() {
   const [runsByScenario, setRunsByScenario] = useState<Record<string, number>>({})
   const [masteredSigns, setMasteredSigns] = useState<Set<string>>(new Set())
   const [account, setAccount] = useState<{ displayName: string } | null>(null)
+  const [progresSiap, setProgresSiap] = useState(false)
 
   useEffect(() => {
     void pullFromServer()
       .catch(() => {})
       .then(() => {
-        void listRuns().then((runs) => {
-          const counts: Record<string, number> = {}
-          for (const run of runs) counts[run.scenarioId] = (counts[run.scenarioId] ?? 0) + 1
-          setRunsByScenario(counts)
-        })
+        void listRuns()
+          .then((runs) => {
+            const counts: Record<string, number> = {}
+            for (const run of runs) counts[run.scenarioId] = (counts[run.scenarioId] ?? 0) + 1
+            setRunsByScenario(counts)
+          })
+          .finally(() => setProgresSiap(true))
         void listSignProgress().then((entries) =>
           setMasteredSigns(
             new Set(
@@ -201,7 +204,7 @@ export function ScenarioPicker() {
       ) : null}
 
       <section className="mx-auto w-full max-w-3xl flex-1 px-4 pb-16 pt-8 sm:px-6">
-        {scenarios.length > 0 ? (
+        {scenarios.length > 0 && progresSiap ? (
           <PetaPerjalanan
             simpul={scenarios.map((scenario, index) => {
               const signIds = scenarioSignIds(scenario)
