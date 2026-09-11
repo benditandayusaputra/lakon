@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { ArrowRight, CheckCircle2, Eye, Hand, VolumeX } from 'lucide-react'
+import { Logo } from '@/components/logo'
 import { useContent } from '@/features/content/use-content'
+import { SCENE_ICONS, scenarioSignIds } from '@/features/ui/adegan'
 import { paletteFor, scenarioRank } from '@/features/ui/tokens'
 
 const TrySignBlock = dynamic(() => import('@/components/try-sign-block'), {
@@ -30,13 +32,20 @@ const copy = {
     statSides: 'peran',
     tryTitle: 'Coba satu isyarat, sekarang',
     tryBody: 'Tanpa akun, tanpa unduhan. Selesai dalam 20 detik.',
+    trySteps: ['Lihat peragaan dari tiga sudut', 'Nyalakan kamera', 'Peragakan, nilai langsung'],
     tryMissing: 'Isyarat contoh sedang disiapkan. Pilih salah satu adegan untuk mulai belajar.',
+    loading: 'Memuat…',
+    loadBlock: 'Muat blok latihan',
     twoWayTitle: 'Satu adegan, dua peran',
+    twoWayBody: 'Pilih peran saat masuk. Setiap adegan bisa dijalani dari kedua sisi.',
     sideDeaf: 'Sisi Tuli',
     sideService: 'Sisi pekerja layanan',
-    deafRole: 'Anda yang berisyarat: memesan, bertanya, membayar.',
-    serviceRole: 'Anda yang membaca isyarat: melayani sampai tuntas.',
+    deafRole: 'Kamu yang berisyarat. Menjalani transaksi: memesan, bertanya, membayar.',
+    serviceRole: 'Kamu yang membaca isyarat. Melayani pelanggan Tuli sampai tuntas.',
     scenariosTitle: 'Pilih tempat, bukan daftar kata',
+    scenariosBody: 'Adegan terbuka satu demi satu. Mulai dari kedai kopi.',
+    sceneLabel: 'Adegan',
+    sceneStart: 'Mulai',
     scenarioMoods: {
       'kedai-kopi': 'Amber pagi, kayu jati',
       puskesmas: 'Hijau teduh, ruang tunggu',
@@ -74,13 +83,24 @@ const copy = {
     statSides: 'roles',
     tryTitle: 'Try one sign, right now',
     tryBody: 'No account, no download. Done in 20 seconds.',
+    trySteps: [
+      'Watch the sign from three angles',
+      'Turn on the camera',
+      'Perform it, get instant feedback',
+    ],
     tryMissing: 'The sample sign is being prepared. Pick a scene to start learning.',
+    loading: 'Loading…',
+    loadBlock: 'Load the practice block',
     twoWayTitle: 'One scene, two roles',
+    twoWayBody: 'Pick a role when you sign in. Every scene can be played from both sides.',
     sideDeaf: 'Deaf side',
     sideService: 'Service side',
-    deafRole: 'You sign: order, ask, pay.',
-    serviceRole: 'You read the signs: serve to the end.',
+    deafRole: 'You sign. Go through the transaction: order, ask, pay.',
+    serviceRole: 'You read the signs. Serve a Deaf customer to the end.',
     scenariosTitle: 'Pick a place, not a word list',
+    scenariosBody: 'Scenes unlock one after another. Start at the coffee shop.',
+    sceneLabel: 'Scene',
+    sceneStart: 'Start',
     scenarioMoods: {
       'kedai-kopi': 'Morning amber, teak wood',
       puskesmas: 'Calm green, waiting room',
@@ -137,42 +157,42 @@ export function Landing() {
     return () => observer.disconnect()
   }, [])
 
+  const roles = [
+    [Hand, t.sideDeaf, t.deafRole],
+    [Eye, t.sideService, t.serviceRole],
+  ] as const
+
   return (
     <main lang={lang} className="flex min-h-dvh flex-col">
       <header className="border-halaman/10 bg-panggung/90 text-halaman sticky top-0 z-40 border-b backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-6 py-3.5">
-          <p className="flex items-center gap-2 text-xl font-bold">
-            <span aria-hidden className="text-sorot tracking-tighter">
-              ▲▲▲
-            </span>
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5 text-xl font-bold">
+            <Logo />
             Lakon
-          </p>
-          <nav className="flex items-center gap-1 sm:gap-3">
+          </Link>
+          <nav className="flex items-center gap-1.5 sm:gap-2.5">
             <a
               href="#adegan"
-              className="hover:text-sorot hidden px-2 py-2 text-sm font-medium transition-colors md:inline-block"
+              className="hover:text-sorot hidden px-2.5 py-2 text-sm font-medium transition-colors md:inline-block"
             >
               {t.navScenes}
             </a>
             <a
               href="#coba"
-              className="bg-sorot text-panggung hidden items-center rounded-lg px-4 text-sm font-bold transition-colors hover:bg-[#e5b93c] sm:inline-flex"
-              style={{ minHeight: 44 }}
+              className="bg-sorot text-panggung hidden min-h-11 items-center rounded-lg px-4 text-sm font-bold transition-colors hover:bg-[#e5b93c] sm:inline-flex"
             >
               {t.navTry}
             </a>
             <Link
               href="/masuk"
-              className="flex items-center px-3 text-sm underline underline-offset-4"
-              style={{ minHeight: 44 }}
+              className="border-halaman/30 hover:border-halaman/70 flex min-h-11 items-center rounded-lg border px-3.5 text-sm font-semibold transition-colors"
             >
               {t.navSignIn}
             </Link>
             <button
               type="button"
               onClick={() => setLang(other)}
-              className="border-halaman/30 hover:border-halaman/70 rounded-lg border px-3 font-mono text-sm transition-colors"
-              style={{ minHeight: 44 }}
+              className="border-halaman/30 hover:border-halaman/70 min-h-11 rounded-lg border px-3 font-mono text-sm transition-colors"
               aria-label={t.langSwitch}
             >
               {t.langLabel}
@@ -183,14 +203,14 @@ export function Landing() {
 
       <section className="bg-panggung text-halaman relative overflow-hidden">
         <div aria-hidden className="sorot-panggung absolute inset-0" />
-        <div className="animasi-masuk relative mx-auto flex w-full max-w-3xl flex-col gap-6 px-6 pb-16 pt-14 text-center md:pb-20 md:pt-20">
+        <div className="animasi-masuk relative mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pb-14 pt-12 text-center sm:px-6 md:pb-20 md:pt-20">
           <p className="text-sorot font-mono text-xs font-bold uppercase tracking-[0.2em]">
             {t.heroKicker}
           </p>
-          <h1 className="font-display text-balance text-4xl font-semibold leading-[1.08] sm:text-5xl">
+          <h1 className="font-display text-balance text-3xl font-semibold leading-[1.1] sm:text-4xl md:text-5xl">
             {t.heroTitle}
           </h1>
-          <p className="text-halaman/80 mx-auto max-w-prose text-pretty text-lg leading-relaxed">
+          <p className="text-halaman/80 mx-auto max-w-prose text-pretty text-base leading-relaxed sm:text-lg">
             {t.heroBody}
           </p>
           <div className="flex flex-col justify-center gap-3 sm:flex-row">
@@ -210,118 +230,142 @@ export function Landing() {
                 [2, t.statSides],
               ] as const
             ).map(([value, label]) => (
-              <div key={label} className="px-4 py-3.5">
-                <dd className="font-display text-3xl font-semibold">{value}</dd>
-                <dt className="text-halaman/60 mt-0.5 text-sm">{label}</dt>
+              <div key={label} className="px-3 py-3.5 sm:px-4">
+                <dd className="font-display text-2xl font-semibold sm:text-3xl">{value}</dd>
+                <dt className="text-halaman/60 mt-0.5 text-xs sm:text-sm">{label}</dt>
               </div>
             ))}
           </dl>
         </div>
       </section>
 
-      <section id="coba" ref={trySectionRef} className="mx-auto w-full max-w-5xl px-6 py-14">
-        <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.tryTitle}</h2>
-        <p className="text-teks-sekunder mt-2 text-lg">{t.tryBody}</p>
-        <div className="border-border-halus bg-kartu shadow-kartu-angkat mt-6 rounded-3xl border p-5 md:p-7">
+      <section
+        id="coba"
+        ref={trySectionRef}
+        className="mx-auto w-full max-w-5xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16"
+      >
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="lg:shrink-0">
+            <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.tryTitle}</h2>
+            <p className="text-teks-sekunder mt-2 text-base sm:text-lg">{t.tryBody}</p>
+          </div>
+          <ol className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:gap-2.5">
+            {t.trySteps.map((step, index) => (
+              <li
+                key={step}
+                className="border-border-halus bg-kartu shadow-kartu flex items-center gap-2.5 rounded-full border py-1.5 pl-1.5 pr-4 font-medium"
+              >
+                <span
+                  aria-hidden
+                  className="bg-panggung text-sorot flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-xs font-bold"
+                >
+                  {index + 1}
+                </span>
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div className="border-border-halus bg-kartu shadow-kartu-angkat mt-6 rounded-3xl border p-3 sm:p-5 md:p-6">
           {showTry ? (
-            <TrySignBlock
-              lang={lang}
-              missingText={t.tryMissing}
-              loadingText={lang === 'id' ? 'Memuat…' : 'Loading…'}
-            />
+            <TrySignBlock lang={lang} missingText={t.tryMissing} loadingText={t.loading} />
           ) : (
             <button type="button" onClick={() => setShowTry(true)} className="tombol-sekunder">
-              {lang === 'id' ? 'Muat blok latihan' : 'Load the practice block'}
+              {t.loadBlock}
             </button>
           )}
         </div>
       </section>
 
       <section className="bg-terangkat">
-        <div className="mx-auto w-full max-w-5xl px-6 py-14">
+        <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
           <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.twoWayTitle}</h2>
+          <p className="text-teks-sekunder mt-2 text-base sm:text-lg">{t.twoWayBody}</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {(
-              [
-                [Hand, t.sideDeaf, t.deafRole],
-                [Eye, t.sideService, t.serviceRole],
-              ] as const
-            ).map(([Ikon, judul, isi]) => (
+            {roles.map(([Ikon, judul, isi]) => (
               <div
                 key={judul}
-                className="border-border-halus bg-kartu shadow-kartu flex items-start gap-3.5 rounded-2xl border p-5"
+                className="border-border-halus bg-kartu shadow-kartu flex flex-col gap-2 rounded-2xl border p-5"
               >
-                <span
-                  aria-hidden
-                  className="bg-terangkat text-aksen flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                >
-                  <Ikon size={19} strokeWidth={2.25} />
+                <span className="flex items-center gap-2.5 text-lg font-bold">
+                  <span
+                    aria-hidden
+                    className="bg-terangkat text-aksen flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                  >
+                    <Ikon size={18} strokeWidth={2.25} />
+                  </span>
+                  {judul}
                 </span>
-                <span>
-                  <span className="block font-bold">{judul}</span>
-                  <span className="text-teks-sekunder block text-sm">{isi}</span>
-                </span>
+                <span className="text-teks-sekunder text-sm leading-relaxed">{isi}</span>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="adegan" className="mx-auto w-full max-w-5xl px-6 py-14">
+      <section
+        id="adegan"
+        className="mx-auto w-full max-w-5xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16"
+      >
         <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.scenariosTitle}</h2>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <p className="text-teks-sekunder mt-2 text-base sm:text-lg">{t.scenariosBody}</p>
+        <ol className="mt-6 grid gap-4 lg:grid-cols-2">
           {scenarios.map((scenario, index) => {
             const palette = paletteFor(scenario.id)
-            const signCount = new Set(
-              scenario.nodes.flatMap((node) =>
-                node.task
-                  ? [node.task.deaf, node.task.service].flatMap((task) =>
-                      task.type === 'point' ? [] : [task.sign],
-                    )
-                  : [],
-              ),
-            ).size
+            const SceneIcon = SCENE_ICONS[scenario.id] ?? Hand
+            const signCount = scenarioSignIds(scenario).size
             return (
-              <Link
-                key={scenario.id}
-                href="/skenario"
-                className="border-border-halus bg-kartu shadow-kartu hover:shadow-kartu-angkat group overflow-hidden rounded-3xl border transition-all duration-300 hover:-translate-y-1"
-              >
-                <div
-                  aria-hidden
-                  className="relative h-20"
-                  style={{
-                    background: `linear-gradient(155deg, ${palette.ambient}, ${palette.tint})`,
-                  }}
+              <li key={scenario.id}>
+                <Link
+                  href="/daftar"
+                  className="jalur-simpul border-border-halus bg-kartu shadow-kartu hover:shadow-kartu-angkat flex h-full items-start gap-4 rounded-3xl border p-4 sm:p-5"
                 >
                   <span
-                    className="font-display absolute left-5 top-3 text-3xl font-semibold"
-                    style={{ color: palette.deep }}
+                    aria-hidden
+                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-4 shadow-lg sm:h-20 sm:w-20"
+                    style={{
+                      backgroundColor: palette.tint,
+                      borderColor: palette.accent,
+                      color: palette.deep,
+                    }}
                   >
-                    {index + 1}
+                    <SceneIcon size={28} strokeWidth={2} />
+                  </span>
+                  <span className="flex min-w-0 flex-1 flex-col gap-1">
+                    <span className="text-teks-samar font-mono text-xs uppercase tracking-[0.2em]">
+                      {t.sceneLabel} {index + 1}
+                    </span>
+                    <span
+                      className="font-display text-xl font-semibold leading-tight"
+                      style={{ color: palette.deep }}
+                    >
+                      {scenario.title[lang]}
+                    </span>
+                    <span className="text-teks-sekunder text-sm">
+                      {t.scenarioMoods[scenario.id] ?? ''}
+                    </span>
+                    <span className="text-teks-samar font-mono text-xs">
+                      {signCount} {t.scenarioSigns} · ±{scenario.estimatedMinutes}{' '}
+                      {t.scenarioMinutes}
+                    </span>
                   </span>
                   <span
-                    className="absolute inset-x-0 bottom-0 h-1.5"
-                    style={{ backgroundColor: palette.accent }}
-                  />
-                </div>
-                <div className="flex flex-col gap-1 p-5">
-                  <p className="font-display text-xl font-semibold" style={{ color: palette.deep }}>
-                    {scenario.title[lang]}
-                  </p>
-                  <p className="text-teks-sekunder text-sm">{t.scenarioMoods[scenario.id] ?? ''}</p>
-                  <p className="text-teks-samar mt-1 font-mono text-sm">
-                    {signCount} {t.scenarioSigns}, ±{scenario.estimatedMinutes} {t.scenarioMinutes}
-                  </p>
-                </div>
-              </Link>
+                    aria-hidden
+                    className="hidden shrink-0 items-center gap-1.5 self-center text-sm font-bold sm:flex"
+                    style={{ color: palette.accent }}
+                  >
+                    {t.sceneStart}
+                    <ArrowRight size={16} strokeWidth={2.5} />
+                  </span>
+                </Link>
+              </li>
             )
           })}
-        </div>
+        </ol>
       </section>
 
       <section className="bg-terangkat">
-        <div className="mx-auto w-full max-w-5xl px-6 py-14">
+        <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
           <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.accessTitle}</h2>
           <ul className="mt-5 flex flex-wrap gap-2.5">
             {t.accessItems.map((item) => (
@@ -338,18 +382,16 @@ export function Landing() {
       </section>
 
       <footer className="bg-panggung text-halaman/60 border-halaman/10 border-t">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-6 py-8 text-sm">
-          <p className="text-halaman flex items-center gap-2 font-bold">
-            <span aria-hidden className="text-sorot tracking-tighter">
-              ▲▲▲
-            </span>
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-8 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
+          <p className="text-halaman flex items-center gap-2.5 font-bold">
+            <Logo className="h-6 w-6" />
             Lakon
             <span className="text-halaman/50 ml-1 font-mono text-xs font-normal">
               {t.footerRegion}
             </span>
           </p>
           <p className="flex items-center gap-1.5 font-mono">
-            <VolumeX aria-hidden size={14} />
+            <VolumeX aria-hidden size={14} className="shrink-0" />
             {t.footerLine}
           </p>
           <p>{t.footerMeta}</p>

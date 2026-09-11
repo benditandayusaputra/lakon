@@ -1,6 +1,6 @@
 'use client'
 
-import { Hand, QrCode, Star } from 'lucide-react'
+import { Circle, Hand, QrCode, Star } from 'lucide-react'
 import { ArtMinuman, KartuQris } from './props'
 import { MENU_UTAMA, rupiah, type MenuKedai } from './types'
 
@@ -70,7 +70,10 @@ export function LayarKasir({
       <div className="mx-auto w-full max-w-sm rounded-2xl border-4 border-[#241811] bg-[#101a12] p-4 shadow-[0_18px_40px_-14px_rgba(0,0,0,0.7)]">
         <p className="flex items-center justify-between font-mono text-[11px] uppercase tracking-widest text-[#7dbb8f]">
           <span>Kasir · Kopi Lakon</span>
-          <span className="kk-lampu-nyala">●</span>
+          <Circle
+            aria-hidden
+            className="kk-lampu-nyala inline-block h-[0.6em] w-[0.6em] fill-current"
+          />
         </p>
         <div className="my-2 border-t border-dashed border-[#2e4a36]" />
         <p className="flex justify-between font-mono text-sm text-[#c9e8d2]">

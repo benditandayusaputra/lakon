@@ -3,6 +3,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Logo } from '@/components/logo'
 
 type Mode = 'masuk' | 'daftar'
 
@@ -29,7 +30,8 @@ const label: Record<
     switchHref: '/daftar',
     switchLabel: 'Daftar gratis',
     panelTitle: 'Panggungmu masih menunggu.',
-    panelBody: 'Kemajuanmu tersimpan per adegan dan per peran. Lanjutkan tepat dari tempatmu berhenti.',
+    panelBody:
+      'Kemajuanmu tersimpan per adegan dan per peran. Lanjutkan tepat dari tempatmu berhenti.',
   },
   daftar: {
     title: 'Buat akun',
@@ -39,7 +41,8 @@ const label: Record<
     switchHref: '/masuk',
     switchLabel: 'Masuk',
     panelTitle: 'Naik ke panggung pertamamu.',
-    panelBody: 'Simpan kemajuan latihanmu: isyarat yang sudah lulus, adegan yang sedang berjalan, dan hasil ujian percakapan.',
+    panelBody:
+      'Simpan kemajuan latihanmu: isyarat yang sudah lulus, adegan yang sedang berjalan, dan hasil ujian percakapan.',
   },
 }
 
@@ -75,7 +78,8 @@ const paths = {
   eye: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
   eyeOff:
     'M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24 M1 1l22 22',
-  alert: 'M12 9v4 M12 17h.01 M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z',
+  alert:
+    'M12 9v4 M12 17h.01 M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z',
   arrowRight: 'M5 12h14 M12 5l7 7-7 7',
   check: 'M20 6 9 17l-5-5',
   camera:
@@ -218,9 +222,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
       <header className="bg-panggung text-halaman lg:hidden">
         <div className="flex items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2 text-lg font-bold">
-            <span aria-hidden className="text-sorot tracking-tighter">
-              ▲▲▲
-            </span>
+            <Logo className="h-6 w-6" />
             Lakon
           </Link>
           <p className="text-halaman/60 font-mono text-xs uppercase tracking-[0.2em]">
@@ -232,13 +234,14 @@ export function AuthForm({ mode }: { mode: Mode }) {
       <div className="flex flex-1 lg:grid lg:grid-cols-[10fr_9fr]">
         <aside className="bg-panggung text-halaman relative hidden overflow-hidden lg:flex lg:flex-col">
           <div aria-hidden className="sorot-panggung absolute inset-0" />
-          <div aria-hidden className="sorot-kerucut absolute -top-24 left-1/2 h-[36rem] w-full -translate-x-1/2" />
+          <div
+            aria-hidden
+            className="sorot-kerucut absolute -top-24 left-1/2 h-[36rem] w-full -translate-x-1/2"
+          />
 
           <div className="relative flex flex-1 flex-col justify-between gap-12 px-10 py-10 xl:px-16">
             <Link href="/" className="flex items-center gap-2.5 self-start text-xl font-bold">
-              <span aria-hidden className="text-sorot tracking-tighter">
-                ▲▲▲
-              </span>
+              <Logo />
               Lakon
             </Link>
 

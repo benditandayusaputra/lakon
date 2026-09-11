@@ -1,6 +1,6 @@
 'use client'
 
-import { Hand, MapPin, PhoneCall, Star } from 'lucide-react'
+import { Circle, Hand, MapPin, PhoneCall, Star } from 'lucide-react'
 import { GambarKejadian, PetaLingkungan } from './props'
 import {
   KARTU_KEJADIAN,
@@ -171,7 +171,10 @@ export function KartuPanggilan({
       <div className="mx-auto w-full max-w-sm rounded-2xl border-4 border-[#1f2d3a] bg-[#0f1a24] p-4 shadow-[0_18px_40px_-14px_rgba(15,26,36,0.8)]">
         <p className="flex items-center justify-between font-mono text-[11px] uppercase tracking-widest text-[#7fd4ff]">
           <span>Telepon pos · memanggil</span>
-          <span className="pk-led-kedip">●</span>
+          <Circle
+            aria-hidden
+            className="pk-led-kedip inline-block h-[0.6em] w-[0.6em] fill-current"
+          />
         </p>
         <div className="my-3 flex items-center gap-4">
           <span className="dr-cincin relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#3e8e5e] text-white">

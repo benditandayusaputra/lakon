@@ -2,32 +2,13 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import {
-  ArrowRight,
-  Briefcase,
-  Bus,
-  Coffee,
-  Eye,
-  Hand,
-  HeartPulse,
-  Info,
-  Lock,
-  Siren,
-  Star,
-  UserRound,
-} from 'lucide-react'
+import { ArrowRight, Eye, Hand, Info, Lock, Star, UserRound } from 'lucide-react'
 import { useContent } from '@/features/content/use-content'
 import { listRuns, listSignProgress, pullFromServer } from '@/features/progress/store'
+import { Logo } from '@/components/logo'
 import { SyncBadge } from '@/components/sync-badge'
+import { SCENE_ICONS, scenarioSignIds } from '@/features/ui/adegan'
 import { paletteFor, scenarioRank } from '@/features/ui/tokens'
-
-const SCENE_ICONS: Record<string, typeof Coffee> = {
-  'kedai-kopi': Coffee,
-  puskesmas: HeartPulse,
-  transportasi: Bus,
-  'wawancara-kerja': Briefcase,
-  darurat: Siren,
-}
 
 const SCENE_MOODS: Record<string, string> = {
   'kedai-kopi': 'Amber pagi, kayu jati',
@@ -55,23 +36,6 @@ const ROLES = [
 ] as const
 
 const GESER = [0, 14, -12, 10, -8] as const
-
-const scenarioSignIds = (scenario: {
-  vocab: string[]
-  nodes: {
-    task?: { deaf: { type: string; sign?: string }; service: { type: string; sign?: string } }
-  }[]
-}) =>
-  new Set([
-    ...scenario.vocab,
-    ...scenario.nodes.flatMap((node) =>
-      node.task
-        ? [node.task.deaf, node.task.service].flatMap((task) =>
-            task.type === 'point' || !task.sign ? [] : [task.sign],
-          )
-        : [],
-    ),
-  ])
 
 export function ScenarioPicker() {
   const { content, error } = useContent()
@@ -121,10 +85,8 @@ export function ScenarioPicker() {
     <main className="flex min-h-dvh flex-col">
       <header className="border-halaman/10 bg-panggung/90 text-halaman sticky top-0 z-40 border-b backdrop-blur">
         <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-6 py-3.5">
-          <p className="flex items-center gap-2 text-xl font-bold">
-            <span aria-hidden className="text-sorot tracking-tighter">
-              ▲▲▲
-            </span>
+          <p className="flex items-center gap-2.5 text-xl font-bold">
+            <Logo />
             Lakon
           </p>
           <div className="flex items-center gap-2 sm:gap-3">

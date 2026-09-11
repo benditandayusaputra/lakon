@@ -11,13 +11,7 @@ const HIJAU = '#2f7d52'
 const PUTIH = '#f7faf7'
 const PUTIH_BAYANG = '#dde8dd'
 
-function Lengan({
-  pose,
-  warna,
-}: {
-  pose: PoseMedis
-  warna: string
-}) {
+function Lengan({ pose, warna }: { pose: PoseMedis; warna: string }) {
   return (
     <>
       {pose === 'periksa' ? (
@@ -186,7 +180,16 @@ export function KarakterMedis({
             />
             <circle cx="151" cy="252" r="9" fill="#8a95a0" />
             <circle cx="151" cy="252" r="5" fill="#5c6670" />
-            <rect x="186" y="200" width="20" height="26" rx="3" fill={PUTIH} stroke="#c2d1c2" strokeWidth="2" />
+            <rect
+              x="186"
+              y="200"
+              width="20"
+              height="26"
+              rx="3"
+              fill={PUTIH}
+              stroke="#c2d1c2"
+              strokeWidth="2"
+            />
             <rect x="189" y="205" width="14" height="4" rx="2" fill={HIJAU} />
             <rect x="189" y="212" width="14" height="2.5" rx="1" fill="#b0bcb0" />
             <rect x="189" y="217" width="10" height="2.5" rx="1" fill="#b0bcb0" />
@@ -202,7 +205,16 @@ export function KarakterMedis({
               <rect x="0" y="4" width="20" height="5" rx="2" fill={HIJAU} />
               <rect x="7.5" y="-3.5" width="5" height="20" rx="2" fill={HIJAU} />
             </g>
-            <rect x="174" y="198" width="24" height="11" rx="3" fill={PUTIH} stroke={MINT_TUA} strokeWidth="1.5" />
+            <rect
+              x="174"
+              y="198"
+              width="24"
+              height="11"
+              rx="3"
+              fill={PUTIH}
+              stroke={MINT_TUA}
+              strokeWidth="1.5"
+            />
             <rect x="177" y="202" width="18" height="2.4" rx="1.2" fill={MINT_TUA} />
           </g>
         ) : null}
@@ -230,7 +242,10 @@ export function KarakterMedis({
               d="M160 38 q52 4 50 62 q1 26 14 34 q-26 12 -34 -4 l0 -22 a46 46 0 0 0 -60 -56 Z"
               fill={MINT}
             />
-            <path d="M114 86 a46 46 0 0 1 92 0 l0 -10 q-14 -34 -46 -34 q-32 0 -46 34 Z" fill={MINT_TUA} />
+            <path
+              d="M114 86 a46 46 0 0 1 92 0 l0 -10 q-14 -34 -46 -34 q-32 0 -46 34 Z"
+              fill={MINT_TUA}
+            />
             <path d="M150 130 q10 10 20 0 l6 22 q-16 10 -32 0 Z" fill={MINT} />
           </g>
         ) : (
@@ -334,10 +349,16 @@ export function LayarAntrean({
   className?: string
 }) {
   return (
-    <div className={`pk-led rounded-xl border-4 border-[#1d442f] p-3 shadow-lg ${className}`} aria-hidden>
+    <div
+      className={`pk-led rounded-xl border-4 border-[#1d442f] p-3 shadow-lg ${className}`}
+      aria-hidden
+    >
       <p className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-[#7dbb8f]">
         <span>Antrean</span>
-        <span className="pk-led-kedip text-[#7ee787]">●</span>
+        <Circle
+          aria-hidden
+          className="pk-led-kedip inline-block h-[0.6em] w-[0.6em] fill-current text-[#7ee787]"
+        />
       </p>
       <p className="mt-1 whitespace-nowrap text-center font-mono text-3xl font-bold tracking-widest text-[#7ee787] drop-shadow-[0_0_10px_rgba(126,231,135,0.6)]">
         {nomor}
@@ -375,7 +396,12 @@ export function KursiTunggu({ className = '' }: { className?: string }) {
           <rect x="4" y="24" width="42" height="12" rx="5" fill="#aeb8c2" />
         </g>
       ))}
-      <path d="M20 24 L14 66 M200 24 L206 66 M110 24 L110 66" stroke="#6b7680" strokeWidth="5" strokeLinecap="round" />
+      <path
+        d="M20 24 L14 66 M200 24 L206 66 M110 24 L110 66"
+        stroke="#6b7680"
+        strokeWidth="5"
+        strokeLinecap="round"
+      />
     </svg>
   )
 }
@@ -410,3 +436,4 @@ export function AmbulansParkir({ className = '' }: { className?: string }) {
     </svg>
   )
 }
+import { Circle } from 'lucide-react'

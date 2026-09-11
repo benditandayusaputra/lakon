@@ -36,5 +36,14 @@ export default function TrySignBlock({
       <p className="text-teks-sekunder max-w-prose">{content && rig ? missingText : loadingText}</p>
     )
   }
-  return <PracticeBlock compiled={trySign.compiled} signLabel={trySign.sign.gloss[lang]} />
+  return (
+    <PracticeBlock
+      compiled={trySign.compiled}
+      sign={trySign.sign}
+      signLabel={trySign.sign.gloss[lang]}
+      peragaAwal
+      sejajar
+      kontrolPutar={false}
+    />
+  )
 }

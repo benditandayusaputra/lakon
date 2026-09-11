@@ -1,6 +1,6 @@
 'use client'
 
-import { FlipHorizontal } from 'lucide-react'
+import { FlipHorizontal, Pause, Play, SkipBack, SkipForward } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { CompiledSign, CompilerRig } from '@lakon/sign-compiler'
@@ -148,7 +148,7 @@ export function AvatarStage({
         <div
           role="group"
           aria-label="Sudut pandang peragaan"
-          className="border-border-halus bg-kartu flex flex-wrap items-center justify-center gap-2 rounded-2xl border p-2 text-sm"
+          className="border-border-halus bg-kartu flex items-center justify-center gap-2 rounded-2xl border p-2 text-sm"
         >
           {SUDUT_PERAGA.map((id) => (
             <button
@@ -157,7 +157,11 @@ export function AvatarStage({
               onClick={() => setSudut(id)}
               aria-pressed={sudut === id}
               disabled={sumber ? !sudutTersedia(video, id) : false}
-              className={sudut === id ? 'tombol-utama px-4 py-1.5' : 'tombol-sekunder px-4 py-1.5'}
+              className={
+                sudut === id
+                  ? 'tombol-utama flex-1 px-3 py-1.5'
+                  : 'tombol-sekunder flex-1 px-3 py-1.5'
+              }
               style={{ minHeight: 48 }}
             >
               {LABEL_SUDUT[id]}
@@ -173,7 +177,12 @@ export function AvatarStage({
             className={playing ? 'tombol-utama px-4 py-1.5' : 'tombol-sekunder px-4 py-1.5'}
             style={{ minHeight: 48 }}
           >
-            {playing ? '⏸ Jeda' : '▶ Putar'}
+            {playing ? (
+              <Pause aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            ) : (
+              <Play aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            )}
+            {playing ? 'Jeda' : 'Putar'}
           </button>
           <button
             type="button"
@@ -182,7 +191,7 @@ export function AvatarStage({
             style={{ minHeight: 48 }}
             aria-label="Mundur satu frame"
           >
-            ⏮
+            <SkipBack aria-hidden className="h-4 w-4" />
           </button>
           <button
             type="button"
@@ -191,7 +200,7 @@ export function AvatarStage({
             style={{ minHeight: 48 }}
             aria-label="Maju satu frame"
           >
-            ⏭
+            <SkipForward aria-hidden className="h-4 w-4" />
           </button>
           <span aria-hidden className="bg-border-halus mx-1 hidden h-6 w-px sm:block" />
           {[1, 0.5, 0.25].map((value) => (

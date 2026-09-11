@@ -45,6 +45,9 @@ export function PracticeBlock({
   onFailedAttempt,
   onSelfAssessed,
   compact = false,
+  peragaAwal = false,
+  sejajar = false,
+  kontrolPutar = true,
 }: {
   compiled: CompiledSign
   sign?: Sign
@@ -53,6 +56,9 @@ export function PracticeBlock({
   onFailedAttempt?: (result: VerifyResult) => void
   onSelfAssessed?: () => void
   compact?: boolean
+  peragaAwal?: boolean
+  sejajar?: boolean
+  kontrolPutar?: boolean
 }) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -67,7 +73,7 @@ export function PracticeBlock({
   const [result, setResult] = useState<VerifyResult | null>(null)
   const [verdict, setVerdict] = useState<Verdict | null>(null)
   const [failures, setFailures] = useState(0)
-  const [peragaTampil, setPeragaTampil] = useState(false)
+  const [peragaTampil, setPeragaTampil] = useState(peragaAwal)
 
   useEffect(() => {
     setPhase((current) =>
@@ -81,8 +87,8 @@ export function PracticeBlock({
     setFailures(0)
     setResult(null)
     setVerdict(null)
-    setPeragaTampil(false)
-  }, [compiled.id])
+    setPeragaTampil(peragaAwal)
+  }, [compiled.id, peragaAwal])
 
   useEffect(() => {
     if (failures >= PERAGA_SETELAH_GAGAL) setPeragaTampil(true)
@@ -224,7 +230,7 @@ export function PracticeBlock({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className={peragaAwal ? 'hidden' : 'flex flex-wrap items-center gap-3'}>
         <button
           type="button"
           onClick={() => setPeragaTampil((value) => !value)}
@@ -242,21 +248,28 @@ export function PracticeBlock({
         </p>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className={sejajar ? 'grid gap-3 md:grid-cols-2 md:items-start' : 'flex flex-col gap-3'}>
         {peragaTampil ? (
           <div className="bg-zona-tenang zona-tenang-gradasi w-full overflow-hidden rounded-2xl">
             <AvatarStage
               compiled={compiled}
               sign={sign}
-              showControls
+              showControls={kontrolPutar}
+              sudutKontrol
               signLabel={signLabel}
-              className="h-[46vh] min-h-72 sm:h-[54vh]"
+              className={
+                sejajar ? 'sm:aspect-4/3 aspect-[4/5] w-full' : 'h-[46vh] min-h-72 sm:h-[54vh]'
+              }
             />
           </div>
         ) : null}
         <div
           className={`bg-zona-tenang relative w-full overflow-hidden rounded-2xl ${
-            peragaTampil || compact ? 'aspect-4/3' : 'aspect-video'
+            sejajar
+              ? 'sm:aspect-4/3 aspect-[4/5]'
+              : peragaTampil || compact
+                ? 'aspect-4/3'
+                : 'aspect-video'
           }`}
         >
           <video

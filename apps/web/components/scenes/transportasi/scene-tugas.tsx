@@ -1,6 +1,6 @@
 'use client'
 
-import { CreditCard, Hand, MapPin } from 'lucide-react'
+import { Circle, CreditCard, Hand, MapPin } from 'lucide-react'
 import { AlatTap, JariAngka, PetaRute } from './props'
 import { HALTE_RUTE, HARGA_TIKET, TUJUAN, rupiah } from './types'
 
@@ -100,7 +100,10 @@ export function LayarLoketHarga({
       <div className="mx-auto w-full max-w-sm rounded-2xl border-4 border-[#0d1f2e] bg-[#0d1f2e] p-4 shadow-[0_18px_40px_-14px_rgba(13,31,46,0.7)]">
         <p className="flex items-center justify-between font-mono text-[11px] uppercase tracking-widest text-[#7fd4ff]">
           <span>Loket 1 · Halte Lakon</span>
-          <span className="pk-led-kedip">●</span>
+          <Circle
+            aria-hidden
+            className="pk-led-kedip inline-block h-[0.6em] w-[0.6em] fill-current"
+          />
         </p>
         <div className="my-2 border-t border-dashed border-[#26496b]" />
         <p className="flex justify-between font-mono text-sm text-[#cfe9ff]">
