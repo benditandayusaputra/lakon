@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   ArrowRight,
-  Camera,
   Check,
   Eye,
   EyeOff,
@@ -21,6 +20,7 @@ import {
   UserRound,
   type LucideIcon,
 } from 'lucide-react'
+import { HeroLatar } from '@/components/hero-latar'
 import { Logo } from '@/components/logo'
 
 type Mode = 'masuk' | 'daftar'
@@ -63,14 +63,6 @@ const label: Record<
       'Simpan kemajuan latihanmu: isyarat yang sudah lulus, adegan yang sedang berjalan, dan hasil ujian percakapan.',
   },
 }
-
-const scenes = [
-  ['Kedai kopi', '#b4632c'],
-  ['Puskesmas', '#3e7d5e'],
-  ['Transportasi', '#33608c'],
-  ['Wawancara kerja', '#8a6a45'],
-  ['Darurat', '#5b7285'],
-] as const
 
 const features = [
   {
@@ -220,6 +212,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
             aria-hidden
             className="sorot-kerucut absolute -top-24 left-1/2 h-[36rem] w-full -translate-x-1/2"
           />
+          <HeroLatar ringkas />
 
           <div className="relative flex flex-1 flex-col justify-between gap-12 px-10 py-10 xl:px-16">
             <Link href="/" className="flex items-center gap-2.5 self-start text-xl font-bold">
@@ -252,38 +245,16 @@ export function AuthForm({ mode }: { mode: Mode }) {
                   </li>
                 ))}
               </ul>
-
-              <div className="border-halaman/15 flex flex-col gap-3 border-t pt-6">
-                <p className="text-halaman/60 font-mono text-xs uppercase tracking-[0.2em]">
-                  Lima adegan
-                </p>
-                <ul className="flex flex-wrap gap-2">
-                  {scenes.map(([name, color]) => (
-                    <li
-                      key={name}
-                      className="border-halaman/20 flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm"
-                    >
-                      <span
-                        aria-hidden
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: color }}
-                      />
-                      {name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
 
-            <p className="text-halaman/60 flex items-center gap-2.5 text-sm">
-              <ShieldCheck aria-hidden className="text-sorot h-4.5 w-4.5 shrink-0" />
-              Video latihan tidak pernah meninggalkan perangkatmu.
+            <p className="text-halaman/50 font-mono text-xs uppercase tracking-[0.2em]">
+              Lakon · alat belajar bahasa untuk dua pihak
             </p>
           </div>
         </aside>
 
-        <main className="flex flex-1 items-center justify-center px-6 py-10 sm:px-10 sm:py-14">
-          <div className="animasi-masuk flex w-full max-w-md flex-col gap-8">
+        <main className="bg-terangkat flex flex-1 items-center justify-center px-4 py-8 sm:px-10 sm:py-14">
+          <div className="animasi-masuk border-border-halus bg-kartu shadow-kartu-angkat flex w-full max-w-md flex-col gap-7 rounded-3xl border p-6 sm:p-8">
             <div className="flex flex-col gap-2.5">
               <p className="text-aksen flex items-center gap-2.5 font-mono text-xs font-bold uppercase tracking-[0.2em]">
                 {mode === 'masuk' ? (
@@ -375,16 +346,12 @@ export function AuthForm({ mode }: { mode: Mode }) {
                 </p>
               ) : null}
 
-              <button
-                type="submit"
-                disabled={busy}
-                className="bg-teks text-halaman hover:bg-panggung inline-flex min-h-14 items-center justify-center gap-2.5 rounded-xl px-6 font-bold transition-colors"
-              >
+              <button type="submit" disabled={busy} className="tombol-sorot w-full text-base">
                 {busy ? (
                   <>
                     <span
                       aria-hidden
-                      className="border-halaman/40 border-t-halaman h-5 w-5 animate-spin rounded-full border-2"
+                      className="border-panggung/40 border-t-panggung h-5 w-5 animate-spin rounded-full border-2"
                     />
                     Sebentar…
                   </>
@@ -397,21 +364,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
               </button>
             </form>
 
-            <div className="flex flex-col gap-5">
-              <p className="text-teks-sekunder flex items-center gap-3 text-sm">
-                <span aria-hidden className="bg-border-halus h-px flex-1" />
-                atau
-                <span aria-hidden className="bg-border-halus h-px flex-1" />
-              </p>
-
-              <Link
-                href="/#coba"
-                className="border-border-tegas hover:bg-terangkat inline-flex min-h-12 items-center justify-center gap-2.5 rounded-xl border-2 px-6 font-bold transition-colors"
-              >
-                <Camera aria-hidden className="text-aksen h-5 w-5" />
-                Coba dulu tanpa akun
-              </Link>
-
+            <div className="border-border-halus flex flex-col gap-4 border-t pt-5">
               <p className="text-center text-sm">
                 {t.switchText}{' '}
                 <Link

@@ -6,6 +6,7 @@ import { getSessionUser } from '@/db/auth'
 
 const signEntry = z.object({
   signId: z.string().min(1),
+  direction: z.enum(['deaf', 'service']).default('deaf'),
   status: z.enum(['belum', 'berlatih', 'dikuasai', 'dinilai-sendiri']),
   attempts: z.number().int().min(0),
   updatedAt: z.number(),
@@ -42,6 +43,7 @@ export async function GET() {
     ok: true,
     signs: signs.map((row) => ({
       signId: row.signId,
+      direction: row.direction,
       status: row.status,
       attempts: row.attempts,
       updatedAt: row.updatedAt.getTime(),
@@ -70,12 +72,17 @@ export async function POST(request: Request) {
       .values({
         userId: user.id,
         signId: entry.signId,
+        direction: entry.direction,
         status: entry.status,
         attempts: entry.attempts,
         updatedAt: new Date(entry.updatedAt),
       })
       .onConflictDoUpdate({
-        target: [schema.signProgress.userId, schema.signProgress.signId],
+        target: [
+          schema.signProgress.userId,
+          schema.signProgress.signId,
+          schema.signProgress.direction,
+        ],
         set: {
           status: entry.status,
           attempts: entry.attempts,

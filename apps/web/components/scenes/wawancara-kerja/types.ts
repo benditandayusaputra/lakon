@@ -1,6 +1,6 @@
 export type PosePewawancara = 'netral' | 'lambai' | 'tunjuk' | 'catat' | 'sajikan'
 
-export type TahapWawancara = 'luar' | 'belajar' | 'ujian' | 'hasil'
+export type TahapWawancara = 'luar' | 'kamera' | 'belajar' | 'ujian' | 'hasil'
 
 export type MenuTes = {
   opsi: string

@@ -1,6 +1,6 @@
 export type PoseBarista = 'netral' | 'lambai' | 'tunjuk' | 'sajikan'
 
-export type TahapKedai = 'luar' | 'belajar' | 'ujian' | 'struk'
+export type TahapKedai = 'luar' | 'kamera' | 'belajar' | 'ujian' | 'struk'
 
 export type MenuKedai = {
   opsi: string

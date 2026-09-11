@@ -5,7 +5,7 @@
     "en": "Asking for directions and buying a transit ticket"
   },
   "sdg": [11],
-  "vocab": ["halo", "maaf", "terima-kasih", "sama-sama"],
+  "vocab": ["halo", "maaf", "terima-kasih", "sama-sama", "panas", "dingin", "sakit", "tangan"],
   "estimatedMinutes": 15,
   "nodes": [
     {

@@ -1,6 +1,6 @@
 export type PoseWarga = 'netral' | 'lambai' | 'tunjuk' | 'telepon' | 'tenang'
 
-export type TahapDarurat = 'luar' | 'belajar' | 'ujian' | 'laporan'
+export type TahapDarurat = 'luar' | 'kamera' | 'belajar' | 'ujian' | 'laporan'
 
 export type KartuKejadian = {
   opsi: string

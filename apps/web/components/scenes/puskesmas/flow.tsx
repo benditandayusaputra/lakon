@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { ArrowLeft, FileText } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
-import { LANGKAH_PEMBUKA, PembukaAdegan } from '@/components/scenes/pembuka'
+import { IzinKamera } from '@/components/scenes/izin-kamera'
 import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
 import { SceneLuarPuskesmas } from '@/components/scenes/puskesmas/scene-luar'
@@ -24,7 +24,7 @@ import {
 import { createLearningPhase, type LearningPhase } from '@/features/scenario/learning'
 import { saveRun, saveSignProgress } from '@/features/progress/store'
 
-type Tahap = 'luar' | 'belajar' | 'ujian' | 'resep'
+type Tahap = 'luar' | 'kamera' | 'belajar' | 'ujian' | 'resep'
 
 export function PuskesmasFlow() {
   const scenarioId = 'puskesmas'
@@ -119,7 +119,10 @@ export function PuskesmasFlow() {
     startedAtRef.current = Date.now()
     const cepat =
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    pintuTimer.current = setTimeout(() => setTahap('belajar'), cepat ? 120 : 1250)
+    pintuTimer.current = setTimeout(
+      () => setTahap(direction === 'deaf' ? 'kamera' : 'belajar'),
+      cepat ? 120 : 1250,
+    )
   }
 
   const persistSign = (signId: string) => {
@@ -127,6 +130,7 @@ export function PuskesmasFlow() {
     if (!progress) return
     void saveSignProgress({
       signId,
+      direction,
       status: progress.status === 'belum' ? 'berlatih' : progress.status,
       attempts: progress.attempts,
     })
@@ -175,24 +179,20 @@ export function PuskesmasFlow() {
     </header>
   )
 
+  if (tahap === 'kamera') {
+    return (
+      <main className="pk-dinding flex min-h-dvh flex-col">
+        {kepala}
+        <IzinKamera aksen="#2f7d52" onLanjut={() => setTahap('belajar')} />
+      </main>
+    )
+  }
+
   if (tahap === 'luar') {
     return (
       <main className="pk-langit-pagi flex min-h-dvh flex-col">
         {kepala}
         <SceneLuarPuskesmas membuka={membuka} onMasuk={masukPuskesmas} papanInfo={null} />
-        <PembukaAdegan
-          judul={scenario.title.id}
-          peran={directionLabel}
-          menit={scenario.estimatedMinutes ?? 20}
-          jumlahIsyarat={learning.order().length}
-          ringkasPercakapan="kunjungan berobat"
-          langkah={LANGKAH_PEMBUKA[direction]}
-          aksiLabel="Masuk puskesmas"
-          aksiLabelMembuka="Pintu terbuka…"
-          onMulai={masukPuskesmas}
-          membuka={membuka}
-          aksen="#5fc08a"
-        />
       </main>
     )
   }

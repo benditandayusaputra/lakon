@@ -5,7 +5,7 @@
     "en": "Asking for help in an emergency"
   },
   "sdg": [3, 11],
-  "vocab": ["halo", "sakit", "tangan", "terima-kasih"],
+  "vocab": ["halo", "sakit", "tangan", "terima-kasih", "mata", "dokter", "perawat", "maaf"],
   "estimatedMinutes": 15,
   "nodes": [
     {

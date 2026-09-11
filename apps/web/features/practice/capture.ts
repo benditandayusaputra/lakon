@@ -48,6 +48,25 @@ let kameraJanji: Promise<MediaStream> | null = null
 export const kameraHidup = () =>
   kameraBersama?.getVideoTracks().some((track) => track.readyState === 'live') ?? false
 
+export const nyalakanKamera = async (): Promise<CaptureUnavailable | { ok: true }> => {
+  if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+    return { ok: false, reason: 'unsupported' }
+  }
+  if (kameraHidup()) return { ok: true }
+  try {
+    kameraJanji ??= navigator.mediaDevices.getUserMedia({
+      video: { width: 640, height: 480, frameRate: 30, facingMode: 'user' },
+      audio: false,
+    })
+    kameraBersama = await kameraJanji
+    return { ok: true }
+  } catch (err) {
+    return classify(err)
+  } finally {
+    kameraJanji = null
+  }
+}
+
 export const lepasKamera = () => {
   void kameraJanji?.then((stream) => stream.getTracks().forEach((track) => track.stop()))
   kameraJanji = null

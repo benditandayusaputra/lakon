@@ -5,18 +5,7 @@
     "en": "Ordering a drink at a coffee shop"
   },
   "sdg": [10],
-  "vocab": [
-    "halo",
-    "kopi",
-    "minum",
-    "panas",
-    "dingin",
-    "manis",
-    "pahit",
-    "maaf",
-    "terima-kasih",
-    "sama-sama"
-  ],
+  "vocab": ["halo", "kopi", "minum", "panas", "dingin", "manis", "pahit", "terima-kasih"],
   "estimatedMinutes": 20,
   "nodes": [
     {

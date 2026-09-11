@@ -1,5 +1,6 @@
 'use client'
 
+import { PetunjukPintu } from '@/components/scenes/petunjuk-pintu'
 import { useAsalZoom } from '@/features/ui/use-asal-zoom'
 
 import type { ReactNode } from 'react'
@@ -165,9 +166,10 @@ export function SceneLuarPuskesmas({
                   </span>
                   <span aria-hidden className="absolute inset-x-0 top-0 block h-3 bg-[#4f8a68]" />
                 </span>
-                <span className="pointer-events-none absolute -bottom-8 left-1/2 w-max -translate-x-1/2 rounded-full bg-[#1d442f]/90 px-3 py-1 text-xs font-bold text-[#c9ecd7] opacity-90 transition-opacity group-hover:opacity-100 sm:text-sm">
-                  Klik pintu kaca untuk masuk
-                </span>
+                <PetunjukPintu
+                  aktif={!membuka}
+                  teks={membuka ? 'Pintu terbuka, masuk…' : 'Klik pintu kaca untuk masuk'}
+                />
               </button>
 
               <div

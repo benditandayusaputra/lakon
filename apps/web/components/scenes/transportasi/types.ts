@@ -1,6 +1,6 @@
 export type PosePetugas = 'netral' | 'lambai' | 'tunjuk' | 'serahkan'
 
-export type TahapTransportasi = 'luar' | 'belajar' | 'ujian' | 'tiket'
+export type TahapTransportasi = 'luar' | 'kamera' | 'belajar' | 'ujian' | 'tiket'
 
 export const HALTE_RUTE = [
   { kode: '01', nama: 'Halte Lakon' },

@@ -8,6 +8,7 @@ export const users = pgTable('users', {
   role: text('role', { enum: ['pengguna', 'validator', 'admin'] })
     .notNull()
     .default('pengguna'),
+  avatar: text('avatar'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -27,13 +28,16 @@ export const signProgress = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     signId: text('sign_id').notNull(),
+    direction: text('direction', { enum: ['deaf', 'service'] })
+      .notNull()
+      .default('deaf'),
     status: text('status', { enum: ['belum', 'berlatih', 'dikuasai', 'dinilai-sendiri'] })
       .notNull()
       .default('belum'),
     attempts: integer('attempts').notNull().default(0),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [primaryKey({ columns: [t.userId, t.signId] })],
+  (t) => [primaryKey({ columns: [t.userId, t.signId, t.direction] })],
 )
 
 export const scenarioRuns = pgTable('scenario_runs', {

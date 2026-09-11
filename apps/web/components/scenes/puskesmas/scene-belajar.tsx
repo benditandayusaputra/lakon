@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, ArrowRight, Check, Stethoscope } from 'lucide-react'
+import { ArrowRight, Check, Stethoscope } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
@@ -236,7 +236,7 @@ export function SceneBelajarPuskesmas({
                           tervalidasi penanda Tuli
                         </>
                       ) : (
-                        'draf, belum divalidasi penanda Tuli'
+                        `${sign.gloss.id} · BISINDO`
                       )}
                     </p>
                   </div>
@@ -276,17 +276,6 @@ export function SceneBelajarPuskesmas({
                   />
                 )}
                 <div className="flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => onTampilan('demo')}
-                    className="tombol-sekunder"
-                  >
-                    <ArrowLeft
-                      aria-hidden
-                      className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
-                    />
-                    Lihat peragaan lagi
-                  </button>
                   {percobaan > 0 ? (
                     <p className="text-teks-samar text-sm">
                       percobaan: {percobaan}, gagal beruntun: {gagalBeruntun}

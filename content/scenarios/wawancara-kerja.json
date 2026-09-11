@@ -5,7 +5,7 @@
     "en": "A short job interview"
   },
   "sdg": [8],
-  "vocab": ["halo", "kopi", "panas", "maaf", "terima-kasih"],
+  "vocab": ["halo", "kopi", "panas", "maaf", "terima-kasih", "manis", "pahit", "dingin"],
   "estimatedMinutes": 15,
   "nodes": [
     {

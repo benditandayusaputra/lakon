@@ -113,7 +113,11 @@ const finishExam = async (page: Page) => {
 
 const enterScenario = async (page: Page, direction: 'deaf' | 'service') => {
   await page.goto(`/skenario/kedai-kopi?arah=${direction}`)
-  await page.getByRole('button', { name: 'Buka pintu & masuk' }).click()
+  await page.getByRole('button', { name: /pintu/i }).click()
+  await page
+    .getByRole('button', { name: 'Lanjut tanpa kamera' })
+    .click({ timeout: 10_000 })
+    .catch(() => {})
   await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
 }
 
@@ -140,7 +144,7 @@ test.describe('alur inti', () => {
 
     await page.getByRole('link', { name: 'Penguji E2E' }).click()
     await page.waitForURL('**/profil')
-    await page.getByRole('button', { name: 'Keluar' }).click()
+    await page.getByRole('button', { name: 'Keluar', exact: true }).click()
     await expect(page.getByRole('link', { name: 'Masuk' })).toBeVisible()
 
     await page.goto('/masuk')
@@ -175,7 +179,11 @@ test.describe('alur inti', () => {
     await masukAkunBaru(page)
     await page.goto('/skenario')
     await page.getByRole('button', { name: /Memesan minuman/ }).click()
-    await page.getByRole('button', { name: 'Buka pintu & masuk' }).click()
+    await page.getByRole('button', { name: /pintu/i }).click()
+    await page
+      .getByRole('button', { name: 'Lanjut tanpa kamera' })
+      .click({ timeout: 10_000 })
+      .catch(() => {})
     await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
 
     await skipAllLearning(page)
@@ -216,7 +224,11 @@ test.describe('alur inti', () => {
     await page.goto('/skenario')
     await page.getByText('Sisi pekerja layanan', { exact: false }).click()
     await page.getByRole('button', { name: /Memesan minuman/ }).click()
-    await page.getByRole('button', { name: 'Buka pintu & masuk' }).click()
+    await page.getByRole('button', { name: /pintu/i }).click()
+    await page
+      .getByRole('button', { name: 'Lanjut tanpa kamera' })
+      .click({ timeout: 10_000 })
+      .catch(() => {})
     await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
 
     await skipAllLearning(page)
@@ -301,7 +313,7 @@ test.describe('alur inti', () => {
     await page.goto('/skenario')
     await expect(page.getByRole('button', { name: 'Hapus seluruh data belajarku' })).toHaveCount(0)
     await page.goto('/profil')
-    await expect(page.getByRole('button', { name: 'Keluar' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Keluar', exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Hapus seluruh data belajarku' }).click()
     await page.getByRole('button', { name: 'Ya, hapus sekarang' }).click()
     await expect(page.getByText('Seluruh data belajarmu sudah dihapus.')).toBeVisible()
@@ -310,9 +322,9 @@ test.describe('alur inti', () => {
   test('14. pembuka adegan menerangkan langkah sebelum masuk', async ({ page }) => {
     await masukAkunBaru(page)
     await page.goto('/skenario/kedai-kopi?arah=deaf')
-    await expect(page.getByRole('heading', { name: /Memesan minuman/ })).toBeVisible()
-    await expect(page.getByText('Kamu berperan sebagai sisi Tuli.')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Buka pintu & masuk' })).toBeVisible()
+    await expect(page.getByRole('button', { name: /pintu/i })).toBeVisible()
+    await expect(page.getByText('sisi Tuli')).toBeVisible()
+    await expect(page.getByText('Klik pintu untuk masuk')).toBeVisible()
   })
 
   test('15. praktik menyembunyikan peragaan sampai ditoggle', async ({ page }) => {

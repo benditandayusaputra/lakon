@@ -1404,36 +1404,6 @@ input[type='range'] {
   }
 }
 
-.pembuka-adegan {
-  background: radial-gradient(ellipse 70% 60% at 50% 40%, rgb(18 13 9 / 0.62), rgb(10 7 5 / 0.9));
-  backdrop-filter: blur(3px);
-  transition:
-    opacity 420ms ease-out,
-    visibility 420ms;
-}
-
-.pembuka-adegan[data-tutup='true'] {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.pembuka-kartu {
-  background: linear-gradient(165deg, rgb(28 21 15 / 0.97), rgb(16 12 9 / 0.97));
-  animation: pembuka-naik 420ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
-}
-
-@keyframes pembuka-naik {
-  from {
-    opacity: 0;
-    transform: translateY(18px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
 .tirai-selesai {
   background: radial-gradient(ellipse 60% 55% at 50% 45%, #2a2119, #100c08 75%);
   animation: tirai-masuk 380ms ease-out both;
@@ -1608,5 +1578,34 @@ input[type='range'] {
   }
   to {
     transform: rotate(12deg);
+  }
+}
+
+.pintu-denyut {
+  animation: pintu-denyut 1.6s ease-out infinite;
+}
+
+@keyframes pintu-denyut {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.12);
+  }
+}
+
+.pintu-ketuk {
+  animation: pintu-ketuk 1s ease-in-out infinite;
+}
+
+@keyframes pintu-ketuk {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(0.9);
   }
 }

@@ -6,7 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { ArrowLeft, Coffee, ReceiptText } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
-import { LANGKAH_PEMBUKA, PembukaAdegan } from '@/components/scenes/pembuka'
+import { IzinKamera } from '@/components/scenes/izin-kamera'
 import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
 import { useCompilerRig } from '@/features/avatar/use-rig'
@@ -120,7 +120,10 @@ export function KedaiKopiFlow() {
     startedAtRef.current = Date.now()
     const cepat =
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    pintuTimer.current = setTimeout(() => setTahap('belajar'), cepat ? 120 : 1250)
+    pintuTimer.current = setTimeout(
+      () => setTahap(direction === 'deaf' ? 'kamera' : 'belajar'),
+      cepat ? 120 : 1250,
+    )
   }
 
   const persistSign = (signId: string) => {
@@ -128,6 +131,7 @@ export function KedaiKopiFlow() {
     if (!progress) return
     void saveSignProgress({
       signId,
+      direction,
       status: progress.status === 'belum' ? 'berlatih' : progress.status,
       attempts: progress.attempts,
     })
@@ -176,24 +180,20 @@ export function KedaiKopiFlow() {
     </header>
   )
 
+  if (tahap === 'kamera') {
+    return (
+      <main className="kk-interior flex min-h-dvh flex-col">
+        {kepala}
+        <IzinKamera aksen="#d9a521" onLanjut={() => setTahap('belajar')} />
+      </main>
+    )
+  }
+
   if (tahap === 'luar') {
     return (
       <main className="kk-langit flex min-h-dvh flex-col">
         {kepala}
         <SceneLuar membuka={membuka} onMasuk={masukKedai} papanInfo={null} />
-        <PembukaAdegan
-          judul={scenario.title.id}
-          peran={directionLabel}
-          menit={scenario.estimatedMinutes ?? 12}
-          jumlahIsyarat={learning.order().length}
-          ringkasPercakapan="percakapan lengkap"
-          langkah={LANGKAH_PEMBUKA[direction]}
-          aksiLabel="Buka pintu & masuk"
-          aksiLabelMembuka="Membuka pintu…"
-          onMulai={masukKedai}
-          membuka={membuka}
-          aksen="#d9a521"
-        />
       </main>
     )
   }

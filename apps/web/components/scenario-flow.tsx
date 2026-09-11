@@ -106,6 +106,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
     if (!progress) return
     void saveSignProgress({
       signId,
+      direction,
       status: progress.status === 'belum' ? 'berlatih' : progress.status,
       attempts: progress.attempts,
     })

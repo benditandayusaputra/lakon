@@ -51,6 +51,10 @@ WASM from node_modules and downloads the two landmark models into
 | Learner   | `demo@lakon.id`      | CobaLakon2026     |
 | Admin     | `admin@lakon.id`     | AdminLakon2026    |
 | Validator | `validator@lakon.id` | ValidasiLakon2026 |
+| Learner   | `bendi@lakon.id`     | BendiLakon2026    |
+| Learner   | `kevin@lakon.id`     | KevinLakon2026    |
+| Learner   | `jessica@lakon.id`   | JessicaLakon2026  |
+| Learner   | `nawal@lakon.id`     | NawalLakon2026    |
 
 The demo account ships with partial progress so judges see the app in use.
 `/dev/*` and `/tools/*` require the admin or validator role; validators may

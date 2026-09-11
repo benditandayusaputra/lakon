@@ -5,18 +5,7 @@
     "en": "Registering and describing symptoms at a community clinic"
   },
   "sdg": [3, 10],
-  "vocab": [
-    "halo",
-    "sakit",
-    "panas",
-    "dokter",
-    "perawat",
-    "minum",
-    "makan",
-    "mata",
-    "tangan",
-    "terima-kasih"
-  ],
+  "vocab": ["halo", "sakit", "panas", "dokter", "perawat", "minum", "makan", "terima-kasih"],
   "estimatedMinutes": 20,
   "nodes": [
     {

@@ -1,7 +1,11 @@
 'use client'
 
+export type Arah = 'deaf' | 'service'
+
 export type SignProgressEntry = {
+  key: string
   signId: string
+  direction: Arah
   status: 'belum' | 'berlatih' | 'dikuasai' | 'dinilai-sendiri'
   attempts: number
   updatedAt: number
@@ -11,7 +15,7 @@ export type SignProgressEntry = {
 export type RunEntry = {
   id: string
   scenarioId: string
-  direction: 'deaf' | 'service'
+  direction: Arah
   durationMs: number
   mastered: string[]
   needsRepeat: string[]
@@ -23,12 +27,33 @@ export type SyncState = 'lokal' | 'menyinkron' | 'tersinkron' | 'offline' | 'tan
 
 const DB_NAME = 'lakon-progress'
 
+const kunciSign = (direction: Arah, signId: string) => `${direction}:${signId}`
+
 const openDb = (): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1)
-    request.onupgradeneeded = () => {
-      request.result.createObjectStore('signs', { keyPath: 'signId' })
-      request.result.createObjectStore('runs', { keyPath: 'id' })
+    const request = indexedDB.open(DB_NAME, 2)
+    request.onupgradeneeded = (event) => {
+      const db = request.result
+      if (event.oldVersion < 1) {
+        db.createObjectStore('runs', { keyPath: 'id' })
+      }
+      if (event.oldVersion < 1) {
+        db.createObjectStore('signs', { keyPath: 'key' })
+        return
+      }
+      const upgrade = request.transaction!
+      const lama = upgrade.objectStore('signs')
+      const baca = lama.getAll() as IDBRequest<Record<string, unknown>[]>
+      baca.onsuccess = () => {
+        const entries = baca.result
+        db.deleteObjectStore('signs')
+        const baru = db.createObjectStore('signs', { keyPath: 'key' })
+        for (const entry of entries) {
+          const direction = (entry.direction as Arah | undefined) ?? 'deaf'
+          const signId = String(entry.signId)
+          baru.put({ ...entry, direction, key: kunciSign(direction, signId) })
+        }
+      }
     }
     request.onsuccess = () => resolve(request.result)
     request.onerror = () => reject(request.error ?? new Error('IndexedDB gagal'))
@@ -49,21 +74,28 @@ const tx = async <T>(
   })
 }
 
-export const listSignProgress = () =>
-  tx<SignProgressEntry[]>(
+export const listSignProgress = async (direction?: Arah) => {
+  const semua = await tx<SignProgressEntry[]>(
     'signs',
     'readonly',
     (store) => store.getAll() as IDBRequest<SignProgressEntry[]>,
   )
+  return direction ? semua.filter((entry) => entry.direction === direction) : semua
+}
 
 export const listRuns = () =>
   tx<RunEntry[]>('runs', 'readonly', (store) => store.getAll() as IDBRequest<RunEntry[]>)
 
 export const saveSignProgress = async (
-  entry: Omit<SignProgressEntry, 'updatedAt' | 'synced'>,
+  entry: Omit<SignProgressEntry, 'key' | 'updatedAt' | 'synced'>,
 ): Promise<void> => {
   await tx('signs', 'readwrite', (store) =>
-    store.put({ ...entry, updatedAt: Date.now(), synced: false }),
+    store.put({
+      ...entry,
+      key: kunciSign(entry.direction, entry.signId),
+      updatedAt: Date.now(),
+      synced: false,
+    }),
   )
   scheduleSync()
 }
@@ -133,7 +165,7 @@ export const syncNow = async (): Promise<void> => {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        signs: signs.map(({ synced: _synced, ...entry }) => entry),
+        signs: signs.map(({ synced: _synced, key: _key, ...entry }) => entry),
         runs: runs.map(({ synced: _synced, id: _id, ...run }) => run),
       }),
     })
@@ -168,16 +200,21 @@ export const pullFromServer = async (): Promise<void> => {
     const data = (await response.json()) as {
       signs: {
         signId: string
+        direction?: Arah
         status: SignProgressEntry['status']
         attempts: number
         updatedAt: number
       }[]
     }
-    const local = new Map((await listSignProgress()).map((entry) => [entry.signId, entry]))
+    const local = new Map((await listSignProgress()).map((entry) => [entry.key, entry]))
     for (const remote of data.signs) {
-      const existing = local.get(remote.signId)
+      const direction = remote.direction ?? 'deaf'
+      const key = kunciSign(direction, remote.signId)
+      const existing = local.get(key)
       if (!existing || existing.updatedAt < remote.updatedAt) {
-        await tx('signs', 'readwrite', (store) => store.put({ ...remote, synced: true }))
+        await tx('signs', 'readwrite', (store) =>
+          store.put({ ...remote, direction, key, synced: true }),
+        )
       }
     }
   } catch {

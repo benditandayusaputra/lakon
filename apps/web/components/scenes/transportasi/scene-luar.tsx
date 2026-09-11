@@ -1,5 +1,6 @@
 'use client'
 
+import { PetunjukPintu } from '@/components/scenes/petunjuk-pintu'
 import { useAsalZoom } from '@/features/ui/use-asal-zoom'
 
 import type { ReactNode } from 'react'
@@ -149,9 +150,10 @@ function PintuGeser({ membuka, onMasuk }: { membuka: boolean; onMasuk: () => voi
           </span>
         </span>
       </span>
-      <span className="pointer-events-none absolute -bottom-8 left-1/2 w-max -translate-x-1/2 rounded-full bg-[#1c3a55]/90 px-3 py-1 text-xs font-bold text-[#ffd28a] opacity-90 transition-opacity group-hover:opacity-100 sm:text-sm">
-        {membuka ? 'Pintu terbuka, silakan masuk' : 'Klik pintu untuk masuk'}
-      </span>
+      <PetunjukPintu
+        aktif={!membuka}
+        teks={membuka ? 'Pintu terbuka, silakan masuk' : 'Klik pintu untuk masuk'}
+      />
     </button>
   )
 }

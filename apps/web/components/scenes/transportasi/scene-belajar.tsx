@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowLeft, ArrowRight, Check, Ticket, TicketCheck } from 'lucide-react'
+import { ArrowRight, Check, Ticket, TicketCheck } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
@@ -199,7 +199,7 @@ export function SceneBelajar({
                         tervalidasi penanda Tuli
                       </>
                     ) : (
-                      'draf, belum divalidasi penanda Tuli'
+                      `${sign.gloss.id} · BISINDO`
                     )}
                   </p>
                 </div>
@@ -239,17 +239,6 @@ export function SceneBelajar({
                 />
               )}
               <div className="flex flex-wrap items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => onGantiView('demo')}
-                  className="tombol-sekunder bg-white/80"
-                >
-                  <ArrowLeft
-                    aria-hidden
-                    className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
-                  />
-                  Lihat peragaan lagi
-                </button>
                 {progress.attempts > 0 ? (
                   <p className="text-teks-samar text-sm">
                     percobaan: {progress.attempts}, gagal beruntun: {progress.consecutiveFailures}

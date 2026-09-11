@@ -28,19 +28,28 @@ const demoId = await upsertUser('demo@lakon.id', 'Akun Demo', 'CobaLakon2026', '
 await upsertUser('admin@lakon.id', 'Admin Lakon', 'AdminLakon2026', 'admin')
 await upsertUser('validator@lakon.id', 'Validator Lakon', 'ValidasiLakon2026', 'validator')
 
+const contoh = [
+  ['bendi@lakon.id', 'Bendi', 'BendiLakon2026'],
+  ['kevin@lakon.id', 'Kevin', 'KevinLakon2026'],
+  ['jessica@lakon.id', 'Jessica', 'JessicaLakon2026'],
+  ['nawal@lakon.id', 'Nawal', 'NawalLakon2026'],
+]
+for (const [email, nama, sandi] of contoh) await upsertUser(email, nama, sandi, 'pengguna')
+
 const progress = [
   ['halo', 'dikuasai', 2],
   ['kopi', 'dikuasai', 3],
   ['panas', 'dikuasai', 1],
-  ['berapa', 'berlatih', 4],
-  ['bayar', 'berlatih', 2],
+  ['manis', 'berlatih', 4],
+  ['pahit', 'berlatih', 2],
   ['terima-kasih', 'dinilai-sendiri', 5],
 ]
+await sql(`delete from sign_progress where user_id = $1`, [demoId])
 for (const [signId, status, attempts] of progress) {
   await sql(
-    `insert into sign_progress (user_id, sign_id, status, attempts, updated_at)
-     values ($1, $2, $3, $4, now())
-     on conflict (user_id, sign_id) do update set status = $3, attempts = $4, updated_at = now()`,
+    `insert into sign_progress (user_id, sign_id, direction, status, attempts, updated_at)
+     values ($1, $2, 'deaf', $3, $4, now())
+     on conflict (user_id, sign_id, direction) do update set status = $3, attempts = $4, updated_at = now()`,
     [demoId, signId, status, attempts],
   )
 }
@@ -55,3 +64,5 @@ await sql(
 console.log('seed selesai: demo@lakon.id / CobaLakon2026 (progres parsial terisi)')
 console.log('              admin@lakon.id / AdminLakon2026')
 console.log('              validator@lakon.id / ValidasiLakon2026')
+console.log('              contoh: bendi@lakon.id / BendiLakon2026, kevin@lakon.id / KevinLakon2026,')
+console.log('                      jessica@lakon.id / JessicaLakon2026, nawal@lakon.id / NawalLakon2026')
