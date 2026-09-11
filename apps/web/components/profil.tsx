@@ -2,7 +2,17 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, CheckCircle2, LogOut, Trash2, UserRound } from 'lucide-react'
+import {
+  ArrowLeft,
+  BarChart3,
+  CheckCircle2,
+  Hand,
+  LogOut,
+  Map,
+  Repeat,
+  Trash2,
+  UserRound,
+} from 'lucide-react'
 import { SyncBadge } from '@/components/sync-badge'
 import {
   clearAllProgress,
@@ -82,16 +92,20 @@ export function Profil({ nama, email, peran }: { nama: string; email: string; pe
         </section>
 
         <section>
-          <h2 className="font-display text-2xl font-semibold">Progres belajarmu</h2>
+          <h2 className="font-display flex items-center gap-2.5 text-2xl font-semibold">
+            <BarChart3 aria-hidden size={22} className="text-aksen" />
+            Progres belajarmu
+          </h2>
           <dl className="divide-border-halus border-border-halus bg-kartu shadow-kartu mt-3 grid grid-cols-3 divide-x rounded-2xl border">
             {(
               [
-                [dikuasai, 'isyarat dikuasai'],
-                [sesi, 'sesi selesai'],
-                [adegan, 'adegan dijalani'],
+                [Hand, dikuasai, 'isyarat dikuasai'],
+                [Repeat, sesi, 'sesi selesai'],
+                [Map, adegan, 'adegan dijalani'],
               ] as const
-            ).map(([nilai, label]) => (
+            ).map(([Ikon, nilai, label]) => (
               <div key={label} className="px-4 py-4">
+                <Ikon aria-hidden size={16} className="text-aksen mb-1" />
                 <dd className="font-display text-3xl font-semibold">{nilai}</dd>
                 <dt className="text-teks-sekunder mt-0.5 text-sm">{label}</dt>
               </div>
@@ -100,7 +114,10 @@ export function Profil({ nama, email, peran }: { nama: string; email: string; pe
         </section>
 
         <section className="border-border-halus bg-kartu shadow-kartu flex flex-col gap-4 rounded-3xl border p-6">
-          <h2 className="font-display text-2xl font-semibold">Akun</h2>
+          <h2 className="font-display flex items-center gap-2.5 text-2xl font-semibold">
+            <UserRound aria-hidden size={22} className="text-aksen" />
+            Akun
+          </h2>
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
@@ -109,7 +126,7 @@ export function Profil({ nama, email, peran }: { nama: string; email: string; pe
                   window.location.assign('/')
                 })
               }}
-              className="tombol-utama"
+              className="tombol-utama inline-flex items-center gap-2"
             >
               <LogOut aria-hidden size={16} />
               Keluar
@@ -118,7 +135,10 @@ export function Profil({ nama, email, peran }: { nama: string; email: string; pe
         </section>
 
         <section className="border-border-tegas bg-kartu flex flex-col gap-3 rounded-3xl border-2 p-6">
-          <h2 className="font-display text-2xl font-semibold">Hapus data belajar</h2>
+          <h2 className="font-display flex items-center gap-2.5 text-2xl font-semibold">
+            <Trash2 aria-hidden size={22} className="text-galat" />
+            Hapus data belajar
+          </h2>
           <p className="text-teks-sekunder max-w-prose">
             Menghapus seluruh progres isyarat dan riwayat sesi, di perangkat ini dan di server.
             Akunmu tetap ada. Tindakan ini tidak bisa dibatalkan.

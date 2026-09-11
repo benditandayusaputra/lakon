@@ -3,11 +3,22 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { ArrowRight, CheckCircle2, Eye, Hand, VolumeX } from 'lucide-react'
+import {
+  ArrowRight,
+  CheckCircle2,
+  Eye,
+  Hand,
+  Map,
+  ShieldCheck,
+  Sparkles,
+  Users,
+  VolumeX,
+} from 'lucide-react'
 import { Logo } from '@/components/logo'
+import { PetaPerjalanan } from '@/components/peta-perjalanan'
 import { useContent } from '@/features/content/use-content'
-import { SCENE_ICONS, scenarioSignIds } from '@/features/ui/adegan'
-import { paletteFor, scenarioRank } from '@/features/ui/tokens'
+import { scenarioSignIds } from '@/features/ui/adegan'
+import { scenarioRank } from '@/features/ui/tokens'
 
 const TrySignBlock = dynamic(() => import('@/components/try-sign-block'), {
   ssr: false,
@@ -46,6 +57,10 @@ const copy = {
     scenariosBody: 'Adegan terbuka satu demi satu. Mulai dari kedai kopi.',
     sceneLabel: 'Adegan',
     sceneStart: 'Mulai',
+    sceneRepeat: 'Ulangi',
+    sceneLocked: 'terkunci',
+    mapStart: 'Mulai di sini',
+    mapFinish: 'Garis akhir',
     scenarioMoods: {
       'kedai-kopi': 'Amber pagi, kayu jati',
       puskesmas: 'Hijau teduh, ruang tunggu',
@@ -101,6 +116,10 @@ const copy = {
     scenariosBody: 'Scenes unlock one after another. Start at the coffee shop.',
     sceneLabel: 'Scene',
     sceneStart: 'Start',
+    sceneRepeat: 'Replay',
+    sceneLocked: 'locked',
+    mapStart: 'Start here',
+    mapFinish: 'Finish line',
     scenarioMoods: {
       'kedai-kopi': 'Morning amber, teak wood',
       puskesmas: 'Calm green, waiting room',
@@ -246,7 +265,15 @@ export function Landing() {
       >
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div className="lg:shrink-0">
-            <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.tryTitle}</h2>
+            <h2 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
+              <span
+                aria-hidden
+                className="bg-panggung text-sorot flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+              >
+                <Sparkles size={20} strokeWidth={2.25} />
+              </span>
+              {t.tryTitle}
+            </h2>
             <p className="text-teks-sekunder mt-2 text-base sm:text-lg">{t.tryBody}</p>
           </div>
           <ol className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:gap-2.5">
@@ -279,7 +306,15 @@ export function Landing() {
 
       <section className="bg-terangkat">
         <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
-          <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.twoWayTitle}</h2>
+          <h2 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
+            <span
+              aria-hidden
+              className="bg-panggung text-sorot flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+            >
+              <Users size={20} strokeWidth={2.25} />
+            </span>
+            {t.twoWayTitle}
+          </h2>
           <p className="text-teks-sekunder mt-2 text-base sm:text-lg">{t.twoWayBody}</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {roles.map(([Ikon, judul, isi]) => (
@@ -307,66 +342,51 @@ export function Landing() {
         id="adegan"
         className="mx-auto w-full max-w-5xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16"
       >
-        <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.scenariosTitle}</h2>
+        <h2 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
+          <span
+            aria-hidden
+            className="bg-panggung text-sorot flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+          >
+            <Map size={20} strokeWidth={2.25} />
+          </span>
+          {t.scenariosTitle}
+        </h2>
         <p className="text-teks-sekunder mt-2 text-base sm:text-lg">{t.scenariosBody}</p>
-        <ol className="mt-6 grid gap-4 lg:grid-cols-2">
-          {scenarios.map((scenario, index) => {
-            const palette = paletteFor(scenario.id)
-            const SceneIcon = SCENE_ICONS[scenario.id] ?? Hand
-            const signCount = scenarioSignIds(scenario).size
-            return (
-              <li key={scenario.id}>
-                <Link
-                  href="/daftar"
-                  className="jalur-simpul border-border-halus bg-kartu shadow-kartu hover:shadow-kartu-angkat flex h-full items-start gap-4 rounded-3xl border p-4 sm:p-5"
-                >
-                  <span
-                    aria-hidden
-                    className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border-4 shadow-lg sm:h-20 sm:w-20"
-                    style={{
-                      backgroundColor: palette.tint,
-                      borderColor: palette.accent,
-                      color: palette.deep,
-                    }}
-                  >
-                    <SceneIcon size={28} strokeWidth={2} />
-                  </span>
-                  <span className="flex min-w-0 flex-1 flex-col gap-1">
-                    <span className="text-teks-samar font-mono text-xs uppercase tracking-[0.2em]">
-                      {t.sceneLabel} {index + 1}
-                    </span>
-                    <span
-                      className="font-display text-xl font-semibold leading-tight"
-                      style={{ color: palette.deep }}
-                    >
-                      {scenario.title[lang]}
-                    </span>
-                    <span className="text-teks-sekunder text-sm">
-                      {t.scenarioMoods[scenario.id] ?? ''}
-                    </span>
-                    <span className="text-teks-samar font-mono text-xs">
-                      {signCount} {t.scenarioSigns} · ±{scenario.estimatedMinutes}{' '}
-                      {t.scenarioMinutes}
-                    </span>
-                  </span>
-                  <span
-                    aria-hidden
-                    className="hidden shrink-0 items-center gap-1.5 self-center text-sm font-bold sm:flex"
-                    style={{ color: palette.accent }}
-                  >
-                    {t.sceneStart}
-                    <ArrowRight size={16} strokeWidth={2.5} />
-                  </span>
-                </Link>
-              </li>
-            )
-          })}
-        </ol>
+        <div className="mt-6">
+          <PetaPerjalanan
+            simpul={scenarios.map((scenario) => ({
+              id: scenario.id,
+              judul: scenario.title[lang],
+              suasana: t.scenarioMoods[scenario.id] ?? '',
+              isyarat: scenarioSignIds(scenario).size,
+              menit: scenario.estimatedMinutes ?? 15,
+              href: '/daftar',
+            }))}
+            teks={{
+              adegan: t.sceneLabel,
+              mulai: t.sceneStart,
+              ulangi: t.sceneRepeat,
+              terkunci: t.sceneLocked,
+              isyarat: t.scenarioSigns,
+              menit: t.scenarioMinutes,
+              mulaiDiSini: t.mapStart,
+              garisAkhir: t.mapFinish,
+            }}
+          />
+        </div>
       </section>
 
       <section className="bg-terangkat">
         <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
-          <h2 className="font-display text-3xl font-semibold sm:text-4xl">{t.accessTitle}</h2>
+          <h2 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
+            <span
+              aria-hidden
+              className="bg-panggung text-sorot flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+            >
+              <ShieldCheck size={20} strokeWidth={2.25} />
+            </span>
+            {t.accessTitle}
+          </h2>
           <ul className="mt-5 flex flex-wrap gap-2.5">
             {t.accessItems.map((item) => (
               <li

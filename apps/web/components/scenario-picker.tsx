@@ -2,7 +2,18 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Eye, Hand, Info, Lock, Star, UserRound } from 'lucide-react'
+import {
+  ArrowRight,
+  Eye,
+  Flag,
+  Hand,
+  Info,
+  Lock,
+  Repeat,
+  Star,
+  UserRound,
+  Users,
+} from 'lucide-react'
 import { useContent } from '@/features/content/use-content'
 import { listRuns, listSignProgress, pullFromServer } from '@/features/progress/store'
 import { Logo } from '@/components/logo'
@@ -117,12 +128,13 @@ export function ScenarioPicker() {
           <dl className="divide-halaman/15 border-halaman/15 bg-halaman/5 grid max-w-md grid-cols-3 divide-x rounded-2xl border">
             {(
               [
-                [`${selesai}/${scenarios.length || 5}`, 'adegan selesai'],
-                [masteredSigns.size, 'isyarat dikuasai'],
-                [totalRuns, 'sesi selesai'],
+                [Flag, `${selesai}/${scenarios.length || 5}`, 'adegan selesai'],
+                [Hand, masteredSigns.size, 'isyarat dikuasai'],
+                [Repeat, totalRuns, 'sesi selesai'],
               ] as const
-            ).map(([value, label]) => (
+            ).map(([Ikon, value, label]) => (
               <div key={label} className="px-4 py-3">
+                <Ikon aria-hidden size={15} className="text-sorot mb-1" />
                 <dd className="font-display text-2xl font-semibold">{value}</dd>
                 <dt className="text-halaman/60 mt-0.5 text-xs">{label}</dt>
               </div>
@@ -133,7 +145,10 @@ export function ScenarioPicker() {
 
       <section className="mx-auto w-full max-w-3xl px-6 pt-8">
         <fieldset>
-          <legend className="font-display text-xl font-semibold">Pilih peranmu</legend>
+          <legend className="font-display flex items-center gap-2 text-xl font-semibold">
+            <Users aria-hidden size={20} className="text-aksen" />
+            Pilih peranmu
+          </legend>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             {ROLES.map((role) => {
               const active = direction === role.value
