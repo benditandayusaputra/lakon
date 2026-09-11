@@ -37,6 +37,15 @@ export const RELAXED_FINGERS = {
   pinky: { flex: [15, 20, 10] as [number, number, number], abduct: 8, oppose: 0 },
 }
 
+const PASSIVE_ALIAS: Record<string, { anchor: Anchor; offset: Vec3Tuple }> = {
+  bibir: { anchor: 'dagu', offset: [0, 0.1, 0.02] },
+  mulut: { anchor: 'dagu', offset: [0, 0.1, 0.02] },
+  'bawah-mata': { anchor: 'mata', offset: [0, -0.08, 0.02] },
+  'dada-kiri': { anchor: 'dada', offset: [0.18, 0.05, 0] },
+  'dada-kanan': { anchor: 'dada', offset: [-0.18, 0.05, 0] },
+  kepala: { anchor: 'dahi', offset: [0, 0.2, -0.15] },
+}
+
 const HAND_PART_TIPS: Record<string, Finger> = {
   'thumb-tip': 'thumb',
   'index-tip': 'index',
@@ -314,8 +323,9 @@ const handPartPoint = (
 const restTarget = (rig: CompilerRig, side: Side): HandTarget => {
   const hand = rig.hands[side]
   const shoulder = vec(hand.shoulder)
-  const reach = (hand.upperArmLength + hand.lowerArmLength) * 0.92
-  const wristPos = shoulder.clone().add(new Vector3(0, -reach, 0.04))
+  const reach = (hand.upperArmLength + hand.lowerArmLength) * 0.965
+  const s = rig.shoulderWidth
+  const wristPos = shoulder.clone().add(new Vector3(lateralSign(side) * 0.14 * s, -reach, 0.12 * s))
   const wristQuat = orientationQuat(
     side,
     { palm: 'in', fingers: 'down' },
@@ -417,7 +427,13 @@ const sampleSegments = (
   segments: Segment[],
   t: number,
   shoulderWidth: number,
-): { wristPos: Vector3; wristQuat: Quaternion; fingers: FingerParams } => {
+): {
+  wristPos: Vector3
+  wristQuat: Quaternion
+  fingers: FingerParams
+  segmentIndex: number
+  eased: number
+} => {
   let segment = segments[segments.length - 1]!
   for (const candidate of segments) {
     if (t < candidate.start + candidate.moveDuration + candidate.holdDuration) {
@@ -429,6 +445,15 @@ const sampleSegments = (
   const u = segment.moveDuration <= 0 ? 1 : Math.min(1, Math.max(0, local / segment.moveDuration))
   const eased = easingValue(segment.easing, u)
 
+  let wristQuat = segment.from.wristQuat.clone().slerp(segment.to.wristQuat, eased)
+  const tilt = segment.path?.tilt ?? 0
+  if (tilt > 0 && segment.path) {
+    const repeat = segment.path.repeat ?? 1
+    const angle = toRad(tilt) * Math.sin(2 * Math.PI * repeat * eased) * Math.sin(Math.PI * eased)
+    const axis = PLANE_NORMALS[segment.path.plane ?? 'sagittal']
+    wristQuat = new Quaternion().setFromAxisAngle(axis, angle).multiply(wristQuat)
+  }
+
   return {
     wristPos: evalPath(
       segment.path,
@@ -437,8 +462,58 @@ const sampleSegments = (
       eased,
       shoulderWidth,
     ),
-    wristQuat: segment.from.wristQuat.clone().slerp(segment.to.wristQuat, eased),
+    wristQuat,
     fingers: lerpFingers(segment.from.fingers, segment.to.fingers, eased),
+    segmentIndex: segments.indexOf(segment),
+    eased,
+  }
+}
+
+const isHandPart = (part: string) =>
+  /^(nondominant-|dominant-)?(wrist|palm|thumb-tip|index-tip|middle-tip|ring-tip|pinky-tip)$/.test(
+    part,
+  )
+
+const rencanaKontak = (
+  sign: Sign,
+  anchors: Record<Anchor, Vec3Tuple>,
+  shoulderWidth: number,
+): { titik: Vector3 | null; bobot: (segmentIndex: number, eased: number) => number } | null => {
+  const contact = sign.contact
+  if (!contact) return null
+  const part = contact.passivePart
+  let titik: Vector3 | null = null
+  let anchorPasif: Anchor | null = null
+  if (part in anchors) {
+    anchorPasif = part as Anchor
+    titik = vec(anchors[anchorPasif])
+  } else if (PASSIVE_ALIAS[part]) {
+    const alias = PASSIVE_ALIAS[part]!
+    anchorPasif = alias.anchor
+    titik = vec(anchors[alias.anchor]).add(
+      new Vector3(
+        alias.offset[0] * shoulderWidth,
+        alias.offset[1] * shoulderWidth,
+        alias.offset[2] * shoulderWidth,
+      ),
+    )
+  } else if (!isHandPart(part)) {
+    return null
+  }
+  const berlaku = sign.phases.map((phase) =>
+    anchorPasif
+      ? phase.dominant.location.anchor === anchorPasif
+      : phase.name === 'stroke' || phase.name === 'hold',
+  )
+  if (!berlaku.some(Boolean)) return null
+  return {
+    titik,
+    bobot: (segmentIndex, eased) => {
+      const kini = berlaku[segmentIndex] ?? false
+      const sebelum = segmentIndex > 0 ? (berlaku[segmentIndex - 1] ?? false) : false
+      if (kini) return sebelum ? 1 : eased
+      return sebelum ? 1 - eased : 0
+    },
   }
 }
 
@@ -500,6 +575,8 @@ export const compileSign = (
     return index
   }
 
+  const kontak = sign.contact ? rencanaKontak(sign, anchors, rig.shoulderWidth) : null
+
   const shoulderLeft = vec(rig.hands.left.shoulder)
   const shoulderRight = vec(rig.hands.right.shoulder)
   const mpPose: { x: number; y: number; z: number }[] = Array.from({ length: 33 }, () => ({
@@ -553,17 +630,19 @@ export const compileSign = (
       if (side === dominance) domLandmarks = landmarks
     }
 
-    if (sign.contact && domLandmarks) {
-      const active = handPartPoint(rig, dominance, sign.contact.activePart, domLandmarks)
-      const passiveAnchor = anchors[sign.contact.passivePart as Anchor]
-      const passive = passiveAnchor
-        ? vec(passiveAnchor)
-        : handPartPoint(rig, nonDom, sign.contact.passivePart, landmarksBySide[nonDom])
-      const delta = passive.sub(active)
-      dom.wristPos.add(delta)
-      landmarksBySide[dominance] = landmarksBySide[dominance].map((point) =>
-        point.clone().add(delta),
-      )
+    if (sign.contact && domLandmarks && kontak) {
+      const bobot = kontak.bobot(dom.segmentIndex, dom.eased)
+      if (bobot > 0) {
+        const active = handPartPoint(rig, dominance, sign.contact.activePart, domLandmarks)
+        const passive = kontak.titik
+          ? kontak.titik.clone()
+          : handPartPoint(rig, nonDom, sign.contact.passivePart, landmarksBySide[nonDom])
+        const delta = passive.sub(active).multiplyScalar(bobot)
+        dom.wristPos.add(delta)
+        landmarksBySide[dominance] = landmarksBySide[dominance].map((point) =>
+          point.clone().add(delta),
+        )
+      }
     }
 
     for (const [side, sample] of samples) {

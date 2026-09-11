@@ -1552,3 +1552,61 @@ input[type='range'] {
     transform: translateY(-3px) rotate(4deg);
   }
 }
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgb(250 247 242 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(250 247 242 / 0.06) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 80% at 50% 40%, #000 30%, transparent 100%);
+}
+
+.hero-orb {
+  animation: hero-orb 16s ease-in-out infinite alternate;
+}
+
+@keyframes hero-orb {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(60px, -40px, 0) scale(1.18);
+  }
+}
+
+.hero-jalan {
+  animation: hero-jalan 1.4s linear infinite;
+}
+
+@keyframes hero-jalan {
+  to {
+    stroke-dashoffset: -34;
+  }
+}
+
+.hero-apung {
+  animation: hero-apung 3.6s ease-in-out infinite alternate;
+}
+
+@keyframes hero-apung {
+  from {
+    transform: translate(-50%, -100%) translateY(0);
+  }
+  to {
+    transform: translate(-50%, -100%) translateY(-10px);
+  }
+}
+
+.hero-lambai {
+  transform-origin: 50% 90%;
+  animation: hero-lambai 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes hero-lambai {
+  from {
+    transform: rotate(-10deg);
+  }
+  to {
+    transform: rotate(12deg);
+  }
+}

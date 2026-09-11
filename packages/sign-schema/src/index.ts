@@ -112,6 +112,7 @@ export const pathSchema = z.object({
   curvature: z.number().min(0).max(1).optional(),
   plane: z.enum(PATH_PLANES).optional(),
   repeat: z.number().int().min(1).max(5).optional(),
+  tilt: z.number().min(0).max(45).optional(),
 })
 
 export const phaseSchema = z.object({

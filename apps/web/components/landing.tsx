@@ -15,6 +15,7 @@ import {
   VolumeX,
 } from 'lucide-react'
 import { Logo } from '@/components/logo'
+import { HeroLatar } from '@/components/hero-latar'
 import { PetaPerjalanan } from '@/components/peta-perjalanan'
 import { useContent } from '@/features/content/use-content'
 import { scenarioSignIds } from '@/features/ui/adegan'
@@ -184,7 +185,7 @@ export function Landing() {
   return (
     <main lang={lang} className="flex min-h-dvh flex-col">
       <header className="border-halaman/10 bg-panggung/90 text-halaman sticky top-0 z-40 border-b backdrop-blur">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2.5 text-xl font-bold">
             <Logo />
             Lakon
@@ -222,7 +223,8 @@ export function Landing() {
 
       <section className="bg-panggung text-halaman relative overflow-hidden">
         <div aria-hidden className="sorot-panggung absolute inset-0" />
-        <div className="animasi-masuk relative mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pb-14 pt-12 text-center sm:px-6 md:pb-20 md:pt-20">
+        <HeroLatar />
+        <div className="animasi-masuk relative mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 pb-24 pt-14 text-center sm:px-6 md:pb-32 md:pt-24">
           <p className="text-sorot font-mono text-xs font-bold uppercase tracking-[0.2em]">
             {t.heroKicker}
           </p>
@@ -261,10 +263,10 @@ export function Landing() {
       <section
         id="coba"
         ref={trySectionRef}
-        className="mx-auto w-full max-w-5xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16"
+        className="mx-auto w-full max-w-7xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16"
       >
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div className="lg:shrink-0">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] lg:items-center">
+          <div>
             <h2 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
               <span
                 aria-hidden
@@ -276,15 +278,15 @@ export function Landing() {
             </h2>
             <p className="text-teks-sekunder mt-2 text-base sm:text-lg">{t.tryBody}</p>
           </div>
-          <ol className="flex flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:gap-2.5">
+          <ol className="grid gap-3 sm:grid-cols-3">
             {t.trySteps.map((step, index) => (
               <li
                 key={step}
-                className="border-border-halus bg-kartu shadow-kartu flex items-center gap-2.5 rounded-full border py-1.5 pl-1.5 pr-4 font-medium"
+                className="border-border-halus bg-kartu shadow-kartu flex items-center gap-3 rounded-2xl border p-3.5 text-sm font-medium leading-snug"
               >
                 <span
                   aria-hidden
-                  className="bg-panggung text-sorot flex h-7 w-7 shrink-0 items-center justify-center rounded-full font-mono text-xs font-bold"
+                  className="bg-panggung text-sorot flex h-9 w-9 shrink-0 items-center justify-center rounded-full font-mono text-sm font-bold"
                 >
                   {index + 1}
                 </span>
@@ -305,7 +307,7 @@ export function Landing() {
       </section>
 
       <section className="bg-terangkat">
-        <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
+        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
           <h2 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
             <span
               aria-hidden
@@ -340,7 +342,7 @@ export function Landing() {
 
       <section
         id="adegan"
-        className="mx-auto w-full max-w-5xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16"
+        className="mx-auto w-full max-w-7xl scroll-mt-20 px-4 py-12 sm:px-6 sm:py-16"
       >
         <h2 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
           <span
@@ -377,7 +379,7 @@ export function Landing() {
       </section>
 
       <section className="bg-terangkat">
-        <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 sm:py-16">
+        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
           <h2 className="font-display flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
             <span
               aria-hidden
@@ -402,7 +404,7 @@ export function Landing() {
       </section>
 
       <footer className="bg-panggung text-halaman/60 border-halaman/10 border-t">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-8 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-8 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:px-6">
           <p className="text-halaman flex items-center gap-2.5 font-bold">
             <Logo className="h-6 w-6" />
             Lakon
