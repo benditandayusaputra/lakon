@@ -1,7 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, CheckCircle2, ClipboardCheck, Clock3, RotateCcw, Siren } from 'lucide-react'
+import {
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  ClipboardCheck,
+  Clock3,
+  Hand,
+  RotateCcw,
+  Siren,
+} from 'lucide-react'
 import { Ambulans } from './props'
 import { KARTU_KEJADIAN, NOMOR_DARURAT, TITIK_PETA, prettify, type Laporan } from './types'
 
@@ -49,7 +58,7 @@ export function SceneLaporan({
         >
           <span className="absolute inset-x-6 top-1/2 block h-1.5 -translate-y-1/2 rounded-full bg-[#1f2d3a]" />
         </div>
-        <div className="kk-muncul relative rounded-2xl bg-[#fbfcfd] px-6 pb-6 pt-8 font-mono text-sm text-[#2b2620] shadow-[0_30px_60px_-24px_rgba(31,45,58,0.7)] sm:px-8">
+        <div className="kk-muncul relative overflow-hidden rounded-2xl bg-[#fbfcfd] px-6 pb-6 pt-8 font-mono text-sm text-[#2b2620] shadow-[0_30px_60px_-24px_rgba(31,45,58,0.7)] sm:px-8">
           <span
             aria-hidden
             className="kk-stempel font-display pointer-events-none absolute right-4 top-[4.5rem] rotate-[-12deg] rounded-md border-4 border-[#256b45] px-3 py-1 text-lg font-black tracking-[0.2em] text-[#256b45] opacity-60"
@@ -88,7 +97,8 @@ export function SceneLaporan({
           </dl>
           <div className="my-3 border-t border-dashed border-[#b0a591]" />
           <p className="text-xs font-bold uppercase tracking-widest text-[#256b45]">
-            ✓ Isyarat dikuasai
+            <Check aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            Isyarat dikuasai
           </p>
           <ul className="mt-1 space-y-0.5 capitalize">
             {dikuasai.length > 0 ? (
@@ -103,7 +113,11 @@ export function SceneLaporan({
             )}
           </ul>
           <p className="mt-3 text-xs font-bold uppercase tracking-widest text-[#46536a]">
-            ↻ Perlu diulang
+            <RotateCcw
+              aria-hidden
+              className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+            />
+            Perlu diulang
           </p>
           <ul className="mt-1 space-y-0.5 capitalize">
             {perluUlang.length > 0 ? (
@@ -125,7 +139,8 @@ export function SceneLaporan({
             <span>{jumlahLangkah} langkah percakapan</span>
           </p>
           <p className="kk-font-kapur mt-4 text-center text-xl text-[#33465a]">
-            Bantuan datang. Kamu sudah bisa minta tolong dengan tenang ✋
+            Bantuan datang. Kamu sudah bisa minta tolong dengan tenang{' '}
+            <Hand aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
           </p>
           <p className="mt-2 flex items-center justify-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-[#8fa3b5]">
             <ClipboardCheck aria-hidden className="h-3.5 w-3.5" /> petugas jaga · RW 05

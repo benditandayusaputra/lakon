@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Check, CircleDashed, RefreshCw, WifiOff, type LucideIcon } from 'lucide-react'
 import { onSyncState, pullFromServer, syncNow, type SyncState } from '@/features/progress/store'
 
 const LABEL: Record<SyncState, string> = {
@@ -11,12 +12,12 @@ const LABEL: Record<SyncState, string> = {
   'tanpa-akun': 'tersimpan di perangkat (masuk untuk sinkron)',
 }
 
-const ICON: Record<SyncState, string> = {
-  lokal: '◌',
-  menyinkron: '↻',
-  tersinkron: '✓',
-  offline: '⇣',
-  'tanpa-akun': '◌',
+const ICON: Record<SyncState, LucideIcon> = {
+  lokal: CircleDashed,
+  menyinkron: RefreshCw,
+  tersinkron: Check,
+  offline: WifiOff,
+  'tanpa-akun': CircleDashed,
 }
 
 export function SyncBadge() {
@@ -28,9 +29,10 @@ export function SyncBadge() {
     return unsubscribe
   }, [])
 
+  const Ikon = ICON[state]
   return (
     <p className="text-teks-samar flex items-center gap-1.5 text-sm" aria-live="polite">
-      <span aria-hidden>{ICON[state]}</span>
+      <Ikon aria-hidden className="h-4 w-4 shrink-0" />
       {LABEL[state]}
     </p>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, CheckCircle2, Clock3, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Check, CheckCircle2, Clock3, Hand, RotateCcw } from 'lucide-react'
 
 const prettify = (id: string) => id.replace(/-/g, ' ')
 
@@ -59,7 +59,8 @@ export function SceneResepPuskesmas({
           </div>
 
           <p className="mt-4 text-xs font-bold uppercase tracking-widest text-[#256b45]">
-            ✓ Isyarat dikuasai
+            <Check aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            Isyarat dikuasai
           </p>
           <ul className="mt-1 space-y-0.5 capitalize">
             {dikuasai.length > 0 ? (
@@ -74,7 +75,11 @@ export function SceneResepPuskesmas({
             )}
           </ul>
           <p className="mt-3 text-xs font-bold uppercase tracking-widest text-[#46536a]">
-            ↻ Perlu diulang
+            <RotateCcw
+              aria-hidden
+              className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+            />
+            Perlu diulang
           </p>
           <ul className="mt-1 space-y-0.5 capitalize">
             {perluDiulang.length > 0 ? (
@@ -110,7 +115,8 @@ export function SceneResepPuskesmas({
             </div>
           </div>
           <p className="kk-font-kapur mt-3 text-center text-xl text-[#2f7d52]">
-            Semoga lekas sembuh! ✋
+            Semoga lekas sembuh!{' '}
+            <Hand aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
           </p>
         </div>
       </div>

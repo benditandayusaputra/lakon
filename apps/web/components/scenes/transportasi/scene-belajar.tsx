@@ -1,6 +1,6 @@
 'use client'
 
-import { TicketCheck } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Ticket, TicketCheck } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
@@ -125,7 +125,11 @@ export function SceneBelajar({
                 key={id}
                 className="rounded-full border border-[#8fb4d8] bg-white/80 px-3 py-1 text-sm font-bold capitalize"
               >
-                ✓ {prettify(id)}
+                <Check
+                  aria-hidden
+                  className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                />
+                {prettify(id)}
               </span>
             ))}
           </div>
@@ -186,9 +190,17 @@ export function SceneBelajar({
                   <p className="font-display mt-1 text-xl font-bold">{sign.gloss.id}</p>
                   <p className="text-teks-sekunder">{sign.gloss.en}</p>
                   <p className="text-teks-sekunder mt-2 text-sm">
-                    {sign.review.status === 'approved'
-                      ? '✓ tervalidasi penanda Tuli'
-                      : 'draf, belum divalidasi penanda Tuli'}
+                    {sign.review.status === 'approved' ? (
+                      <>
+                        <Check
+                          aria-hidden
+                          className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                        />
+                        tervalidasi penanda Tuli
+                      </>
+                    ) : (
+                      'draf, belum divalidasi penanda Tuli'
+                    )}
                   </p>
                 </div>
                 <button
@@ -196,7 +208,11 @@ export function SceneBelajar({
                   onClick={() => onGantiView('praktik')}
                   className="tp-tombol w-full text-lg md:w-auto md:self-end md:px-10"
                 >
-                  Lanjut ke praktik →
+                  Lanjut ke praktik{' '}
+                  <ArrowRight
+                    aria-hidden
+                    className="inline-block h-[1em] w-[1em] align-text-bottom"
+                  />
                 </button>
               </div>
             </div>
@@ -228,7 +244,11 @@ export function SceneBelajar({
                   onClick={() => onGantiView('demo')}
                   className="tombol-sekunder bg-white/80"
                 >
-                  ← Lihat peragaan lagi
+                  <ArrowLeft
+                    aria-hidden
+                    className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                  />
+                  Lihat peragaan lagi
                 </button>
                 {progress.attempts > 0 ? (
                   <p className="text-teks-samar text-sm">
@@ -261,7 +281,8 @@ export function SceneBelajar({
         <PapanLed teks="BUS · 5 MENIT" className="w-full" />
         <div className="tp-kertas w-full -rotate-1 rounded-xl border-2 border-[#8fb4d8] p-3 text-center shadow-md">
           <p className="text-sm font-bold text-[#26496b]">
-            Hafalkan dulu, nanti dipakai saat bicara dengan petugas loket 🎫
+            Hafalkan dulu, nanti dipakai saat bicara dengan petugas loket{' '}
+            <Ticket aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
           </p>
         </div>
       </div>

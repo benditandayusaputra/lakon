@@ -1,5 +1,6 @@
 'use client'
 
+import { Check, RotateCcw, VideoOff } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   createExplicitSegmenter,
@@ -10,6 +11,7 @@ import {
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
+import { kameraHidup } from '@/features/practice/capture'
 import { createPipeline, type Pipeline, type PipelineState } from '@/features/practice/pipeline'
 import type { OverlayHighlight } from '@/features/practice/overlay'
 import {
@@ -69,8 +71,13 @@ export function PracticeBlock({
 
   useEffect(() => {
     setPhase((current) =>
-      current === 'jalan-keluar' || current === 'ditolak' ? current : 'kamera-mati',
+      current === 'jalan-keluar' || current === 'ditolak'
+        ? current
+        : pipelineRef.current?.state().status === 'running'
+          ? 'siap'
+          : 'kamera-mati',
     )
+    pipelineRef.current?.setHighlights([])
     setFailures(0)
     setResult(null)
     setVerdict(null)
@@ -125,6 +132,10 @@ export function PracticeBlock({
       },
     })
     pipelineRef.current = pipeline
+    if (kameraHidup()) {
+      setPhase('menunggu-izin')
+      void pipeline.start()
+    }
     return () => {
       pipeline.stop()
       pipelineRef.current = null
@@ -303,7 +314,11 @@ export function PracticeBlock({
         {phase === 'ditolak' ? (
           <div className="flex flex-col gap-2">
             <p>
-              <span aria-hidden>🎥</span> Kamera tidak tersedia
+              <VideoOff
+                aria-hidden
+                className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              Kamera tidak tersedia
               {pipelineState.status === 'denied' ? ' karena izin ditolak' : ''}. Kamu tetap bisa
               berlatih dengan membandingkan sendiri.
             </p>
@@ -336,7 +351,8 @@ export function PracticeBlock({
         {phase === 'berhasil' ? (
           <div className="border-berhasil flex flex-col gap-2 rounded-xl border-2 p-4">
             <p className="text-berhasil text-lg font-bold">
-              <span aria-hidden>✓</span> Berhasil
+              <Check aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+              Berhasil
             </p>
             {verdict?.kind === 'lulus-dengan-catatan' && result ? (
               <ul className="list-inside list-disc text-sm">
@@ -356,7 +372,11 @@ export function PracticeBlock({
         {phase === 'belum-tepat' ? (
           <div className="border-ulang flex flex-col gap-2 rounded-xl border-2 p-4">
             <p className="text-ulang text-lg font-bold">
-              <span aria-hidden>↻</span> Belum tepat
+              <RotateCcw
+                aria-hidden
+                className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              Belum tepat
             </p>
             {result ? (
               <ul className="list-inside list-disc text-sm">

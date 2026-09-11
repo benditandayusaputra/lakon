@@ -58,7 +58,7 @@
           "correct": 0
         }
       },
-      "next": "tiket",
+      "next": "ulang",
       "onFail": "repair-rute"
     },
     {
@@ -69,6 +69,36 @@
       },
       "hint": "Tunjukkan halte tujuanmu di peta.",
       "next": "rute"
+    },
+    {
+      "id": "ulang",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Balai Kota ya. Lewat koridor satu, transit di Pasar Lama, lalu lanjut ke…"
+      },
+      "hint": "Kalau petugas terlalu cepat, minta maaf lalu minta diulang. Itu sopan.",
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "maaf"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "maaf",
+          "options": ["maaf", "halo", "sama-sama"]
+        }
+      },
+      "next": "tiket",
+      "onFail": "repair-ulang"
+    },
+    {
+      "id": "repair-ulang",
+      "actor": "petugas-loket",
+      "line": {
+        "id": "Pelan-pelan saja, saya ulangi."
+      },
+      "hint": "Minta ulang dengan isyarat maaf.",
+      "next": "ulang"
     },
     {
       "id": "tiket",

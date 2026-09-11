@@ -4,9 +4,7 @@
     "id": "Memesan minuman di kedai kopi",
     "en": "Ordering a drink at a coffee shop"
   },
-  "sdg": [
-    10
-  ],
+  "sdg": [10],
   "vocab": [
     "halo",
     "kopi",
@@ -35,11 +33,7 @@
         "service": {
           "type": "receptive",
           "sign": "halo",
-          "options": [
-            "halo",
-            "maaf",
-            "tolong"
-          ]
+          "options": ["halo", "maaf", "tolong"]
         }
       },
       "next": "pesan",
@@ -64,21 +58,13 @@
         "deaf": {
           "type": "point",
           "prompt": "Tunjuk menu: minuman apa yang mau kamu pesan?",
-          "options": [
-            "Kopi",
-            "Teh",
-            "Cokelat"
-          ],
+          "options": ["Kopi", "Teh", "Cokelat"],
           "correct": 0
         },
         "service": {
           "type": "point",
           "prompt": "Pelanggan menunjuk menu. Minuman apa yang ditunjuk?",
-          "options": [
-            "Kopi",
-            "Teh",
-            "Cokelat"
-          ],
+          "options": ["Kopi", "Teh", "Cokelat"],
           "correct": 0
         }
       },
@@ -109,13 +95,10 @@
         "service": {
           "type": "receptive",
           "sign": "panas",
-          "options": [
-            "panas",
-            "dingin"
-          ]
+          "options": ["panas", "dingin"]
         }
       },
-      "next": "harga",
+      "next": "rasa",
       "onFail": "repair-suhu"
     },
     {
@@ -128,6 +111,35 @@
       "next": "suhu"
     },
     {
+      "id": "rasa",
+      "actor": "barista",
+      "line": {
+        "id": "Manis atau pahit?"
+      },
+      "task": {
+        "deaf": {
+          "type": "produce",
+          "sign": "manis"
+        },
+        "service": {
+          "type": "receptive",
+          "sign": "manis",
+          "options": ["manis", "pahit", "dingin"]
+        }
+      },
+      "next": "harga",
+      "onFail": "repair-rasa"
+    },
+    {
+      "id": "repair-rasa",
+      "actor": "barista",
+      "line": {
+        "id": "Maaf, manis atau pahit?"
+      },
+      "hint": "Pilih rasa minumanmu.",
+      "next": "rasa"
+    },
+    {
       "id": "harga",
       "actor": "barista",
       "line": {
@@ -137,11 +149,7 @@
         "deaf": {
           "type": "point",
           "prompt": "Layar kasir menunjukkan total. Berapa yang harus kamu bayar?",
-          "options": [
-            "Rp20.000",
-            "Rp12.000",
-            "Rp25.000"
-          ],
+          "options": ["Rp20.000", "Rp12.000", "Rp25.000"],
           "correct": 0
         },
         "service": {
@@ -195,7 +203,7 @@
           "correct": 0
         }
       },
-      "next": "tutup",
+      "next": "ambil",
       "onFail": "repair-bayar"
     },
     {
@@ -206,6 +214,47 @@
       },
       "hint": "Tunjukkan bukti pembayaranmu.",
       "next": "bayar"
+    },
+    {
+      "id": "ambil",
+      "actor": "barista",
+      "line": {
+        "id": "Pembayaran diterima. Nomor pesananmu 12, tunggu sebentar ya."
+      },
+      "task": {
+        "deaf": {
+          "type": "point",
+          "prompt": "Barista mengangkat papan bernomor 12. Apa yang kamu lakukan?",
+          "options": [
+            "Maju ke meja ambil dan tunjukkan struk",
+            "Tetap duduk sampai dipanggil dengan suara",
+            "Memesan ulang dari awal"
+          ],
+          "correct": 0
+        },
+        "service": {
+          "type": "point",
+          "prompt": "Pesanan pelanggan Tuli sudah siap. Cara memanggilnya?",
+          "options": [
+            "Angkat papan nomor dan lambaikan tangan",
+            "Sebut namanya dengan suara keras",
+            "Menunggu ia datang sendiri"
+          ],
+          "correct": 0
+        }
+      },
+      "next": "tutup",
+      "onFail": "repair-ambil",
+      "hint": "Papan nomor adalah penanda visual, andalkan itu."
+    },
+    {
+      "id": "repair-ambil",
+      "actor": "barista",
+      "line": {
+        "id": "Nomor 12, sudah siap di meja ambil."
+      },
+      "hint": "Lihat papan nomor yang diangkat barista.",
+      "next": "ambil"
     },
     {
       "id": "tutup",
@@ -221,11 +270,7 @@
         "service": {
           "type": "receptive",
           "sign": "terima-kasih",
-          "options": [
-            "terima-kasih",
-            "halo",
-            "maaf"
-          ]
+          "options": ["terima-kasih", "halo", "maaf"]
         }
       },
       "next": null,

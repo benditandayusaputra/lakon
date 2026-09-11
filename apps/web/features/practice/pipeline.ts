@@ -125,6 +125,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
   let sentAt = 0
   let overlayWidth = 0
   let overlayHeight = 0
+  let generasi = 0
 
   const setState = (next: PipelineState) => {
     state = next
@@ -241,6 +242,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
   const start = async (route?: CaptureRoute) => {
     if (state.status === 'running' || state.status === 'starting') return
     setState({ status: 'starting' })
+    const gen = ++generasi
 
     overlay ??= createOverlay(canvas, { mirrored })
 
@@ -253,6 +255,10 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     send({ type: 'init', config })
 
     const result = await startCapture({ video, onFrame, route })
+    if (gen !== generasi) {
+      if (result.ok) result.stop()
+      return
+    }
     if (!result.ok) {
       stop()
       setState(
@@ -276,6 +282,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
   }
 
   const stop = () => {
+    generasi++
     capture?.stop()
     capture = null
     if (raf !== 0) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { Stethoscope } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Stethoscope } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
@@ -133,7 +133,11 @@ export function SceneBelajarPuskesmas({
                   key={id}
                   className="rounded-full border border-[#9dbfa9] bg-[#eef5ef] px-3 py-1 text-sm font-bold capitalize text-[#1d442f]"
                 >
-                  ✓ {prettify(id)}
+                  <Check
+                    aria-hidden
+                    className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                  />
+                  {prettify(id)}
                 </span>
               ))}
             </div>
@@ -223,9 +227,17 @@ export function SceneBelajarPuskesmas({
                     <p className="font-display mt-1 text-xl font-bold">{sign.gloss.id}</p>
                     <p className="text-teks-sekunder">{sign.gloss.en}</p>
                     <p className="text-teks-sekunder mt-2 text-sm">
-                      {sign.review.status === 'approved'
-                        ? '✓ tervalidasi penanda Tuli'
-                        : 'draf, belum divalidasi penanda Tuli'}
+                      {sign.review.status === 'approved' ? (
+                        <>
+                          <Check
+                            aria-hidden
+                            className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                          />
+                          tervalidasi penanda Tuli
+                        </>
+                      ) : (
+                        'draf, belum divalidasi penanda Tuli'
+                      )}
                     </p>
                   </div>
                   <button
@@ -233,7 +245,11 @@ export function SceneBelajarPuskesmas({
                     onClick={() => onTampilan('praktik')}
                     className="tombol-utama w-full bg-[#2f7d52] text-lg md:w-auto md:self-end md:px-10"
                   >
-                    Lanjut ke praktik →
+                    Lanjut ke praktik{' '}
+                    <ArrowRight
+                      aria-hidden
+                      className="inline-block h-[1em] w-[1em] align-text-bottom"
+                    />
                   </button>
                 </div>
               </div>
@@ -265,7 +281,11 @@ export function SceneBelajarPuskesmas({
                     onClick={() => onTampilan('demo')}
                     className="tombol-sekunder"
                   >
-                    ← Lihat peragaan lagi
+                    <ArrowLeft
+                      aria-hidden
+                      className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                    />
+                    Lihat peragaan lagi
                   </button>
                   {percobaan > 0 ? (
                     <p className="text-teks-samar text-sm">

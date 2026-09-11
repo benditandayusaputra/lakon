@@ -1,3 +1,4 @@
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { HALTE_RUTE, TUJUAN } from './types'
 
 const BIRU = '#33608c'
@@ -248,9 +249,9 @@ export function RambuGantung({
         <span className="h-4 w-1 bg-[#5c6166]" />
       </div>
       <div className="flex items-center gap-2 rounded-md bg-[#1c3a55] px-3 py-1.5 shadow-md">
-        {arah === 'kiri' ? <span className="text-sm font-black text-[#ffd28a]">←</span> : null}
+        {arah === 'kiri' ? <ArrowLeft aria-hidden className="h-4 w-4 text-[#ffd28a]" /> : null}
         <span className="text-xs font-bold tracking-wider text-[#f4f8fb]">{teks}</span>
-        {arah === 'kanan' ? <span className="text-sm font-black text-[#ffd28a]">→</span> : null}
+        {arah === 'kanan' ? <ArrowRight aria-hidden className="h-4 w-4 text-[#ffd28a]" /> : null}
       </div>
     </div>
   )

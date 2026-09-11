@@ -1,6 +1,17 @@
 'use client'
 
-import { CheckCircle2, ClipboardList, Hand, Pill, Sparkles, Stethoscope, Users } from 'lucide-react'
+import {
+  CheckCircle2,
+  ClipboardList,
+  Cross,
+  Hand,
+  PersonStanding,
+  Pill,
+  Sparkles,
+  Stethoscope,
+  Thermometer,
+  Users,
+} from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { ScenarioNode } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
@@ -22,19 +33,18 @@ export const LANGKAH_PUSKESMAS = [
   { id: 'sapa', label: 'Sapa', Icon: Hand },
   { id: 'daftar', label: 'Daftar', Icon: ClipboardList },
   { id: 'antre', label: 'Antre', Icon: Users },
-  { id: 'periksa', label: 'Periksa', Icon: Stethoscope },
+  { id: 'keluhan', label: 'Keluhan', Icon: Stethoscope },
+  { id: 'bagian', label: 'Bagian', Icon: PersonStanding },
+  { id: 'gejala', label: 'Gejala', Icon: Thermometer },
   { id: 'apotek', label: 'Obat', Icon: Pill },
   { id: 'tutup', label: 'Selesai', Icon: Sparkles },
 ] as const
 
-export const langkahDariSimpul = (idUtama: string): number => {
-  if (idUtama === 'sapa') return 0
-  if (idUtama === 'daftar') return 1
-  if (idUtama === 'antre') return 2
-  if (['keluhan', 'bagian', 'gejala', 'periksa'].includes(idUtama)) return 3
-  if (idUtama === 'apotek') return 4
-  return 5
-}
+export const langkahDariSimpul = (idUtama: string): number =>
+  Math.max(
+    0,
+    LANGKAH_PUSKESMAS.findIndex((langkah) => langkah.id === idUtama),
+  )
 
 export const PERAN_SIMPUL: Record<string, PeranMedis> = {
   petugas: 'perawat',
@@ -48,8 +58,7 @@ export const POSE_SIMPUL: Record<string, PoseMedis> = {
   antre: 'tunjuk',
   keluhan: 'netral',
   bagian: 'tunjuk',
-  gejala: 'netral',
-  periksa: 'periksa',
+  gejala: 'periksa',
   apotek: 'tunjuk',
   tutup: 'lambai',
 }
@@ -77,29 +86,74 @@ export function PanggungMedis({
       <JamDinding className="absolute left-[6%] top-[4%] w-9 sm:w-11" aria-hidden />
       {peran === 'perawat' ? (
         <>
-          <PosterKesehatan varian="cuci-tangan" className="absolute right-[7%] top-[6%] w-14 rotate-1 sm:w-16" />
-          <LayarAntrean nomor="A-06" poli="Poli Umum" className="absolute left-[6%] top-[22%] w-32 sm:w-36" />
+          <PosterKesehatan
+            varian="cuci-tangan"
+            className="absolute right-[7%] top-[6%] w-14 rotate-1 sm:w-16"
+          />
+          <LayarAntrean
+            nomor="A-06"
+            poli="Poli Umum"
+            className="absolute left-[6%] top-[22%] w-32 sm:w-36"
+          />
           <KursiTunggu className="absolute bottom-[16%] right-[2%] w-40 opacity-50" aria-hidden />
         </>
       ) : null}
       {peran === 'dokter' ? (
         <>
-          <PosterKesehatan varian="mata" className="absolute left-[6%] top-[26%] w-14 -rotate-1 sm:w-16" />
-          <svg viewBox="0 0 180 120" className="absolute bottom-[14%] right-[-4%] w-[52%] max-w-52" aria-hidden>
-            <rect x="10" y="46" width="150" height="16" rx="6" fill="#f2f7f0" stroke="#c4dcca" strokeWidth="2" />
-            <rect x="18" y="34" width="42" height="16" rx="8" fill="#ffffff" stroke="#c4dcca" strokeWidth="2" />
+          <PosterKesehatan
+            varian="mata"
+            className="absolute left-[6%] top-[26%] w-14 -rotate-1 sm:w-16"
+          />
+          <svg
+            viewBox="0 0 180 120"
+            className="absolute bottom-[14%] right-[-4%] w-[52%] max-w-52"
+            aria-hidden
+          >
+            <rect
+              x="10"
+              y="46"
+              width="150"
+              height="16"
+              rx="6"
+              fill="#f2f7f0"
+              stroke="#c4dcca"
+              strokeWidth="2"
+            />
+            <rect
+              x="18"
+              y="34"
+              width="42"
+              height="16"
+              rx="8"
+              fill="#ffffff"
+              stroke="#c4dcca"
+              strokeWidth="2"
+            />
             <rect x="10" y="60" width="150" height="10" rx="4" fill="#79b393" />
-            <path d="M26 70 L26 112 M144 70 L144 112" stroke="#8a95a0" strokeWidth="6" strokeLinecap="round" />
+            <path
+              d="M26 70 L26 112 M144 70 L144 112"
+              stroke="#8a95a0"
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
           </svg>
           <svg viewBox="0 0 60 160" className="absolute right-[2%] top-[4%] h-[46%]" aria-hidden>
-            <path d="M6 0 L6 160 M6 6 Q30 10 54 6 L54 152 Q30 156 6 152" fill="#a8cbb4" opacity="0.55" />
+            <path
+              d="M6 0 L6 160 M6 6 Q30 10 54 6 L54 152 Q30 156 6 152"
+              fill="#a8cbb4"
+              opacity="0.55"
+            />
             <path d="M6 0 L6 160" stroke="#4f8a68" strokeWidth="4" />
           </svg>
         </>
       ) : null}
       {peran === 'apoteker' ? (
         <>
-          <svg viewBox="0 0 200 150" className="absolute left-[5%] top-[6%] w-[52%] max-w-56" aria-hidden>
+          <svg
+            viewBox="0 0 200 150"
+            className="absolute left-[5%] top-[6%] w-[52%] max-w-56"
+            aria-hidden
+          >
             {[0, 1, 2].map((baris) => (
               <g key={baris} transform={`translate(0 ${baris * 48})`}>
                 <rect x="0" y="34" width="200" height="6" rx="3" fill="#8a5a33" />
@@ -111,7 +165,9 @@ export function PanggungMedis({
                     width="30"
                     height={26 - ((kolom + baris) % 3) * 3}
                     rx="3"
-                    fill={['#79b393', '#e8b45a', '#8fa9c0', '#e08a6a', '#f2f7f0'][(kolom + baris) % 5]}
+                    fill={
+                      ['#79b393', '#e8b45a', '#8fa9c0', '#e08a6a', '#f2f7f0'][(kolom + baris) % 5]
+                    }
                   />
                 ))}
               </g>
@@ -150,7 +206,10 @@ export function PanggungMedis({
 
 function KartuIdentitas({ className = '' }: { className?: string }) {
   return (
-    <div className={`rounded-xl border-2 border-[#9dbfa9] bg-white p-3 shadow-lg ${className}`} aria-hidden>
+    <div
+      className={`rounded-xl border-2 border-[#9dbfa9] bg-white p-3 shadow-lg ${className}`}
+      aria-hidden
+    >
       <div className="flex items-center gap-2">
         <span className="flex h-6 w-6 items-center justify-center rounded-sm bg-[#2f7d52]">
           <svg viewBox="0 0 40 40" width="14" height="14">
@@ -189,17 +248,38 @@ function SiluetTubuh({ className = '' }: { className?: string }) {
         fill="#9dbfa9"
       />
       <path d="M31 42 L18 78 L24 82 L34 56 M59 42 L72 78 L66 82 L56 56" fill="#9dbfa9" />
-      <circle cx="45" cy="20" r="17" fill="none" stroke="#d9a521" strokeWidth="3" strokeDasharray="4 4" className="kk-lampu-nyala" />
+      <circle
+        cx="45"
+        cy="20"
+        r="17"
+        fill="none"
+        stroke="#d9a521"
+        strokeWidth="3"
+        strokeDasharray="4 4"
+        className="kk-lampu-nyala"
+      />
     </svg>
   )
 }
 
 function KemasanObat({ className = '' }: { className?: string }) {
   return (
-    <div className={`rounded-xl border-2 border-[#9dbfa9] bg-white p-3 shadow-lg ${className}`} aria-hidden>
+    <div
+      className={`rounded-xl border-2 border-[#9dbfa9] bg-white p-3 shadow-lg ${className}`}
+      aria-hidden
+    >
       <div className="flex items-start gap-3">
         <svg viewBox="0 0 54 70" className="w-14 shrink-0">
-          <rect x="6" y="8" width="42" height="56" rx="5" fill="#f2f7f0" stroke="#79b393" strokeWidth="2.5" />
+          <rect
+            x="6"
+            y="8"
+            width="42"
+            height="56"
+            rx="5"
+            fill="#f2f7f0"
+            stroke="#79b393"
+            strokeWidth="2.5"
+          />
           <rect x="6" y="8" width="42" height="16" rx="5" fill="#2f7d52" />
           <circle cx="19" cy="42" r="5" fill="#e8b45a" />
           <circle cx="34" cy="42" r="5" fill="#e8b45a" />
@@ -343,7 +423,11 @@ export function TugasPuskesmas({
         ))}
       </div>
       {engine.attemptsAtCurrent() >= 3 ? (
-        <button type="button" onClick={() => onMaju(engine.skip())} className="tombol-sekunder mt-3">
+        <button
+          type="button"
+          onClick={() => onMaju(engine.skip())}
+          className="tombol-sekunder mt-3"
+        >
           Lewati simpul ini
         </button>
       ) : null}
@@ -377,7 +461,8 @@ export function SceneUjianPuskesmas({
       >
         <ol className="flex items-center justify-between gap-1">
           {LANGKAH_PUSKESMAS.map(({ id, label, Icon }, index) => {
-            const status = index < langkahIndex ? 'lewat' : index === langkahIndex ? 'aktif' : 'nanti'
+            const status =
+              index < langkahIndex ? 'lewat' : index === langkahIndex ? 'aktif' : 'nanti'
             return (
               <li key={id} className="flex min-w-0 flex-1 items-center gap-1 last:flex-none">
                 <span
@@ -433,12 +518,16 @@ export function SceneUjianPuskesmas({
                 <Stethoscope aria-hidden className="h-3.5 w-3.5" />
                 {NAMA_AKTOR[node.actor] ?? prettify(node.actor)}
               </p>
-              <p aria-live="polite" className="font-display mt-1.5 text-xl font-bold leading-snug sm:text-2xl">
+              <p
+                aria-live="polite"
+                className="font-display mt-1.5 text-xl font-bold leading-snug sm:text-2xl"
+              >
                 “{node.line.id}”
               </p>
               {node.hint ? (
                 <p className="mt-2 rounded-lg bg-[#eef5ef] px-3 py-1.5 text-sm font-bold text-[#1d442f]">
-                  ✚ {node.hint}
+                  <Cross aria-hidden className="mr-1 inline h-4 w-4" />
+                  {node.hint}
                 </p>
               ) : null}
             </div>

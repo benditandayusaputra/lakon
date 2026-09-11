@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, CheckCircle2, Clock3, Coffee, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Check, CheckCircle2, Clock3, Coffee, Hand, RotateCcw } from 'lucide-react'
 import { LampuTali } from './props'
 import { MENU_UTAMA, prettify, rupiah, type MenuKedai } from './types'
 
@@ -43,7 +43,7 @@ export function SceneStruk({
       </div>
       <div className="kk-cetak-struk relative z-10 w-full max-w-md">
         <div className="kk-gerigi-atas rotate-180" aria-hidden />
-        <div className="relative bg-[#fdfbf3] px-6 py-6 font-mono text-sm text-[#2b2620] shadow-[0_30px_60px_-24px_rgba(0,0,0,0.7)] sm:px-8">
+        <div className="relative overflow-hidden bg-[#fdfbf3] px-6 py-6 font-mono text-sm text-[#2b2620] shadow-[0_30px_60px_-24px_rgba(0,0,0,0.7)] sm:px-8">
           <span
             aria-hidden
             className="kk-stempel font-display pointer-events-none absolute right-5 top-24 rotate-[-14deg] rounded-md border-4 border-[#256b45] px-3 py-1 text-xl font-black tracking-[0.2em] text-[#256b45] opacity-80"
@@ -73,7 +73,8 @@ export function SceneStruk({
           </div>
           <div className="my-3 border-t border-dashed border-[#b0a591]" />
           <p className="text-xs font-bold uppercase tracking-widest text-[#256b45]">
-            ✓ Isyarat dikuasai
+            <Check aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            Isyarat dikuasai
           </p>
           <ul className="mt-1 space-y-0.5 capitalize">
             {dikuasai.length > 0 ? (
@@ -88,7 +89,11 @@ export function SceneStruk({
             )}
           </ul>
           <p className="mt-3 text-xs font-bold uppercase tracking-widest text-[#46536a]">
-            ↻ Perlu diulang
+            <RotateCcw
+              aria-hidden
+              className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+            />
+            Perlu diulang
           </p>
           <ul className="mt-1 space-y-0.5 capitalize">
             {perluUlang.length > 0 ? (
@@ -110,7 +115,8 @@ export function SceneStruk({
             <span>{jumlahLangkah} langkah percakapan</span>
           </p>
           <p className="kk-font-kapur mt-4 text-center text-xl text-[#6b4226]">
-            Terima kasih, sampai jumpa lagi! ✋
+            Terima kasih, sampai jumpa lagi!{' '}
+            <Hand aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
           </p>
           <p className="mt-1 text-center text-[10px] tracking-[0.3em] text-[#b0a591]">
             * * * * * * * * * * * *

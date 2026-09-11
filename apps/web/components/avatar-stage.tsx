@@ -1,5 +1,6 @@
 'use client'
 
+import { FlipHorizontal } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { CompiledSign, CompilerRig } from '@lakon/sign-compiler'
@@ -215,7 +216,11 @@ export function AvatarStage({
             className={mirror ? 'tombol-utama px-3 py-1.5' : 'tombol-sekunder px-3 py-1.5'}
             style={{ minHeight: 48 }}
           >
-            🪞 Cermin
+            <FlipHorizontal
+              aria-hidden
+              className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+            />
+            Cermin
           </button>
         </div>
       ) : null}

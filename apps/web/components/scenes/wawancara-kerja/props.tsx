@@ -1,3 +1,4 @@
+import { Hand, Star } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import { MENU_PAJANGAN } from './types'
 
@@ -133,7 +134,12 @@ export function PapanMenuKapur({
           <li key={nama} className="flex items-baseline gap-2">
             <span>
               {nama}
-              {favorit ? <span className="text-[#ffce8a]"> ★</span> : null}
+              {favorit ? (
+                <Star
+                  aria-hidden
+                  className="ml-1 inline-block h-[1em] w-[1em] fill-current align-text-bottom text-[#ffce8a]"
+                />
+              ) : null}
             </span>
             <span className="min-w-4 flex-1 border-b border-dotted border-[#d9d3bd]/40" />
             <span className="text-[#ffce8a]">{harga}</span>
@@ -141,7 +147,11 @@ export function PapanMenuKapur({
         ))}
       </ul>
       <p className="wk-font-kapur mt-2 text-center text-base text-[#a8c79a]">
-        ★ paling laris · ramah isyarat
+        <Star
+          aria-hidden
+          className="inline-block h-[1em] w-[1em] fill-current align-text-bottom text-[#ffce8a]"
+        />{' '}
+        paling laris · ramah isyarat
       </p>
     </div>
   )
@@ -158,7 +168,12 @@ export function PapanMenuMini({ className = '' }: { className?: string }) {
           <li key={nama} className="flex justify-between gap-1">
             <span className="truncate">
               {nama}
-              {favorit ? ' ★' : ''}
+              {favorit ? (
+                <Star
+                  aria-hidden
+                  className="ml-0.5 inline-block h-[1em] w-[1em] fill-current align-text-bottom text-[#ffce8a]"
+                />
+              ) : null}
             </span>
             <span className="text-[#ffce8a]">{harga}</span>
           </li>
@@ -476,7 +491,8 @@ export function PosterLowongan({ className = '' }: { className?: string }) {
         wawancara hari ini · 09.00
       </p>
       <p className="wk-font-kapur mt-0.5 text-[10px] leading-none text-[#5e8a63] sm:text-xs">
-        ramah isyarat ✋
+        ramah isyarat{' '}
+        <Hand aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
       </p>
     </div>
   )

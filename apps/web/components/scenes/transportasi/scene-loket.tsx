@@ -6,6 +6,9 @@ import {
   Hand,
   Map,
   MapPin,
+  MessageCircleQuestion,
+  Pencil,
+  Pointer,
   ReceiptText,
   Sparkles,
   Ticket,
@@ -22,6 +25,7 @@ import { prettify, simpulUtama, type PosePetugas } from './types'
 const LANGKAH = [
   { id: 'sapa', label: 'Sapa', Icon: Hand },
   { id: 'rute', label: 'Rute', Icon: Map },
+  { id: 'ulang', label: 'Ulang', Icon: MessageCircleQuestion },
   { id: 'tiket', label: 'Tiket', Icon: Ticket },
   { id: 'harga', label: 'Harga', Icon: ReceiptText },
   { id: 'bayar', label: 'Bayar', Icon: CreditCard },
@@ -32,6 +36,7 @@ const LANGKAH = [
 export const POSE_SIMPUL: Record<string, PosePetugas> = {
   sapa: 'lambai',
   rute: 'tunjuk',
+  ulang: 'netral',
   tiket: 'netral',
   harga: 'tunjuk',
   bayar: 'tunjuk',
@@ -107,7 +112,8 @@ function GelembungPetugas({ node }: { node: ScenarioNode }) {
         </p>
         {node.hint ? (
           <p className="mt-2 rounded-lg bg-[#1c3a55] px-3 py-1.5 text-sm font-bold text-[#cfe9ff]">
-            ✎ {node.hint}
+            <Pencil aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            {node.hint}
           </p>
         ) : null}
       </div>
@@ -173,7 +179,11 @@ function TugasLoket({
               onClick={() => jawab(index)}
               className="kk-kartu-menu tombol-sekunder bg-white/80 text-left"
             >
-              ☝️ {option}
+              <Pointer
+                aria-hidden
+                className="mr-2 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              {option}
             </button>
           ))}
         </div>

@@ -7,7 +7,9 @@ import {
   Hand,
   HeartPulse,
   MapPinned,
+  Pencil,
   PhoneCall,
+  Pointer,
   Siren,
   Sparkles,
 } from 'lucide-react'
@@ -110,7 +112,8 @@ function GelembungWarga({ node }: { node: ScenarioNode }) {
         </p>
         {node.hint ? (
           <p className="kk-font-kapur mt-2 rounded-lg bg-[#e6edf2] px-3 py-1.5 text-lg text-[#1f2d3a]">
-            ✎ {node.hint}
+            <Pencil aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            {node.hint}
           </p>
         ) : null}
       </div>
@@ -213,7 +216,11 @@ function TugasPos({
               onClick={() => jawab(index)}
               className="kk-kartu-menu tombol-sekunder bg-white/80 text-left"
             >
-              ☝️ {option}
+              <Pointer
+                aria-hidden
+                className="mr-2 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              {option}
             </button>
           ))}
         </div>

@@ -1,10 +1,11 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { compileSign } from '@lakon/sign-compiler'
 import { useCompilerRig } from '@/features/avatar/use-rig'
 import { useContent } from '@/features/content/use-content'
 import { PracticeBlock } from '@/components/practice-block'
+import { lepasKamera } from '@/features/practice/capture'
 
 export default function TrySignBlock({
   lang,
@@ -17,6 +18,7 @@ export default function TrySignBlock({
 }) {
   const { content } = useContent()
   const { rig } = useCompilerRig()
+  useEffect(() => lepasKamera, [])
 
   const trySign = useMemo(() => {
     if (!content || !rig) return null

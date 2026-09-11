@@ -8,7 +8,10 @@ import {
   Flame,
   Hand,
   HeartHandshake,
+  Pencil,
+  Pointer,
   Sparkles,
+  Users,
 } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { ScenarioNode } from '@lakon/sign-schema'
@@ -24,6 +27,7 @@ const LANGKAH = [
   { id: 'berkas', label: 'Berkas', Icon: FileText },
   { id: 'kopi', label: 'Kopi', Icon: Coffee },
   { id: 'menu', label: 'Tes menu', Icon: ClipboardList },
+  { id: 'pelanggan', label: 'Pelanggan', Icon: Users },
   { id: 'panas', label: 'Panas', Icon: Flame },
   { id: 'maaf', label: 'Maaf', Icon: HeartHandshake },
   { id: 'tutup', label: 'Selesai', Icon: Sparkles },
@@ -34,6 +38,7 @@ export const POSE_SIMPUL: Record<string, PosePewawancara> = {
   berkas: 'catat',
   kopi: 'netral',
   menu: 'tunjuk',
+  pelanggan: 'tunjuk',
   panas: 'netral',
   maaf: 'catat',
   tutup: 'sajikan',
@@ -107,7 +112,8 @@ function GelembungPewawancara({ node }: { node: ScenarioNode }) {
         </p>
         {node.hint ? (
           <p className="wk-font-kapur mt-2 rounded-lg bg-[#26301f] px-3 py-1.5 text-lg text-[#d9d3bd]">
-            ✎ {node.hint}
+            <Pencil aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            {node.hint}
           </p>
         ) : null}
       </div>
@@ -176,7 +182,11 @@ function TugasWawancara({
               onClick={() => jawab(index)}
               className="wk-kartu tombol-sekunder bg-white/80 text-left"
             >
-              ☝️ {option}
+              <Pointer
+                aria-hidden
+                className="mr-2 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              {option}
             </button>
           ))}
         </div>

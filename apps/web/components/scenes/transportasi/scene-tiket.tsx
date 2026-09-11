@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, Bus, CheckCircle2, Clock3, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Bus, Check, CheckCircle2, Clock3, Hand, RotateCcw } from 'lucide-react'
 import { BusKota } from './props'
 import { HARGA_TIKET, TUJUAN, prettify, rupiah } from './types'
 
@@ -83,7 +83,8 @@ export function SceneTiket({
               ))}
             </div>
             <p className="text-xs font-bold uppercase tracking-widest text-[#256b45]">
-              ✓ Isyarat dikuasai
+              <Check aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+              Isyarat dikuasai
             </p>
             <ul className="mt-1 space-y-0.5 capitalize">
               {dikuasai.length > 0 ? (
@@ -98,7 +99,11 @@ export function SceneTiket({
               )}
             </ul>
             <p className="mt-3 text-xs font-bold uppercase tracking-widest text-[#46536a]">
-              ↻ Perlu diulang
+              <RotateCcw
+                aria-hidden
+                className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              Perlu diulang
             </p>
             <ul className="mt-1 space-y-0.5 capitalize">
               {perluUlang.length > 0 ? (
@@ -120,7 +125,8 @@ export function SceneTiket({
               <span>{jumlahLangkah} langkah percakapan</span>
             </p>
             <p className="mt-3 text-center text-sm font-bold text-[#26496b]">
-              Hati-hati di jalan, sampai jumpa lagi! ✋
+              Hati-hati di jalan, sampai jumpa lagi!{' '}
+              <Hand aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
             </p>
             <p className="mt-1 text-center text-[10px] tracking-[0.3em] text-[#8fb4d8]">
               K1 · 03 · {TUJUAN.toUpperCase()}

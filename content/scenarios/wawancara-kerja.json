@@ -128,7 +128,7 @@
         }
       },
       "hint": "Minuman paling laris punya tanda favorit di menu.",
-      "next": "panas",
+      "next": "pelanggan",
       "onFail": "repair-menu"
     },
     {
@@ -139,6 +139,47 @@
       },
       "hint": "Cari tanda favorit.",
       "next": "menu"
+    },
+    {
+      "id": "pelanggan",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Bagus. Kalau pelanggan Tuli datang ke kasir, apa yang kamu lakukan?"
+      },
+      "hint": "Kontak mata dan menunjuk menu lebih jelas daripada suara.",
+      "task": {
+        "deaf": {
+          "type": "point",
+          "prompt": "Pelanggan Tuli berdiri di depan kasir. Cara paling jelas melayaninya?",
+          "options": [
+            "Tatap matanya, lambaikan tangan, lalu tunjuk menu",
+            "Bicara lebih keras",
+            "Menunggu ia bicara duluan"
+          ],
+          "correct": 0
+        },
+        "service": {
+          "type": "point",
+          "prompt": "Pelamar menunjuk kartu: tatap mata, lambai, tunjuk menu. Penilaianmu?",
+          "options": [
+            "Tepat, itu cara melayani yang jelas",
+            "Kurang, seharusnya bicara lebih keras",
+            "Salah, seharusnya diam saja"
+          ],
+          "correct": 0
+        }
+      },
+      "next": "panas",
+      "onFail": "repair-pelanggan"
+    },
+    {
+      "id": "repair-pelanggan",
+      "actor": "pewawancara",
+      "line": {
+        "id": "Ingat, pelanggan Tuli mengandalkan mata, bukan telinga."
+      },
+      "hint": "Pilih cara yang bisa dilihat.",
+      "next": "pelanggan"
     },
     {
       "id": "panas",

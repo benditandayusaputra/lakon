@@ -42,6 +42,19 @@ export const closeFrame = (frame: CaptureFrame) => {
   frame.close()
 }
 
+let kameraBersama: MediaStream | null = null
+let kameraJanji: Promise<MediaStream> | null = null
+
+export const kameraHidup = () =>
+  kameraBersama?.getVideoTracks().some((track) => track.readyState === 'live') ?? false
+
+export const lepasKamera = () => {
+  void kameraJanji?.then((stream) => stream.getTracks().forEach((track) => track.stop()))
+  kameraJanji = null
+  kameraBersama?.getTracks().forEach((track) => track.stop())
+  kameraBersama = null
+}
+
 const classify = (err: unknown): CaptureUnavailable => {
   const name = err instanceof DOMException ? err.name : ''
   if (name === 'NotAllowedError' || name === 'SecurityError' || name === 'PermissionDeniedError') {
@@ -72,21 +85,27 @@ export const startCapture = async (options: CaptureOptions): Promise<CaptureResu
     return { ok: false, reason: 'unsupported' }
   }
 
-  let stream: MediaStream
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { width, height, frameRate, facingMode: 'user' },
-      audio: false,
-    })
-  } catch (err) {
-    return classify(err)
+  if (!kameraHidup()) {
+    try {
+      kameraJanji ??= navigator.mediaDevices.getUserMedia({
+        video: { width, height, frameRate, facingMode: 'user' },
+        audio: false,
+      })
+      kameraBersama = await kameraJanji
+    } catch (err) {
+      return classify(err)
+    } finally {
+      kameraJanji = null
+    }
   }
 
-  const track = stream.getVideoTracks()[0]
-  if (!track) {
-    stream.getTracks().forEach((t) => t.stop())
+  const asal = kameraBersama?.getVideoTracks()[0]
+  if (!asal) {
+    lepasKamera()
     return { ok: false, reason: 'no-camera' }
   }
+  const track = asal.clone()
+  const stream = new MediaStream([track])
 
   video.srcObject = stream
   video.muted = true

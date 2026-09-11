@@ -1,5 +1,6 @@
 'use client'
 
+import { Check, RotateCcw } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
@@ -103,7 +104,19 @@ export function LatihanBaca({
                   : ''
               }`}
             >
-              {tandai ? (inibenar ? '✓ ' : '↻ ') : ''}
+              {tandai ? (
+                inibenar ? (
+                  <Check
+                    aria-hidden
+                    className="mr-1.5 inline-block h-[1em] w-[1em] align-text-bottom"
+                  />
+                ) : (
+                  <RotateCcw
+                    aria-hidden
+                    className="mr-1.5 inline-block h-[1em] w-[1em] align-text-bottom"
+                  />
+                )
+              ) : null}
               {rapikan(id)}
             </button>
           )
@@ -113,12 +126,17 @@ export function LatihanBaca({
       <div aria-live="polite" className="flex min-h-14 flex-col gap-3">
         {benar ? (
           <p className="text-berhasil text-lg font-bold">
-            <span aria-hidden>✓</span> Benar, itu isyarat {rapikan(signId)}.
+            <Check aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            Benar, itu isyarat {rapikan(signId)}.
           </p>
         ) : dipilih ? (
           <div className="border-ulang flex flex-col gap-2 rounded-xl border-2 p-4">
             <p className="text-ulang font-bold">
-              <span aria-hidden>↻</span> Belum tepat. Putar ulang peragaan, coba dari sudut lain.
+              <RotateCcw
+                aria-hidden
+                className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              Belum tepat. Putar ulang peragaan, coba dari sudut lain.
             </p>
             {bukaJawaban ? (
               <div className="flex flex-wrap items-center gap-3">

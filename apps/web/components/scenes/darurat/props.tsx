@@ -1,3 +1,4 @@
+import { Hand } from 'lucide-react'
 import type { CSSProperties } from 'react'
 import { NOMOR_PAJANGAN, TITIK_PETA } from './types'
 
@@ -344,7 +345,7 @@ export function PapanNomorDarurat({
               {nomor}
             </span>
             <span className="min-w-2 flex-1 border-b border-dotted border-[#8fa3b5]/40" />
-            <span className="font-bold">{nama}</span>
+            <span className={kompak ? 'hidden font-bold sm:inline' : 'font-bold'}>{nama}</span>
           </li>
         ))}
       </ul>
@@ -374,7 +375,7 @@ export function PetaLingkungan({
       aria-hidden
     >
       <p
-        className={`whitespace-nowrap text-center font-black uppercase text-[#33465a] ${ringkas ? 'text-[7px] tracking-[0.2em]' : 'text-[10px] tracking-[0.3em]'}`}
+        className={`text-center font-black uppercase text-[#33465a] ${ringkas ? 'whitespace-nowrap text-[7px] tracking-[0.2em]' : 'text-[10px] tracking-[0.3em]'}`}
       >
         {judul}
       </p>
@@ -595,7 +596,10 @@ export function PapanPengumuman({ className = '' }: { className?: string }) {
         <p className="kk-font-kapur text-sm leading-tight text-[#1f2d3a]">
           Kerja bakti: Minggu 07.00
         </p>
-        <p className="kk-font-kapur text-sm leading-tight text-[#2f7d52]">Pos ramah isyarat ✋</p>
+        <p className="kk-font-kapur text-sm leading-tight text-[#2f7d52]">
+          Pos ramah isyarat{' '}
+          <Hand aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
+        </p>
       </div>
       <div className="mt-1.5 flex justify-center gap-1">
         <span className="h-1.5 w-1.5 rounded-full bg-[#c8553d]" />

@@ -205,7 +205,7 @@
           "options": ["panas", "sakit", "makan"]
         }
       },
-      "next": "periksa",
+      "next": "apotek",
       "onFail": "repair-gejala"
     },
     {
@@ -216,14 +216,6 @@
       },
       "hint": "Jawab soal panas badan.",
       "next": "gejala"
-    },
-    {
-      "id": "periksa",
-      "actor": "dokter",
-      "line": {
-        "id": "Baik, saya periksa dulu ya. Tenang saja."
-      },
-      "next": "apotek"
     },
     {
       "id": "apotek",

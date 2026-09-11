@@ -1,3 +1,4 @@
+import { Check, X } from 'lucide-react'
 import { readFile, readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 import { validateContent, type ContentSet } from '@lakon/sign-schema'
@@ -114,7 +115,11 @@ export default async function HealthPage() {
             className={`flex items-start gap-3 rounded-xl border-2 p-3 ${check.ok ? 'border-berhasil' : 'border-galat'}`}
           >
             <span aria-hidden className="text-lg">
-              {check.ok ? '✓' : '✗'}
+              {check.ok ? (
+                <Check aria-hidden className="h-5 w-5" />
+              ) : (
+                <X aria-hidden className="h-5 w-5" />
+              )}
             </span>
             <div>
               <p className="font-bold">

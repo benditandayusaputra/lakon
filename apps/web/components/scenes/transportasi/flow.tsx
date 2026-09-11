@@ -164,7 +164,7 @@ export function TransportasiFlow() {
         <ArrowLeft aria-hidden className="h-4 w-4" />
         Skenario
       </Link>
-      <div className="flex items-center gap-3">
+      <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1">
         <p className="text-sm font-bold sm:text-base">
           <span className="font-display">Transportasi</span>
           <span className="text-[#41546b]"> · {directionLabel}</span>

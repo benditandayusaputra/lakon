@@ -54,7 +54,7 @@ const ROLES = [
   },
 ] as const
 
-const GESER = ['0%', '14%', '-12%', '10%', '-8%'] as const
+const GESER = [0, 14, -12, 10, -8] as const
 
 const scenarioSignIds = (scenario: {
   vocab: string[]
@@ -327,7 +327,13 @@ export function ScenarioPicker() {
                   style={{ ['--jalur-warna' as string]: terkunci ? '#ded9d0' : palette.ambient }}
                 />
               ) : null}
-              <div style={{ marginInlineStart: GESER[index % GESER.length] }}>
+              <div
+                className="sm:pe-[var(--pe)] sm:ps-[var(--ps)]"
+                style={{
+                  ['--ps' as string]: `${Math.max(GESER[index % GESER.length] ?? 0, 0)}%`,
+                  ['--pe' as string]: `${Math.max(-(GESER[index % GESER.length] ?? 0), 0)}%`,
+                }}
+              >
                 {terkunci ? (
                   <div
                     className={`${kelas} opacity-70`}

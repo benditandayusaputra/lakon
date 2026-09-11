@@ -1,10 +1,14 @@
 'use client'
 
 import {
+  BellRing,
+  Candy,
   CheckCircle2,
   Coffee,
   Flame,
   Hand,
+  Pencil,
+  Pointer,
   QrCode,
   ReceiptText,
   Sparkles,
@@ -22,8 +26,10 @@ const LANGKAH = [
   { id: 'sapa', label: 'Sapa', Icon: Hand },
   { id: 'pesan', label: 'Pesan', Icon: Coffee },
   { id: 'suhu', label: 'Suhu', Icon: Flame },
+  { id: 'rasa', label: 'Rasa', Icon: Candy },
   { id: 'harga', label: 'Harga', Icon: ReceiptText },
   { id: 'bayar', label: 'Bayar', Icon: QrCode },
+  { id: 'ambil', label: 'Ambil', Icon: BellRing },
   { id: 'tutup', label: 'Selesai', Icon: Sparkles },
 ]
 
@@ -31,8 +37,10 @@ export const POSE_SIMPUL: Record<string, PoseBarista> = {
   sapa: 'lambai',
   pesan: 'tunjuk',
   suhu: 'netral',
+  rasa: 'netral',
   harga: 'tunjuk',
   bayar: 'tunjuk',
+  ambil: 'sajikan',
   tutup: 'sajikan',
 }
 
@@ -96,12 +104,16 @@ function GelembungBarista({ node }: { node: ScenarioNode }) {
           <Coffee aria-hidden className="h-3.5 w-3.5" />
           Barista · Kopi Lakon
         </p>
-        <p aria-live="polite" className="font-display mt-1.5 text-xl font-bold leading-snug sm:text-2xl">
+        <p
+          aria-live="polite"
+          className="font-display mt-1.5 text-xl font-bold leading-snug sm:text-2xl"
+        >
           “{node.line.id}”
         </p>
         {node.hint ? (
           <p className="kk-font-kapur mt-2 rounded-lg bg-[#26301f] px-3 py-1.5 text-lg text-[#d9d3bd]">
-            ✎ {node.hint}
+            <Pencil aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+            {node.hint}
           </p>
         ) : null}
       </div>
@@ -187,7 +199,11 @@ function TugasKedai({
               onClick={() => onMaju(engine.answer(index === task.correct ? 'benar' : 'salah'))}
               className="kk-kartu-menu tombol-sekunder bg-white/80 text-left"
             >
-              ☝️ {option}
+              <Pointer
+                aria-hidden
+                className="mr-2 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              {option}
             </button>
           ))}
         </div>
@@ -257,7 +273,11 @@ function TugasKedai({
         ))}
       </div>
       {engine.attemptsAtCurrent() >= 3 ? (
-        <button type="button" onClick={() => onMaju(engine.skip())} className="tombol-sekunder mt-3">
+        <button
+          type="button"
+          onClick={() => onMaju(engine.skip())}
+          className="tombol-sekunder mt-3"
+        >
           Lewati simpul ini
         </button>
       ) : null}

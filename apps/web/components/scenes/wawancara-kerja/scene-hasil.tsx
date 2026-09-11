@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowLeft, CheckCircle2, Clock3, Coffee, RotateCcw } from 'lucide-react'
+import { ArrowLeft, Check, CheckCircle2, Clock3, Coffee, Hand, RotateCcw } from 'lucide-react'
 import { CangkirSaji } from './props'
 import { prettify, rupiah, type MenuTes } from './types'
 
@@ -89,7 +89,8 @@ export function SceneHasil({
             </div>
             <div className="my-3 border-t border-dashed border-[#b0a591]" />
             <p className="text-xs font-bold uppercase tracking-widest text-[#256b45]">
-              ✓ Isyarat dikuasai
+              <Check aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+              Isyarat dikuasai
             </p>
             <ul className="mt-1 space-y-0.5 capitalize">
               {dikuasai.length > 0 ? (
@@ -104,7 +105,11 @@ export function SceneHasil({
               )}
             </ul>
             <p className="mt-3 text-xs font-bold uppercase tracking-widest text-[#46536a]">
-              ↻ Perlu diulang
+              <RotateCcw
+                aria-hidden
+                className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+              />
+              Perlu diulang
             </p>
             <ul className="mt-1 space-y-0.5 capitalize">
               {perluUlang.length > 0 ? (
@@ -126,9 +131,17 @@ export function SceneHasil({
               <span>{jumlahLangkah} langkah wawancara</span>
             </p>
             <p className="wk-font-kapur mt-4 text-center text-xl text-[#6b4226]">
-              {diterima
-                ? 'Selamat datang di tim Kopi Lakon! ☕'
-                : 'Terima kasih sudah datang, latihan lagi ya! ✋'}
+              {diterima ? (
+                <>
+                  Selamat datang di tim Kopi Lakon!{' '}
+                  <Coffee aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
+                </>
+              ) : (
+                <>
+                  Terima kasih sudah datang, latihan lagi ya!{' '}
+                  <Hand aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
+                </>
+              )}
             </p>
           </div>
         </div>

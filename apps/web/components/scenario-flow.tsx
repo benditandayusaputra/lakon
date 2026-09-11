@@ -1,5 +1,6 @@
 'use client'
 
+import { ArrowLeft, ArrowRight, Check, Lightbulb, Pointer, RotateCcw } from 'lucide-react'
 import { useCallback, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
@@ -131,7 +132,8 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
     <main className="flex min-h-dvh flex-col">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/skenario" className="underline underline-offset-4">
-          ← Skenario
+          <ArrowLeft aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
+          Skenario
         </Link>
         <div className="flex items-center gap-4">
           <p className="font-bold">
@@ -246,9 +248,13 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                           <button
                             type="button"
                             onClick={() => setLearnView('praktik')}
-                            className="tombol-utama w-full min-h-14 text-lg md:w-auto md:self-end md:px-10"
+                            className="tombol-utama min-h-14 w-full text-lg md:w-auto md:self-end md:px-10"
                           >
-                            Lanjut ke praktik →
+                            Lanjut ke praktik{' '}
+                            <ArrowRight
+                              aria-hidden
+                              className="inline-block h-[1em] w-[1em] align-text-bottom"
+                            />
                           </button>
                         </div>
                       </div>
@@ -280,7 +286,11 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                           onClick={() => setLearnView('demo')}
                           className="tombol-sekunder self-start"
                         >
-                          ← Lihat peragaan lagi
+                          <ArrowLeft
+                            aria-hidden
+                            className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                          />
+                          Lihat peragaan lagi
                         </button>
                         {progress.attempts > 0 ? (
                           <p className="text-teks-samar text-sm">
@@ -329,7 +339,15 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
             >
               <p className="text-sm font-bold capitalize">{node.actor.replace(/-/g, ' ')}</p>
               <p className="text-lg">{node.line.id}</p>
-              {node.hint ? <p className="mt-1 text-sm">💡 {node.hint}</p> : null}
+              {node.hint ? (
+                <p className="mt-1 text-sm">
+                  <Lightbulb
+                    aria-hidden
+                    className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                  />
+                  {node.hint}
+                </p>
+              ) : null}
             </div>
 
             {task === null ? (
@@ -359,7 +377,11 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                       }}
                       className="tombol-sekunder bg-white text-left"
                     >
-                      ☝️ {option}
+                      <Pointer
+                        aria-hidden
+                        className="mr-2 inline-block h-[1em] w-[1em] align-text-bottom"
+                      />
+                      {option}
                     </button>
                   ))}
                 </div>
@@ -499,7 +521,11 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <section className="border-berhasil rounded-2xl border-2 p-4">
                     <h2 className="text-berhasil font-bold">
-                      <span aria-hidden>✓</span> Dikuasai
+                      <Check
+                        aria-hidden
+                        className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                      />
+                      Dikuasai
                     </h2>
                     <ul className="mt-2 capitalize">
                       {summary.mastered.length > 0 ? (
@@ -513,7 +539,11 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                   </section>
                   <section className="border-ulang rounded-2xl border-2 p-4">
                     <h2 className="text-ulang font-bold">
-                      <span aria-hidden>↻</span> Perlu diulang
+                      <RotateCcw
+                        aria-hidden
+                        className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                      />
+                      Perlu diulang
                     </h2>
                     <ul className="mt-2 capitalize">
                       {needsRepeat.length > 0 ? (

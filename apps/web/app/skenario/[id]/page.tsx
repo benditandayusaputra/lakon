@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import { Caveat } from 'next/font/google'
+import { KameraSesi } from '@/components/kamera-sesi'
 import { ScenarioFlow } from '@/components/scenario-flow'
 import { KedaiKopiFlow } from '@/components/scenes/kedai-kopi/flow'
 import { PuskesmasFlow } from '@/components/scenes/puskesmas/flow'
@@ -23,6 +24,7 @@ export default async function ScenarioDetailPage({ params }: { params: Promise<{
   ) {
     return (
       <div className={caveat.variable}>
+        <KameraSesi />
         <Suspense fallback={<p className="p-10">Memuat…</p>}>
           {id === 'kedai-kopi' ? (
             <KedaiKopiFlow />
@@ -40,8 +42,11 @@ export default async function ScenarioDetailPage({ params }: { params: Promise<{
     )
   }
   return (
-    <Suspense fallback={<p className="p-10">Memuat…</p>}>
-      <ScenarioFlow scenarioId={id} />
-    </Suspense>
+    <>
+      <KameraSesi />
+      <Suspense fallback={<p className="p-10">Memuat…</p>}>
+        <ScenarioFlow scenarioId={id} />
+      </Suspense>
+    </>
   )
 }

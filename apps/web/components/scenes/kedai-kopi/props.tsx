@@ -1,3 +1,4 @@
+import { Sparkles } from 'lucide-react'
 import { MENU_PAJANGAN } from './types'
 
 export function Uap({ className = '', warna = '#f5e9d7' }: { className?: string; warna?: string }) {
@@ -121,7 +122,9 @@ export function PapanMenuKapur({
         ))}
       </ul>
       <p className="kk-font-kapur mt-2 text-center text-base text-[#a8c79a]">
-        ✻ ramah bahasa isyarat ✻
+        <Sparkles aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" /> ramah
+        bahasa isyarat{' '}
+        <Sparkles aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
       </p>
     </div>
   )
@@ -216,10 +219,26 @@ export function EtalaseKue({ className = '' }: { className?: string }) {
     <svg viewBox="0 0 220 150" className={className} aria-hidden>
       <rect x="8" y="18" width="204" height="112" rx="10" fill="#57392a" />
       <rect x="16" y="26" width="188" height="72" rx="7" fill="#f8efdf" opacity="0.16" />
-      <rect x="16" y="26" width="188" height="72" rx="7" fill="none" stroke="#c9b695" strokeWidth="2.5" opacity="0.5" />
+      <rect
+        x="16"
+        y="26"
+        width="188"
+        height="72"
+        rx="7"
+        fill="none"
+        stroke="#c9b695"
+        strokeWidth="2.5"
+        opacity="0.5"
+      />
       <line x1="16" y1="62" x2="204" y2="62" stroke="#c9b695" strokeWidth="2.5" opacity="0.5" />
       <path d="M34 56 q4 -18 20 -14 q16 4 10 16 q-4 8 -16 6 q-12 -2 -14 -8" fill="#d99b52" />
-      <path d="M40 50 q8 -8 18 -2" stroke="#a8632c" strokeWidth="2" fill="none" strokeLinecap="round" />
+      <path
+        d="M40 50 q8 -8 18 -2"
+        stroke="#a8632c"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+      />
       <path d="M84 58 h30 l-4 -18 h-22 Z" fill="#8a5a33" />
       <rect x="84" y="40" width="30" height="6" rx="2" fill="#e8d3b8" />
       <circle cx="99" cy="37" r="3.5" fill="#c1443c" />
@@ -230,7 +249,14 @@ export function EtalaseKue({ className = '' }: { className?: string }) {
       <path d="M120 92 h30 v-8 q0 -8 -15 -8 q-15 0 -15 8 Z" fill="#e8c79b" />
       <rect x="8" y="98" width="204" height="32" rx="6" fill="#452817" />
       <rect x="26" y="106" width="56" height="14" rx="3" fill="#26301f" />
-      <text x="54" y="117" textAnchor="middle" fontSize="10" fill="#d9d3bd" fontFamily="var(--font-kapur), cursive">
+      <text
+        x="54"
+        y="117"
+        textAnchor="middle"
+        fontSize="10"
+        fill="#d9d3bd"
+        fontFamily="var(--font-kapur), cursive"
+      >
         kue segar
       </text>
       <ellipse cx="110" cy="138" rx="92" ry="5" fill="rgba(0,0,0,0.28)" />
@@ -256,7 +282,14 @@ export function StoplesKopi({ className = '' }: { className?: string }) {
       <circle cx="135" cy="44" r="2" fill="#3d2716" />
       <path d="M160 24 h34 v28 h-34 Z" fill="#f3e5cf" />
       <path d="M160 24 h34 v8 h-34 Z" fill="#c1443c" opacity="0.85" />
-      <text x="177" y="45" textAnchor="middle" fontSize="9" fill="#6b4226" fontFamily="var(--font-kapur), cursive">
+      <text
+        x="177"
+        y="45"
+        textAnchor="middle"
+        fontSize="9"
+        fill="#6b4226"
+        fontFamily="var(--font-kapur), cursive"
+      >
         kopi
       </text>
       <path d="M202 52 q-4 -12 5 -17 q5 -3 9 0 q9 5 5 17 Z" fill="#5d8a4f" />
@@ -277,7 +310,14 @@ export function BingkaiTangan({ className = '' }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <text x="35" y="74" textAnchor="middle" fontSize="7" fill="#8a5f10" fontFamily="var(--font-kapur), cursive">
+      <text
+        x="35"
+        y="74"
+        textAnchor="middle"
+        fontSize="7"
+        fill="#8a5f10"
+        fontFamily="var(--font-kapur), cursive"
+      >
         salam isyarat
       </text>
     </svg>
@@ -298,7 +338,13 @@ export function Sepeda({ className = '' }: { className?: string }) {
         strokeWidth="5"
         strokeLinecap="round"
       />
-      <path d="M108 42 h16 M70 40 q-8 -4 -12 2" stroke="#241811" strokeWidth="5" strokeLinecap="round" fill="none" />
+      <path
+        d="M108 42 h16 M70 40 q-8 -4 -12 2"
+        stroke="#241811"
+        strokeWidth="5"
+        strokeLinecap="round"
+        fill="none"
+      />
       <path d="M84 44 h14 l-2 -8 h-10 Z" fill="#241811" />
       <rect x="118" y="52" width="22" height="16" rx="3" fill="#c9b695" />
       <path d="M122 52 v-6 q7 -4 14 0 v6" stroke="#5d8a4f" strokeWidth="4" fill="none" />

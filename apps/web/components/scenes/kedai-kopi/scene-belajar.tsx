@@ -1,6 +1,6 @@
 'use client'
 
-import { Coffee } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Coffee } from 'lucide-react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
@@ -104,7 +104,11 @@ export function SceneBelajar({
                 key={id}
                 className="rounded-full border border-[#c9b695] bg-white/70 px-3 py-1 text-sm font-bold capitalize"
               >
-                ✓ {prettify(id)}
+                <Check
+                  aria-hidden
+                  className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                />
+                {prettify(id)}
               </span>
             ))}
           </div>
@@ -165,9 +169,17 @@ export function SceneBelajar({
                   <p className="font-display mt-1 text-xl font-bold">{sign.gloss.id}</p>
                   <p className="text-teks-sekunder">{sign.gloss.en}</p>
                   <p className="text-teks-sekunder mt-2 text-sm">
-                    {sign.review.status === 'approved'
-                      ? '✓ tervalidasi penanda Tuli'
-                      : 'draf, belum divalidasi penanda Tuli'}
+                    {sign.review.status === 'approved' ? (
+                      <>
+                        <Check
+                          aria-hidden
+                          className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                        />
+                        tervalidasi penanda Tuli
+                      </>
+                    ) : (
+                      'draf, belum divalidasi penanda Tuli'
+                    )}
                   </p>
                 </div>
                 <button
@@ -175,7 +187,11 @@ export function SceneBelajar({
                   onClick={() => onGantiView('praktik')}
                   className="tombol-sorot w-full text-lg md:w-auto md:self-end md:px-10"
                 >
-                  Lanjut ke praktik →
+                  Lanjut ke praktik{' '}
+                  <ArrowRight
+                    aria-hidden
+                    className="inline-block h-[1em] w-[1em] align-text-bottom"
+                  />
                 </button>
               </div>
             </div>
@@ -207,7 +223,11 @@ export function SceneBelajar({
                   onClick={() => onGantiView('demo')}
                   className="tombol-sekunder bg-white/70"
                 >
-                  ← Lihat peragaan lagi
+                  <ArrowLeft
+                    aria-hidden
+                    className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                  />
+                  Lihat peragaan lagi
                 </button>
                 {progress.attempts > 0 ? (
                   <p className="text-teks-samar text-sm">
@@ -239,7 +259,8 @@ export function SceneBelajar({
         <PapanMenuKapur className="w-full rotate-1" />
         <div className="kk-papan-kapur w-full -rotate-1 rounded-xl p-3 text-center">
           <p className="kk-font-kapur text-lg text-[#d9d3bd]">
-            Hafalkan dulu, nanti dipakai saat memesan ke barista ☕
+            Hafalkan dulu, nanti dipakai saat memesan ke barista{' '}
+            <Coffee aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
           </p>
         </div>
       </div>
