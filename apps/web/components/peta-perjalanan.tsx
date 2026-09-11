@@ -1,6 +1,6 @@
 'use client'
 
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowRight,
@@ -12,6 +12,7 @@ import {
   Hand,
   Landmark,
   Lock,
+  PersonStanding,
   Star,
   Store,
   TreeDeciduous,
@@ -42,9 +43,11 @@ export type TeksPeta = {
   menit: string
   mulaiDiSini: string
   garisAkhir: string
+  kamuDiSini?: string
 }
 
 const POSISI_X = [22, 74, 24, 76, 30] as const
+const durasiUntuk = (langkah: number) => Math.min(2600, Math.max(500, langkah * 900))
 const DEKOR: { Icon: LucideIcon; x: number; y: number; size: number; kecil?: boolean }[] = [
   { Icon: TreeDeciduous, x: 8, y: 6, size: 28 },
   { Icon: Building2, x: 90, y: 4, size: 30, kecil: true },
@@ -56,9 +59,28 @@ const DEKOR: { Icon: LucideIcon; x: number; y: number; size: number; kecil?: boo
   { Icon: Building2, x: 8, y: 86, size: 30, kecil: true },
 ]
 
-export function PetaPerjalanan({ simpul, teks }: { simpul: SimpulPeta[]; teks: TeksPeta }) {
+export function PetaPerjalanan({
+  simpul,
+  teks,
+  posisiPemain,
+  onSampai,
+}: {
+  simpul: SimpulPeta[]
+  teks: TeksPeta
+  posisiPemain?: number
+  onSampai?: (item: SimpulPeta, index: number) => void
+}) {
   const ref = useRef<HTMLDivElement | null>(null)
   const [lebar, setLebar] = useState(0)
+  const [tujuan, setTujuan] = useState<number | null>(null)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current)
+    },
+    [],
+  )
 
   useLayoutEffect(() => {
     const el = ref.current
@@ -71,9 +93,9 @@ export function PetaPerjalanan({ simpul, teks }: { simpul: SimpulPeta[]; teks: T
   }, [])
 
   const ponsel = lebar < 640
-  const tinggiBaris = ponsel ? 236 : 208
+  const tinggiBaris = ponsel ? 276 : 208
   const atas = 150
-  const bawah = ponsel ? 320 : 150
+  const bawah = ponsel ? 330 : 150
   const tinggi = atas + Math.max(0, simpul.length - 1) * tinggiBaris + bawah
 
   const titik = simpul.map((_, index) => ({
@@ -85,14 +107,42 @@ export function PetaPerjalanan({ simpul, teks }: { simpul: SimpulPeta[]; teks: T
     y: tinggi - (ponsel ? 44 : 56),
   }
   const jalur = [...titik, akhir]
-  const d = jalur
-    .map((p, i) => {
-      if (i === 0) return `M ${p.x} ${p.y}`
-      const q = jalur[i - 1]!
-      const tarik = (p.y - q.y) * 0.55
-      return `C ${q.x} ${q.y + tarik} ${p.x} ${p.y - tarik} ${p.x} ${p.y}`
-    })
-    .join(' ')
+  const ruas = (titikJalur: { x: number; y: number }[]) =>
+    titikJalur
+      .map((p, i) => {
+        if (i === 0) return `M ${p.x} ${p.y}`
+        const q = titikJalur[i - 1]!
+        const tarik = (p.y - q.y) * 0.55
+        return `C ${q.x} ${q.y + tarik} ${p.x} ${p.y - tarik} ${p.x} ${p.y}`
+      })
+      .join(' ')
+  const d = ruas(jalur)
+
+  const pemain = typeof posisiPemain === 'number' ? Math.min(posisiPemain, simpul.length - 1) : null
+  const asal = pemain !== null ? titik[pemain] : undefined
+  const langkah = tujuan !== null && pemain !== null ? Math.abs(tujuan - pemain) : 0
+  const durasi = Math.min(2600, Math.max(500, langkah * 900))
+  const jalurPemain =
+    tujuan !== null && pemain !== null && langkah > 0
+      ? ruas(
+          tujuan > pemain
+            ? titik.slice(pemain, tujuan + 1)
+            : titik.slice(tujuan, pemain + 1).reverse(),
+        )
+      : null
+
+  const pilih = (item: SimpulPeta, index: number) => {
+    if (!onSampai || tujuan !== null) return
+    const cepat =
+      typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (cepat || pemain === null || index === pemain) {
+      setTujuan(index)
+      timer.current = setTimeout(() => onSampai(item, index), cepat ? 0 : 400)
+      return
+    }
+    setTujuan(index)
+    timer.current = setTimeout(() => onSampai(item, index), durasiUntuk(Math.abs(index - pemain)))
+  }
 
   return (
     <div
@@ -151,7 +201,7 @@ export function PetaPerjalanan({ simpul, teks }: { simpul: SimpulPeta[]; teks: T
             style={{ left: titik[0]!.x, top: titik[0]!.y - 132, transform: 'translateX(-50%)' }}
           >
             <Flag aria-hidden size={13} />
-            {teks.mulaiDiSini}
+            {pemain !== null ? (teks.kamuDiSini ?? teks.mulaiDiSini) : teks.mulaiDiSini}
           </span>
           <Footprints
             aria-hidden
@@ -261,21 +311,37 @@ export function PetaPerjalanan({ simpul, teks }: { simpul: SimpulPeta[]; teks: T
             )
             const posisiKartu = ponsel
               ? {
-                  top: 22,
-                  [kiri ? 'left' : 'right']: -(kiri ? p.x : lebar - p.x) + lebar * 0.04,
+                  top: 100,
+                  [kiri ? 'left' : 'right']: -(kiri ? p.x : lebar - p.x) + lebar * 0.04 + 33,
                   width: lebar * 0.7,
                 }
-              : { top: -78, [kiri ? 'left' : 'right']: 50, width: Math.min(300, lebar * 0.4) }
+              : { top: 0, [kiri ? 'left' : 'right']: 83, width: Math.min(300, lebar * 0.4) }
             const isi = (
               <>
-                <span className="absolute left-1/2 -translate-x-1/2 -translate-y-full">{pin}</span>
+                {pin}
                 <span className="absolute" style={posisiKartu}>
                   {kartu}
                 </span>
               </>
             )
-            const kelas = 'group absolute z-10 block h-0 w-0'
+            const kelas =
+              'group absolute z-10 block h-[78px] w-[66px] -translate-x-1/2 -translate-y-full rounded-full'
             const label = `${teks.adegan} ${index + 1}: ${item.judul}${kunci ? `, ${teks.terkunci}` : ''}`
+            if (onSampai && !kunci) {
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={kelas}
+                  style={{ left: p.x, top: p.y }}
+                  aria-label={label}
+                  aria-busy={tujuan === index}
+                  onClick={() => pilih(item, index)}
+                >
+                  {isi}
+                </button>
+              )
+            }
             return kunci ? (
               <span
                 key={item.id}
@@ -299,6 +365,32 @@ export function PetaPerjalanan({ simpul, teks }: { simpul: SimpulPeta[]; teks: T
             )
           })
         : null}
+
+      {lebar > 0 && asal ? (
+        <svg
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-30"
+          width={lebar}
+          height={tinggi}
+          viewBox={`0 0 ${lebar} ${tinggi}`}
+        >
+          <g transform={jalurPemain ? undefined : `translate(${asal.x} ${asal.y})`}>
+            {jalurPemain ? (
+              <animateMotion
+                dur={`${durasi}ms`}
+                fill="freeze"
+                calcMode="linear"
+                path={jalurPemain}
+              />
+            ) : null}
+            <ellipse cx={0} cy={26} rx={16} ry={6} fill="rgb(0 0 0 / 0.25)" />
+            <g className={tujuan !== null ? 'peta-pejalan' : undefined}>
+              <circle cx={0} cy={4} r={20} fill="#201a13" stroke="#f2c94c" strokeWidth={3} />
+              <PersonStanding x={-13} y={-9} size={26} color="#f2c94c" strokeWidth={2.25} />
+            </g>
+          </g>
+        </svg>
+      ) : null}
     </div>
   )
 }

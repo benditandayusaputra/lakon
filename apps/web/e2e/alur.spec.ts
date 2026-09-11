@@ -174,7 +174,7 @@ test.describe('alur inti', () => {
   test('4+6. arah A: fase belajar lalu ujian sampai ringkasan', async ({ page }) => {
     await masukAkunBaru(page)
     await page.goto('/skenario')
-    await page.getByRole('link', { name: /Memesan minuman/ }).click()
+    await page.getByRole('button', { name: /Memesan minuman/ }).click()
     await page.getByRole('button', { name: 'Buka pintu & masuk' }).click()
     await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
 
@@ -215,7 +215,7 @@ test.describe('alur inti', () => {
     await masukAkunBaru(page)
     await page.goto('/skenario')
     await page.getByText('Sisi pekerja layanan', { exact: false }).click()
-    await page.getByRole('link', { name: /Memesan minuman/ }).click()
+    await page.getByRole('button', { name: /Memesan minuman/ }).click()
     await page.getByRole('button', { name: 'Buka pintu & masuk' }).click()
     await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
 
@@ -291,8 +291,8 @@ test.describe('alur inti', () => {
   test('12. adegan kedua terkunci sebelum adegan pertama selesai', async ({ page }) => {
     await masukAkunBaru(page)
     await page.goto('/skenario')
-    await expect(page.getByRole('link', { name: /Memesan minuman/ })).toBeVisible()
-    await expect(page.getByRole('link', { name: /puskesmas/i })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Memesan minuman/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: /puskesmas/i })).toHaveCount(0)
     await expect(page.getByText(/Selesaikan .* dulu untuk membukanya/).first()).toBeVisible()
   })
 

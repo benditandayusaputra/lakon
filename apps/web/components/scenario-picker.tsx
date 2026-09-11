@@ -2,24 +2,15 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import {
-  ArrowRight,
-  Eye,
-  Flag,
-  Hand,
-  Info,
-  Lock,
-  Repeat,
-  Star,
-  UserRound,
-  Users,
-} from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { Eye, Flag, Hand, Info, Repeat, UserRound, Users } from 'lucide-react'
 import { useContent } from '@/features/content/use-content'
 import { listRuns, listSignProgress, pullFromServer } from '@/features/progress/store'
 import { Logo } from '@/components/logo'
+import { PetaPerjalanan } from '@/components/peta-perjalanan'
 import { SyncBadge } from '@/components/sync-badge'
-import { SCENE_ICONS, scenarioSignIds } from '@/features/ui/adegan'
-import { paletteFor, scenarioRank } from '@/features/ui/tokens'
+import { scenarioSignIds } from '@/features/ui/adegan'
+import { scenarioRank } from '@/features/ui/tokens'
 
 const SCENE_MOODS: Record<string, string> = {
   'kedai-kopi': 'Amber pagi, kayu jati',
@@ -46,9 +37,8 @@ const ROLES = [
   },
 ] as const
 
-const GESER = [0, 14, -12, 10, -8] as const
-
 export function ScenarioPicker() {
+  const router = useRouter()
   const { content, error } = useContent()
   const [direction, setDirection] = useState<'deaf' | 'service'>('deaf')
   const [runsByScenario, setRunsByScenario] = useState<Record<string, number>>({})
@@ -91,6 +81,10 @@ export function ScenarioPicker() {
   const totalRuns = Object.values(runsByScenario).reduce((sum, count) => sum + count, 0)
   const activeRole = ROLES.find((role) => role.value === direction) ?? ROLES[0]
   const selesai = scenarios.filter((scenario) => (runsByScenario[scenario.id] ?? 0) > 0).length
+  const posisiPemain = scenarios.reduce(
+    (akhir, scenario, index) => ((runsByScenario[scenario.id] ?? 0) > 0 ? index : akhir),
+    0,
+  )
 
   return (
     <main className="flex min-h-dvh flex-col">
@@ -206,147 +200,60 @@ export function ScenarioPicker() {
         </div>
       ) : null}
 
-      <ol className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-0 px-6 pb-16 pt-8">
-        {scenarios.map((scenario, index) => {
-          const palette = paletteFor(scenario.id)
-          const SceneIcon = SCENE_ICONS[scenario.id] ?? Hand
-          const signIds = scenarioSignIds(scenario)
-          const masteredHere = [...signIds].filter((id) => masteredSigns.has(id)).length
-          const runs = runsByScenario[scenario.id] ?? 0
-          const sebelumnya = scenarios[index - 1]
-          const terkunci = index > 0 && (runsByScenario[sebelumnya?.id ?? ''] ?? 0) === 0
-          const tuntas = runs > 0
-          const persen = signIds.size > 0 ? Math.round((masteredHere / signIds.size) * 100) : 0
-
-          const isi = (
-            <>
-              <span
-                aria-hidden
-                className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full border-4 shadow-lg transition-transform"
-                style={{
-                  backgroundColor: terkunci ? '#ded9d0' : palette.tint,
-                  borderColor: terkunci ? '#b9b2a6' : palette.accent,
-                  color: terkunci ? '#7c7568' : palette.deep,
-                }}
-              >
-                {terkunci ? (
-                  <Lock size={26} strokeWidth={2.25} />
-                ) : (
-                  <SceneIcon size={30} strokeWidth={2} />
-                )}
-                {tuntas ? (
-                  <span
-                    className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-2 border-white"
-                    style={{ backgroundColor: palette.accent, color: '#fff' }}
-                  >
-                    <Star size={16} strokeWidth={2.5} fill="currentColor" />
-                  </span>
-                ) : null}
-              </span>
-
-              <span className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="text-teks-samar font-mono text-xs uppercase tracking-[0.2em]">
-                  Adegan {index + 1}
-                  {terkunci ? ' · terkunci' : tuntas ? ' · selesai' : ''}
-                </span>
-                <span
-                  className="font-display text-xl font-semibold leading-tight"
-                  style={{ color: terkunci ? '#7c7568' : palette.deep }}
-                >
-                  {scenario.title.id}
-                </span>
-                <span className="text-teks-sekunder text-sm">
-                  {terkunci
-                    ? `Selesaikan “${sebelumnya?.title.id ?? 'adegan sebelumnya'}” dulu untuk membukanya.`
-                    : (SCENE_MOODS[scenario.id] ?? '')}
-                </span>
-                {terkunci ? null : (
-                  <>
-                    <span className="text-teks-samar font-mono text-xs">
-                      {signIds.size} isyarat · ±{scenario.estimatedMinutes} menit
-                      {runs > 0 ? ` · diselesaikan ${runs}×` : ''}
-                    </span>
-                    <span aria-hidden className="bg-terangkat mt-1 h-1.5 rounded-full">
-                      <span
-                        className="block h-full rounded-full transition-[width] duration-500"
-                        style={{ width: `${persen}%`, backgroundColor: palette.accent }}
-                      />
-                    </span>
-                    <span className="text-teks-sekunder mt-0.5 text-xs">
-                      {masteredHere}/{signIds.size} isyarat dikuasai
-                    </span>
-                  </>
-                )}
-              </span>
-
-              {terkunci ? null : (
-                <span
-                  aria-hidden
-                  className="hidden shrink-0 items-center gap-1.5 self-center text-sm font-bold sm:flex"
-                  style={{ color: palette.accent }}
-                >
-                  {tuntas ? 'Ulangi' : 'Mulai'}
-                  <ArrowRight size={16} strokeWidth={2.5} />
-                </span>
-              )}
-            </>
-          )
-
-          const kelas =
-            'jalur-simpul border-border-halus bg-kartu shadow-kartu flex w-full items-start gap-4 rounded-3xl border p-4 text-left'
-
-          return (
-            <li key={scenario.id} className="flex flex-col items-stretch">
-              {index > 0 ? (
-                <span
-                  aria-hidden
-                  className="jalur-garis mx-auto h-10 w-1.5 rounded-full"
-                  style={{ ['--jalur-warna' as string]: terkunci ? '#ded9d0' : palette.ambient }}
-                />
-              ) : null}
-              <div
-                className="sm:pe-[var(--pe)] sm:ps-[var(--ps)]"
-                style={{
-                  ['--ps' as string]: `${Math.max(GESER[index % GESER.length] ?? 0, 0)}%`,
-                  ['--pe' as string]: `${Math.max(-(GESER[index % GESER.length] ?? 0), 0)}%`,
-                }}
-              >
-                {terkunci ? (
-                  <div
-                    className={`${kelas} opacity-70`}
-                    aria-label={`${scenario.title.id}, terkunci`}
-                  >
-                    {isi}
-                  </div>
-                ) : (
-                  <Link
-                    href={`/skenario/${scenario.id}?arah=${direction}`}
-                    className={`${kelas} hover:shadow-kartu-angkat`}
-                  >
-                    {isi}
-                  </Link>
-                )}
-              </div>
-            </li>
-          )
-        })}
-
-        {!content && !error
-          ? [0, 1, 2].map((index) => (
-              <li key={index} className="mt-4">
-                <div className="border-border-halus bg-kartu flex animate-pulse gap-4 rounded-3xl border p-4">
-                  <span className="sr-only">{index === 0 ? 'Memuat adegan…' : null}</span>
-                  <div className="bg-terangkat h-20 w-20 shrink-0 rounded-full" />
-                  <div className="flex flex-1 flex-col gap-2.5 py-2">
-                    <div className="bg-terangkat h-4 w-1/3 rounded-lg" />
-                    <div className="bg-terangkat h-5 w-2/3 rounded-lg" />
-                    <div className="bg-terangkat h-3 w-1/2 rounded-lg" />
-                  </div>
+      <section className="mx-auto w-full max-w-3xl flex-1 px-4 pb-16 pt-8 sm:px-6">
+        {scenarios.length > 0 ? (
+          <PetaPerjalanan
+            simpul={scenarios.map((scenario, index) => {
+              const signIds = scenarioSignIds(scenario)
+              const masteredHere = [...signIds].filter((id) => masteredSigns.has(id)).length
+              const runs = runsByScenario[scenario.id] ?? 0
+              const sebelumnya = scenarios[index - 1]
+              const terkunci = index > 0 && (runsByScenario[sebelumnya?.id ?? ''] ?? 0) === 0
+              return {
+                id: scenario.id,
+                judul: scenario.title.id,
+                suasana: SCENE_MOODS[scenario.id] ?? '',
+                isyarat: signIds.size,
+                menit: scenario.estimatedMinutes ?? 15,
+                href: `/skenario/${scenario.id}?arah=${direction}`,
+                status: terkunci ? 'kunci' : runs > 0 ? 'selesai' : 'buka',
+                persen: signIds.size > 0 ? Math.round((masteredHere / signIds.size) * 100) : 0,
+                keterangan: terkunci
+                  ? `Selesaikan “${sebelumnya?.title.id ?? 'adegan sebelumnya'}” dulu untuk membukanya.`
+                  : runs > 0
+                    ? `${SCENE_MOODS[scenario.id] ?? ''} · diselesaikan ${runs}×`
+                    : undefined,
+              }
+            })}
+            posisiPemain={posisiPemain}
+            teks={{
+              adegan: 'Adegan',
+              mulai: 'Mulai',
+              ulangi: 'Ulangi',
+              terkunci: 'terkunci',
+              isyarat: 'isyarat',
+              menit: 'menit',
+              mulaiDiSini: 'Mulai di sini',
+              kamuDiSini: 'Kamu di sini',
+              garisAkhir: 'Garis akhir',
+            }}
+            onSampai={(item) => router.push(item.href)}
+          />
+        ) : !error ? (
+          <div className="border-border-halus bg-kartu flex animate-pulse flex-col gap-4 rounded-3xl border p-6">
+            <span className="sr-only">Memuat adegan…</span>
+            {[0, 1, 2].map((index) => (
+              <div key={index} className="flex gap-4">
+                <div className="bg-terangkat h-16 w-16 shrink-0 rounded-full" />
+                <div className="flex flex-1 flex-col gap-2.5 py-2">
+                  <div className="bg-terangkat h-4 w-1/3 rounded-lg" />
+                  <div className="bg-terangkat h-5 w-2/3 rounded-lg" />
                 </div>
-              </li>
-            ))
-          : null}
-      </ol>
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </section>
 
       <footer className="border-border-halus bg-terangkat border-t">
         <div className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-between gap-4 px-6 py-6">

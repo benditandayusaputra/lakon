@@ -1537,3 +1537,18 @@ input[type='range'] {
     28px 28px,
     28px 28px;
 }
+
+.peta-pejalan {
+  animation: peta-langkah 0.45s ease-in-out infinite alternate;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes peta-langkah {
+  from {
+    transform: translateY(0) rotate(-4deg);
+  }
+  to {
+    transform: translateY(-3px) rotate(4deg);
+  }
+}
