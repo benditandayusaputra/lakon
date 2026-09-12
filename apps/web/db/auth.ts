@@ -26,6 +26,7 @@ export type SessionUser = {
   displayName: string
   role: 'pengguna' | 'validator' | 'admin'
   avatar: string | null
+  gender: 'perempuan' | 'laki-laki' | null
 }
 
 export const createSession = async (userId: string): Promise<{ token: string; maxAge: number }> => {
@@ -57,6 +58,7 @@ export const getSessionUser = async (): Promise<SessionUser | null> => {
       displayName: schema.users.displayName,
       role: schema.users.role,
       avatar: schema.users.avatar,
+      gender: schema.users.gender,
     })
     .from(schema.sessions)
     .innerJoin(schema.users, eq(schema.sessions.userId, schema.users.id))

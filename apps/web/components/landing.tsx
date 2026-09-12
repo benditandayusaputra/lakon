@@ -61,6 +61,7 @@ const copy = {
     sceneRepeat: 'Ulangi',
     sceneLocked: 'terkunci',
     mapStart: 'Mulai di sini',
+    mapHome: 'Rumah',
     mapFinish: 'Garis akhir',
     scenarioMoods: {
       'kedai-kopi': 'Amber pagi, kayu jati',
@@ -120,6 +121,7 @@ const copy = {
     sceneRepeat: 'Replay',
     sceneLocked: 'locked',
     mapStart: 'Start here',
+    mapHome: 'Home',
     mapFinish: 'Finish line',
     scenarioMoods: {
       'kedai-kopi': 'Morning amber, teak wood',
@@ -364,6 +366,8 @@ export function Landing() {
               menit: scenario.estimatedMinutes ?? 15,
               href: '/daftar',
             }))}
+            posisiPemain={-1}
+            karakter="robot"
             teks={{
               adegan: t.sceneLabel,
               mulai: t.sceneStart,
@@ -372,6 +376,7 @@ export function Landing() {
               isyarat: t.scenarioSigns,
               menit: t.scenarioMinutes,
               mulaiDiSini: t.mapStart,
+              rumah: t.mapHome,
               garisAkhir: t.mapFinish,
             }}
           />

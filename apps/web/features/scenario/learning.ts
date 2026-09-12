@@ -13,6 +13,8 @@ export type SignProgress = {
 export const ESCAPE_AFTER_FAILURES = 3
 
 export type LearningPhase = {
+  snapshot: () => SignProgress[]
+  restore: (entries: SignProgress[]) => void
   order: () => readonly string[]
   progress: () => readonly SignProgress[]
   progressFor: (sign: string) => SignProgress | null
@@ -54,6 +56,13 @@ export const createLearningPhase = (scenario: Scenario): LearningPhase => {
     progress.status === 'dikuasai' || progress.status === 'dinilai-sendiri'
 
   return {
+    snapshot: () => order.map((sign) => ({ ...bySign.get(sign)! })),
+    restore(entries) {
+      for (const entry of entries) {
+        const progress = bySign.get(entry.sign)
+        if (progress) Object.assign(progress, entry, { sign: progress.sign })
+      }
+    },
     order: () => order,
     progress: () => order.map((sign) => bySign.get(sign)!),
     progressFor: (sign) => bySign.get(sign) ?? null,

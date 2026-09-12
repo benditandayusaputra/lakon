@@ -9,7 +9,9 @@ const patchSchema = z.object({
     .string()
     .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/)
     .max(300_000)
-    .nullable(),
+    .nullable()
+    .optional(),
+  gender: z.enum(['perempuan', 'laki-laki']).nullable().optional(),
 })
 
 export async function PATCH(request: Request) {
@@ -19,11 +21,13 @@ export async function PATCH(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ ok: false, error: 'Foto tidak valid.' }, { status: 400 })
   }
-  await db
-    .update(schema.users)
-    .set({ avatar: parsed.data.avatar })
-    .where(eq(schema.users.id, user.id))
-  return NextResponse.json({ ok: true, avatar: parsed.data.avatar })
+  const perubahan: { avatar?: string | null; gender?: 'perempuan' | 'laki-laki' | null } = {}
+  if (parsed.data.avatar !== undefined) perubahan.avatar = parsed.data.avatar
+  if (parsed.data.gender !== undefined) perubahan.gender = parsed.data.gender
+  if (Object.keys(perubahan).length > 0) {
+    await db.update(schema.users).set(perubahan).where(eq(schema.users.id, user.id))
+  }
+  return NextResponse.json({ ok: true, ...perubahan })
 }
 
 export async function GET() {

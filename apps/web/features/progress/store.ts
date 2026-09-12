@@ -29,13 +29,26 @@ const DB_NAME = 'lakon-progress'
 
 const kunciSign = (direction: Arah, signId: string) => `${direction}:${signId}`
 
+export type CheckpointEntry = {
+  key: string
+  scenarioId: string
+  direction: Arah
+  state: string
+  updatedAt: number
+}
+
+const kunciCheckpoint = (direction: Arah, scenarioId: string) => `${direction}:${scenarioId}`
+
 const openDb = (): Promise<IDBDatabase> =>
   new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 2)
+    const request = indexedDB.open(DB_NAME, 3)
     request.onupgradeneeded = (event) => {
       const db = request.result
       if (event.oldVersion < 1) {
         db.createObjectStore('runs', { keyPath: 'id' })
+      }
+      if (event.oldVersion < 3 && !db.objectStoreNames.contains('checkpoints')) {
+        db.createObjectStore('checkpoints', { keyPath: 'key' })
       }
       if (event.oldVersion < 1) {
         db.createObjectStore('signs', { keyPath: 'key' })
@@ -60,7 +73,7 @@ const openDb = (): Promise<IDBDatabase> =>
   })
 
 const tx = async <T>(
-  storeName: 'signs' | 'runs',
+  storeName: 'signs' | 'runs' | 'checkpoints',
   mode: IDBTransactionMode,
   work: (store: IDBObjectStore) => IDBRequest<T>,
 ): Promise<T> => {
@@ -111,9 +124,95 @@ export const saveRun = async (run: Omit<RunEntry, 'id' | 'synced'>): Promise<voi
   scheduleSync()
 }
 
+export const bacaCheckpoint = async <T>(
+  scenarioId: string,
+  direction: Arah,
+): Promise<{ state: T; updatedAt: number } | null> => {
+  const key = kunciCheckpoint(direction, scenarioId)
+  const lokal = await tx<CheckpointEntry | undefined>(
+    'checkpoints',
+    'readonly',
+    (store) => store.get(key) as IDBRequest<CheckpointEntry | undefined>,
+  ).catch(() => undefined)
+  let server: { state: string; updatedAt: number } | null = null
+  try {
+    const response = await fetch(
+      `/api/checkpoint?scenarioId=${encodeURIComponent(scenarioId)}&direction=${direction}`,
+    )
+    if (response.ok) {
+      const data = (await response.json()) as {
+        checkpoint: { state: string; updatedAt: number } | null
+      }
+      server = data.checkpoint
+    }
+  } catch {
+    server = null
+  }
+  const pilih = server && (!lokal || server.updatedAt > lokal.updatedAt) ? server : lokal
+  if (!pilih) return null
+  try {
+    return { state: JSON.parse(pilih.state) as T, updatedAt: pilih.updatedAt }
+  } catch {
+    return null
+  }
+}
+
+let checkpointTimer: number | null = null
+let checkpointTertunda: CheckpointEntry | null = null
+
+export const tulisCheckpoint = async (
+  scenarioId: string,
+  direction: Arah,
+  state: unknown,
+): Promise<void> => {
+  const entry: CheckpointEntry = {
+    key: kunciCheckpoint(direction, scenarioId),
+    scenarioId,
+    direction,
+    state: JSON.stringify(state),
+    updatedAt: Date.now(),
+  }
+  await tx('checkpoints', 'readwrite', (store) => store.put(entry))
+  checkpointTertunda = entry
+  if (checkpointTimer !== null) window.clearTimeout(checkpointTimer)
+  checkpointTimer = window.setTimeout(() => {
+    checkpointTimer = null
+    const kirim = checkpointTertunda
+    checkpointTertunda = null
+    if (!kirim) return
+    void fetch('/api/checkpoint', {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        scenarioId: kirim.scenarioId,
+        direction: kirim.direction,
+        state: kirim.state,
+        updatedAt: kirim.updatedAt,
+      }),
+    }).catch(() => {})
+  }, 1200)
+}
+
+export const hapusCheckpoint = async (scenarioId: string, direction: Arah): Promise<void> => {
+  if (checkpointTimer !== null) {
+    window.clearTimeout(checkpointTimer)
+    checkpointTimer = null
+    checkpointTertunda = null
+  }
+  await tx('checkpoints', 'readwrite', (store) =>
+    store.delete(kunciCheckpoint(direction, scenarioId)),
+  )
+  await fetch('/api/checkpoint', {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ scenarioId, direction }),
+  }).catch(() => {})
+}
+
 export const clearAllProgress = async () => {
   await tx('signs', 'readwrite', (store) => store.clear())
   await tx('runs', 'readwrite', (store) => store.clear())
+  await tx('checkpoints', 'readwrite', (store) => store.clear()).catch(() => {})
   try {
     await fetch('/api/progress', { method: 'DELETE' })
   } catch {

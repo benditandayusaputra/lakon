@@ -9,6 +9,7 @@ export const users = pgTable('users', {
     .notNull()
     .default('pengguna'),
   avatar: text('avatar'),
+  gender: text('gender', { enum: ['perempuan', 'laki-laki'] }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 })
 
@@ -38,6 +39,20 @@ export const signProgress = pgTable(
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [primaryKey({ columns: [t.userId, t.signId, t.direction] })],
+)
+
+export const checkpoints = pgTable(
+  'checkpoints',
+  {
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    scenarioId: text('scenario_id').notNull(),
+    direction: text('direction', { enum: ['deaf', 'service'] }).notNull(),
+    state: text('state').notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.scenarioId, t.direction] })],
 )
 
 export const scenarioRuns = pgTable('scenario_runs', {

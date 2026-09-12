@@ -143,6 +143,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
   const [busy, setBusy] = useState(false)
   const [showSandi, setShowSandi] = useState(false)
   const [sandiValue, setSandiValue] = useState('')
+  const [jenisKelamin, setJenisKelamin] = useState<'perempuan' | 'laki-laki' | ''>('')
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -164,7 +165,11 @@ export function AuthForm({ mode }: { mode: Mode }) {
       const response = await fetch(`/api/auth/${mode}`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(mode === 'daftar' ? { nama, email, sandi } : { email, sandi }),
+        body: JSON.stringify(
+          mode === 'daftar'
+            ? { nama, email, sandi, jenisKelamin: jenisKelamin || null }
+            : { email, sandi },
+        ),
       })
       const result = (await response.json().catch(() => ({}))) as {
         ok?: boolean
@@ -335,6 +340,43 @@ export function AuthForm({ mode }: { mode: Mode }) {
                   </p>
                 ) : null}
               </div>
+
+              {mode === 'daftar' ? (
+                <fieldset className="flex flex-col gap-2">
+                  <legend className="text-sm font-bold">Karakter di peta perjalanan</legend>
+                  <p className="text-teks-samar text-xs">
+                    Boleh dikosongkan; karakter bawaan berupa robot.
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(
+                      [
+                        ['perempuan', 'Perempuan'],
+                        ['laki-laki', 'Laki-laki'],
+                        ['', 'Tidak memberi tahu'],
+                      ] as const
+                    ).map(([nilai, label]) => (
+                      <label
+                        key={label}
+                        className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl border-2 px-2 text-center text-sm font-bold transition-colors ${
+                          jenisKelamin === nilai
+                            ? 'border-panggung bg-panggung text-halaman'
+                            : 'border-border-halus hover:border-border-tegas'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="jenisKelamin"
+                          value={nilai}
+                          checked={jenisKelamin === nilai}
+                          onChange={() => setJenisKelamin(nilai)}
+                          className="sr-only"
+                        />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ) : null}
 
               {formError ? (
                 <p

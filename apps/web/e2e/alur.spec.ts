@@ -113,12 +113,17 @@ const finishExam = async (page: Page) => {
 
 const enterScenario = async (page: Page, direction: 'deaf' | 'service') => {
   await page.goto(`/skenario/kedai-kopi?arah=${direction}`)
-  await page.getByRole('button', { name: /pintu/i }).click()
-  await page
-    .getByRole('button', { name: 'Lanjut tanpa kamera' })
-    .click({ timeout: 10_000 })
-    .catch(() => {})
-  await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
+  const pintu = page.getByRole('button', { name: /pintu/i })
+  const tanpaKamera = page.getByRole('button', { name: 'Lanjut tanpa kamera' })
+  const judul = page.getByRole('heading', { name: 'halo' })
+  await Promise.race([
+    pintu.waitFor({ timeout: 60_000 }),
+    tanpaKamera.waitFor({ timeout: 60_000 }),
+    judul.waitFor({ timeout: 60_000 }),
+  ]).catch(() => {})
+  if (await pintu.isVisible().catch(() => false)) await pintu.click()
+  await tanpaKamera.click({ timeout: 10_000 }).catch(() => {})
+  await expect(judul).toBeVisible({ timeout: 60_000 })
 }
 
 test.describe('alur inti', () => {

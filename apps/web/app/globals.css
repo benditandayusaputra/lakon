@@ -1609,3 +1609,47 @@ input[type='range'] {
     transform: translateY(-3px) scale(0.9);
   }
 }
+
+.pejalan g {
+  transform-box: fill-box;
+  transform-origin: 50% 10%;
+}
+
+.pejalan-jalan .pejalan-kaki-kiri {
+  animation: pejalan-kaki 0.5s ease-in-out infinite alternate;
+}
+
+.pejalan-jalan .pejalan-kaki-kanan {
+  animation: pejalan-kaki 0.5s ease-in-out infinite alternate-reverse;
+}
+
+.pejalan-jalan .pejalan-lengan-kiri {
+  animation: pejalan-kaki 0.5s ease-in-out infinite alternate-reverse;
+}
+
+.pejalan-jalan .pejalan-lengan-kanan {
+  animation: pejalan-kaki 0.5s ease-in-out infinite alternate;
+}
+
+.pejalan-jalan .pejalan-badan {
+  animation: pejalan-badan 0.5s ease-in-out infinite alternate;
+  transform-origin: 50% 100%;
+}
+
+@keyframes pejalan-kaki {
+  from {
+    transform: rotate(-24deg);
+  }
+  to {
+    transform: rotate(24deg);
+  }
+}
+
+@keyframes pejalan-badan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-2px);
+  }
+}

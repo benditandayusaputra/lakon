@@ -13,7 +13,16 @@ export type ScenarioEvent = {
 
 export type AdvanceResult = 'next' | 'onFail' | 'stay' | 'selesai'
 
+export type EngineSnapshot = {
+  currentId: string | null
+  path: string[]
+  events: ScenarioEvent[]
+  failures: [string, number][]
+}
+
 export type ScenarioEngine = {
+  snapshot: () => EngineSnapshot
+  restore: (snapshot: EngineSnapshot) => void
   current: () => ScenarioNode | null
   currentTask: () => ScenarioTask | null
   attemptsAtCurrent: () => number
@@ -61,6 +70,21 @@ export const createScenarioEngine = (
   }
 
   return {
+    snapshot: () => ({
+      currentId,
+      path: [...path],
+      events: events.map((event) => ({ ...event })),
+      failures: [...failuresByNode.entries()],
+    }),
+    restore(snapshot) {
+      currentId =
+        snapshot.currentId !== null && nodesById.has(snapshot.currentId)
+          ? snapshot.currentId
+          : startId
+      path = [...snapshot.path]
+      events = snapshot.events.map((event) => ({ ...event }))
+      failuresByNode = new Map(snapshot.failures)
+    },
     current: node,
     currentTask: () => {
       const active = node()

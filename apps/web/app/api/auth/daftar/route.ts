@@ -7,6 +7,7 @@ const bodySchema = z.object({
   nama: z.string().trim().min(2),
   email: z.string().trim().email(),
   sandi: z.string().min(8),
+  jenisKelamin: z.enum(['perempuan', 'laki-laki']).nullable().optional(),
 })
 
 export async function POST(request: Request) {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return NextResponse.json({ ok: false, error: 'Data formulir belum lengkap.' }, { status: 400 })
   }
-  const { nama, email, sandi } = parsed.data
+  const { nama, email, sandi, jenisKelamin } = parsed.data
   try {
     const inserted = await db
       .insert(schema.users)
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
         email: email.toLowerCase(),
         displayName: nama,
         passwordHash: hashPassword(sandi),
+        gender: jenisKelamin ?? null,
       })
       .returning({ id: schema.users.id })
     const user = inserted[0]!

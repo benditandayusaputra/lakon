@@ -18,7 +18,19 @@ import {
   type ScenarioEngine,
 } from '@/features/scenario/engine'
 import { createLearningPhase, type LearningPhase } from '@/features/scenario/learning'
-import { saveRun, saveSignProgress } from '@/features/progress/store'
+import {
+  bacaCheckpoint,
+  hapusCheckpoint,
+  saveRun,
+  saveSignProgress,
+  tulisCheckpoint,
+} from '@/features/progress/store'
+import {
+  buatCheckpoint,
+  keteranganCheckpoint,
+  terapkanCheckpoint,
+  type Checkpoint,
+} from '@/features/scenario/checkpoint'
 import { LampuGantung, TanamanGantung } from './props'
 import { SceneBelajar } from './scene-belajar'
 import { SceneHasil } from './scene-hasil'
@@ -53,7 +65,12 @@ export function WawancaraKerjaFlow() {
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [pilihanMenu, setPilihanMenu] = useState<MenuTes | null>(null)
   const [namaPelamar, setNamaPelamar] = useState('Pelamar Lakon')
-  const [, forceUpdate] = useReducer((tick: number) => tick + 1, 0)
+  const [tick, forceUpdate] = useReducer((tick: number) => tick + 1, 0)
+  const [cpDicek, setCpDicek] = useState(false)
+  const [lanjutan, setLanjutan] = useState<{
+    tahap: 'belajar' | 'ujian'
+    keterangan: string
+  } | null>(null)
   const startedAtRef = useRef<number>(Date.now())
   const endedAtRef = useRef<number>(Date.now())
   const pintuTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -80,6 +97,51 @@ export function WawancaraKerjaFlow() {
     },
     [],
   )
+
+  type EkstraCp = { pilihanMenu: MenuTes | null; namaPelamar: string }
+
+  useEffect(() => {
+    if (!learning || !engine || cpDicek) return
+    let batal = false
+    void bacaCheckpoint<Checkpoint<EkstraCp>>(scenarioId, direction).then((cp) => {
+      if (batal) return
+      if (cp && (cp.state.tahap === 'belajar' || cp.state.tahap === 'ujian')) {
+        terapkanCheckpoint(cp.state, learning, engine)
+        setLearnView(cp.state.learnView)
+        setPilihanMenu(cp.state.ekstra.pilihanMenu ?? null)
+        setNamaPelamar(cp.state.ekstra.namaPelamar ?? 'Pelamar Lakon')
+        startedAtRef.current = cp.state.startedAt || Date.now()
+        setLanjutan({
+          tahap: cp.state.tahap,
+          keterangan: keteranganCheckpoint(cp.state, learning, engine),
+        })
+        setMembuka(true)
+        setTahap(direction === 'deaf' ? 'kamera' : cp.state.tahap)
+        forceUpdate()
+      }
+      setCpDicek(true)
+    })
+    return () => {
+      batal = true
+    }
+  }, [learning, engine, direction, cpDicek])
+
+  useEffect(() => {
+    if (!cpDicek || !learning || !engine) return
+    if (tahap !== 'belajar' && tahap !== 'ujian') return
+    void tulisCheckpoint(
+      scenarioId,
+      direction,
+      buatCheckpoint<EkstraCp>(
+        tahap,
+        learnView,
+        learning,
+        engine,
+        { pilihanMenu, namaPelamar },
+        startedAtRef.current,
+      ),
+    )
+  }, [cpDicek, tahap, learnView, tick, learning, engine, direction, pilihanMenu, namaPelamar])
 
   useEffect(() => {
     let aktif = true
@@ -126,7 +188,7 @@ export function WawancaraKerjaFlow() {
     )
   }
 
-  if (!content || !scenario || !learning || !engine) {
+  if (!content || !scenario || !learning || !engine || !cpDicek) {
     return (
       <main className="wk-langit flex min-h-dvh items-center justify-center px-6">
         <p aria-live="polite" className="text-lg font-bold text-[#3b2a1a]">
@@ -164,6 +226,7 @@ export function WawancaraKerjaFlow() {
   }
 
   const finishExam = () => {
+    void hapusCheckpoint(scenarioId, direction)
     endedAtRef.current = Date.now()
     const summary = summarizeRun(engine, startedAtRef.current, endedAtRef.current)
     void saveRun({
@@ -210,7 +273,26 @@ export function WawancaraKerjaFlow() {
     return (
       <main className="wk-interior flex min-h-dvh flex-col">
         {kepala}
-        <IzinKamera aksen="#d9a521" onLanjut={() => setTahap('belajar')} />
+        <IzinKamera
+          aksen="#d9a521"
+          lanjutan={lanjutan?.keterangan}
+          onLanjut={() => setTahap(lanjutan?.tahap ?? 'belajar')}
+          onMulaiUlang={
+            lanjutan
+              ? () => {
+                  engine.reset()
+                  learning.restore(createLearningPhase(scenario).snapshot())
+                  setPilihanMenu(null)
+                  startedAtRef.current = Date.now()
+                  setLearnView('demo')
+                  setLanjutan(null)
+                  void hapusCheckpoint(scenarioId, direction)
+                  setTahap('belajar')
+                  forceUpdate()
+                }
+              : undefined
+          }
+        />
       </main>
     )
   }
@@ -255,6 +337,9 @@ export function WawancaraKerjaFlow() {
           jumlahLangkah={summary.path.length}
           onUlangi={() => {
             engine.reset()
+            learning.restore(createLearningPhase(scenario).snapshot())
+            void hapusCheckpoint(scenarioId, direction)
+            setLanjutan(null)
             startedAtRef.current = Date.now()
             setPilihanMenu(null)
             setMembuka(false)

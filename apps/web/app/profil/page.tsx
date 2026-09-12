@@ -9,6 +9,12 @@ export default async function ProfilPage() {
   const user = await getSessionUser().catch(() => null)
   if (!user) redirect('/masuk')
   return (
-    <Profil nama={user.displayName} email={user.email} peran={user.role} avatarAwal={user.avatar} />
+    <Profil
+      nama={user.displayName}
+      email={user.email}
+      peran={user.role}
+      avatarAwal={user.avatar}
+      genderAwal={user.gender}
+    />
   )
 }

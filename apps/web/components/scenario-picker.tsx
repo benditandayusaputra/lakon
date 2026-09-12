@@ -51,9 +51,11 @@ export function ScenarioPicker() {
   const [direction, setDirection] = useState<Arah>('deaf')
   const [runs, setRuns] = useState<RunEntry[]>([])
   const [signs, setSigns] = useState<SignProgressEntry[]>([])
-  const [account, setAccount] = useState<{ displayName: string; avatar: string | null } | null>(
-    null,
-  )
+  const [account, setAccount] = useState<{
+    displayName: string
+    avatar: string | null
+    gender: 'perempuan' | 'laki-laki' | null
+  } | null>(null)
   const [progresSiap, setProgresSiap] = useState(false)
 
   useEffect(() => {
@@ -69,8 +71,14 @@ export function ScenarioPicker() {
       })
     void fetch('/api/auth/saya')
       .then((response) => response.json())
-      .then((data: { user: { displayName: string; avatar: string | null } | null }) =>
-        setAccount(data.user),
+      .then(
+        (data: {
+          user: {
+            displayName: string
+            avatar: string | null
+            gender: 'perempuan' | 'laki-laki' | null
+          } | null
+        }) => setAccount(data.user),
       )
       .catch(() => {})
   }, [])
@@ -112,7 +120,7 @@ export function ScenarioPicker() {
   const selesai = scenarios.filter((scenario) => (runsByScenario[scenario.id] ?? 0) > 0).length
   const posisiPemain = scenarios.reduce(
     (akhir, scenario, index) => ((runsByScenario[scenario.id] ?? 0) > 0 ? index : akhir),
-    0,
+    -1,
   )
   const totalIsyarat = new Set(scenarios.flatMap((scenario) => [...scenarioSignIds(scenario)])).size
   const persenAdegan = scenarios.length > 0 ? Math.round((selesai / scenarios.length) * 100) : 0
@@ -352,6 +360,7 @@ export function ScenarioPicker() {
                 }
               })}
               posisiPemain={posisiPemain}
+              karakter={account?.gender ?? 'robot'}
               teks={{
                 adegan: 'Adegan',
                 mulai: 'Mulai',
@@ -361,6 +370,7 @@ export function ScenarioPicker() {
                 menit: 'menit',
                 mulaiDiSini: 'Mulai di sini',
                 kamuDiSini: 'Kamu di sini',
+                rumah: 'Rumah',
                 garisAkhir: 'Garis akhir',
               }}
               onSampai={(item) => router.push(item.href)}

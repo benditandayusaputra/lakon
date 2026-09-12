@@ -111,5 +111,6 @@ export async function DELETE() {
   if (!user) return NextResponse.json({ ok: false }, { status: 401 })
   await db.delete(schema.signProgress).where(eq(schema.signProgress.userId, user.id))
   await db.delete(schema.scenarioRuns).where(eq(schema.scenarioRuns.userId, user.id))
+  await db.delete(schema.checkpoints).where(eq(schema.checkpoints.userId, user.id))
   return NextResponse.json({ ok: true })
 }

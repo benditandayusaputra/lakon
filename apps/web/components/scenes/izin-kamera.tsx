@@ -1,15 +1,19 @@
 'use client'
 
 import { useState } from 'react'
-import { Camera, CameraOff, ShieldCheck } from 'lucide-react'
+import { Camera, CameraOff, RotateCcw, ShieldCheck } from 'lucide-react'
 import { nyalakanKamera } from '@/features/practice/capture'
 
 export function IzinKamera({
   onLanjut,
   aksen = '#d9a521',
+  lanjutan,
+  onMulaiUlang,
 }: {
   onLanjut: () => void
   aksen?: string
+  lanjutan?: string
+  onMulaiUlang?: () => void
 }) {
   const [sibuk, setSibuk] = useState(false)
   const [pesan, setPesan] = useState<string | null>(null)
@@ -45,8 +49,16 @@ export function IzinKamera({
           <Camera size={28} strokeWidth={2} />
         </span>
         <h1 id="izin-kamera-judul" className="font-display mt-4 text-2xl font-semibold sm:text-3xl">
-          Nyalakan kamera untuk berlatih
+          {lanjutan ? 'Lanjutkan dari checkpoint' : 'Nyalakan kamera untuk berlatih'}
         </h1>
+        {lanjutan ? (
+          <p
+            className="mt-2 rounded-xl px-3 py-2 text-sm font-bold"
+            style={{ backgroundColor: `${aksen}22`, color: aksen }}
+          >
+            Kamu berhenti di {lanjutan}. Kemajuanmu tersimpan.
+          </p>
+        ) : null}
         <p className="mt-2 text-[#f6efe4]/80">
           Kamera dipakai untuk memeriksa gerakan tanganmu di tiap isyarat. Sekali dinyalakan, kamera
           tetap menyala sampai adegan selesai, jadi kamu tinggal menekan tombol mulai.
@@ -75,6 +87,16 @@ export function IzinKamera({
             Lanjut tanpa kamera
           </button>
         </div>
+        {lanjutan && onMulaiUlang ? (
+          <button
+            type="button"
+            onClick={onMulaiUlang}
+            className="mt-4 flex min-h-11 items-center gap-2 text-sm font-bold text-[#f6efe4]/70 underline-offset-4 hover:underline"
+          >
+            <RotateCcw aria-hidden size={15} />
+            Mulai adegan dari awal
+          </button>
+        ) : null}
       </section>
     </div>
   )

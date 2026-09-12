@@ -18,6 +18,7 @@ import {
   UserRound,
 } from 'lucide-react'
 import { AvatarAkun } from '@/components/avatar-akun'
+import { Pejalan, type Karakter } from '@/components/pejalan'
 import { Logo } from '@/components/logo'
 import { SyncBadge } from '@/components/sync-badge'
 import { useContent } from '@/features/content/use-content'
@@ -59,16 +60,20 @@ export function Profil({
   email,
   peran,
   avatarAwal,
+  genderAwal,
 }: {
   nama: string
   email: string
   peran: string
   avatarAwal: string | null
+  genderAwal: 'perempuan' | 'laki-laki' | null
 }) {
   const { content } = useContent()
   const [runs, setRuns] = useState<RunEntry[]>([])
   const [signs, setSigns] = useState<SignProgressEntry[]>([])
   const [avatar, setAvatar] = useState<string | null>(avatarAwal)
+  const [gender, setGender] = useState<'perempuan' | 'laki-laki' | null>(genderAwal)
+  const [genderPesan, setGenderPesan] = useState<string | null>(null)
   const [fotoPesan, setFotoPesan] = useState<string | null>(null)
   const [fotoSibuk, setFotoSibuk] = useState(false)
   const [dihapus, setDihapus] = useState(false)
@@ -149,6 +154,22 @@ export function Profil({
       setFotoPesan('Foto profil dihapus.')
     } finally {
       setFotoSibuk(false)
+    }
+  }
+
+  const simpanGender = async (nilai: 'perempuan' | 'laki-laki' | null) => {
+    setGender(nilai)
+    setGenderPesan(null)
+    try {
+      const response = await fetch('/api/auth/saya', {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ gender: nilai }),
+      })
+      if (!response.ok) throw new Error('gagal')
+      setGenderPesan('Karakter peta tersimpan.')
+    } catch {
+      setGenderPesan('Karakter belum tersimpan, coba lagi.')
     }
   }
 
@@ -412,6 +433,49 @@ export function Profil({
               )
             })}
           </div>
+        </section>
+
+        <section className="border-border-halus bg-kartu shadow-kartu flex flex-col gap-4 rounded-3xl border p-5 sm:p-6">
+          <h2 className="font-display flex items-center gap-2.5 text-2xl font-semibold">
+            <UserRound aria-hidden size={22} className="text-aksen" />
+            Karakter di peta perjalanan
+          </h2>
+          <p className="text-teks-sekunder text-sm">
+            Karakter ini yang berjalan dari rumah ke tiap adegan di peta.
+          </p>
+          <div className="grid grid-cols-3 gap-3">
+            {(
+              [
+                ['perempuan', 'Perempuan'],
+                ['laki-laki', 'Laki-laki'],
+                [null, 'Robot (tidak memberi tahu)'],
+              ] as const
+            ).map(([nilai, label]) => {
+              const aktif = gender === nilai
+              const karakter: Karakter = nilai ?? 'robot'
+              return (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => void simpanGender(nilai)}
+                  aria-pressed={aktif}
+                  className={`flex flex-col items-center gap-2 rounded-2xl border-2 px-2 py-3 text-center text-xs font-bold transition-colors sm:text-sm ${
+                    aktif
+                      ? 'border-panggung bg-panggung text-halaman'
+                      : 'border-border-halus hover:border-border-tegas'
+                  }`}
+                >
+                  <svg aria-hidden viewBox="-24 -40 48 92" className="h-20 w-12">
+                    <Pejalan karakter={karakter} berjalan={aktif} />
+                  </svg>
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+          <p aria-live="polite" className="text-teks-sekunder min-h-5 text-xs">
+            {genderPesan}
+          </p>
         </section>
 
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">

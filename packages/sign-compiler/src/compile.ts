@@ -38,11 +38,11 @@ export const RELAXED_FINGERS = {
 }
 
 const PASSIVE_ALIAS: Record<string, { anchor: Anchor; offset: Vec3Tuple }> = {
-  bibir: { anchor: 'dagu', offset: [0, 0.1, 0.02] },
-  mulut: { anchor: 'dagu', offset: [0, 0.1, 0.02] },
-  'bawah-mata': { anchor: 'mata', offset: [0, -0.08, 0.02] },
-  'dada-kiri': { anchor: 'dada', offset: [0.18, 0.05, 0] },
-  'dada-kanan': { anchor: 'dada', offset: [-0.18, 0.05, 0] },
+  bibir: { anchor: 'dagu', offset: [0, 0.1, 0.06] },
+  mulut: { anchor: 'dagu', offset: [0, 0.1, 0.06] },
+  'bawah-mata': { anchor: 'mata', offset: [0, -0.08, 0.06] },
+  'dada-kiri': { anchor: 'dada', offset: [0.18, 0.05, 0.04] },
+  'dada-kanan': { anchor: 'dada', offset: [-0.18, 0.05, 0.04] },
   kepala: { anchor: 'dahi', offset: [0, 0.2, -0.15] },
 }
 

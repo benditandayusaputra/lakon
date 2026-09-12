@@ -4,21 +4,16 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowRight,
-  Building2,
-  Bus,
   Flag,
   FlagTriangleRight,
-  Footprints,
   Hand,
-  Landmark,
   Lock,
-  PersonStanding,
   Star,
-  Store,
   TreeDeciduous,
   TreePine,
   type LucideIcon,
 } from 'lucide-react'
+import { Pejalan, type Karakter } from '@/components/pejalan'
 import { SCENE_ICONS } from '@/features/ui/adegan'
 import { paletteFor } from '@/features/ui/tokens'
 
@@ -44,30 +39,74 @@ export type TeksPeta = {
   mulaiDiSini: string
   garisAkhir: string
   kamuDiSini?: string
+  rumah?: string
 }
 
 const POSISI_X = [22, 74, 24, 76, 30] as const
-const durasiUntuk = (langkah: number) => Math.min(2600, Math.max(500, langkah * 900))
+const RUMAH_X = 60
+const durasiUntuk = (langkah: number) => Math.min(3200, Math.max(700, langkah * 1000))
 const DEKOR: { Icon: LucideIcon; x: number; y: number; size: number; kecil?: boolean }[] = [
-  { Icon: TreeDeciduous, x: 8, y: 6, size: 28 },
-  { Icon: Building2, x: 90, y: 4, size: 30, kecil: true },
-  { Icon: Store, x: 52, y: 14, size: 26, kecil: true },
-  { Icon: TreePine, x: 6, y: 42, size: 26 },
-  { Icon: Landmark, x: 92, y: 40, size: 28, kecil: true },
-  { Icon: Bus, x: 50, y: 58, size: 26, kecil: true },
-  { Icon: TreeDeciduous, x: 88, y: 76, size: 26 },
-  { Icon: Building2, x: 8, y: 86, size: 30, kecil: true },
+  { Icon: TreeDeciduous, x: 8, y: 10, size: 28 },
+  { Icon: TreePine, x: 6, y: 44, size: 26 },
+  { Icon: TreeDeciduous, x: 90, y: 74, size: 26 },
+  { Icon: TreePine, x: 93, y: 32, size: 24, kecil: true },
+  { Icon: TreeDeciduous, x: 50, y: 60, size: 22, kecil: true },
 ]
+
+function Bangunan({
+  id,
+  x,
+  y,
+  skala = 1,
+}: {
+  id: string | 'rumah'
+  x: number
+  y: number
+  skala?: number
+}) {
+  const palette = id === 'rumah' ? null : paletteFor(id)
+  const atas = palette ? palette.tint : '#fbe9c9'
+  const kiri = palette ? palette.ambient : '#e4b46f'
+  const kanan = palette ? palette.accent : '#b9803b'
+  const atap = palette ? palette.deep : '#8a3b2d'
+  return (
+    <g transform={`translate(${x} ${y}) scale(${skala})`} aria-hidden>
+      <ellipse cx={0} cy={26} rx={40} ry={9} fill="rgb(0 0 0 / 0.18)" />
+      <polygon points="-30,-6 0,-20 30,-6 0,8" fill={atas} />
+      <polygon points="-30,-6 0,8 0,30 -30,16" fill={kiri} />
+      <polygon points="30,-6 0,8 0,30 30,16" fill={kanan} />
+      {id === 'rumah' ? (
+        <>
+          <polygon points="-30,-6 0,-20 30,-6 0,-34" fill={atap} opacity={0.95} />
+          <polygon points="0,-34 30,-6 30,-2 0,-30" fill="#6e2f24" />
+          <rect x={4} y={10} width={9} height={14} rx={1.5} fill="#5b3a1e" />
+          <rect x={-22} y={2} width={8} height={7} rx={1} fill="#fff3d6" />
+        </>
+      ) : (
+        <>
+          <polygon points="-30,-6 0,-20 30,-6 0,8" fill={atap} opacity={0.18} />
+          <rect x={-24} y={2} width={7} height={6} rx={1} fill="#fff8ea" opacity={0.9} />
+          <rect x={-13} y={7} width={7} height={6} rx={1} fill="#fff8ea" opacity={0.9} />
+          <rect x={6} y={7} width={7} height={6} rx={1} fill="#fff8ea" opacity={0.9} />
+          <rect x={17} y={2} width={7} height={6} rx={1} fill="#fff8ea" opacity={0.9} />
+          <rect x={-8} y={-16} width={16} height={4} rx={1} fill={atap} />
+        </>
+      )}
+    </g>
+  )
+}
 
 export function PetaPerjalanan({
   simpul,
   teks,
   posisiPemain,
+  karakter = 'robot',
   onSampai,
 }: {
   simpul: SimpulPeta[]
   teks: TeksPeta
   posisiPemain?: number
+  karakter?: Karakter
   onSampai?: (item: SimpulPeta, index: number) => void
 }) {
   const ref = useRef<HTMLDivElement | null>(null)
@@ -94,10 +133,11 @@ export function PetaPerjalanan({
 
   const ponsel = lebar < 640
   const tinggiBaris = ponsel ? 276 : 208
-  const atas = 150
+  const atas = 250
   const bawah = ponsel ? 330 : 150
   const tinggi = atas + Math.max(0, simpul.length - 1) * tinggiBaris + bawah
 
+  const rumah = { x: (RUMAH_X / 100) * lebar, y: 96 }
   const titik = simpul.map((_, index) => ({
     x: ((POSISI_X[index % POSISI_X.length] ?? 50) / 100) * lebar,
     y: atas + index * tinggiBaris,
@@ -106,7 +146,7 @@ export function PetaPerjalanan({
     x: lebar * (simpul.length % 2 === 0 ? 0.26 : 0.72),
     y: tinggi - (ponsel ? 44 : 56),
   }
-  const jalur = [...titik, akhir]
+  const jalur = [rumah, ...titik, akhir]
   const ruas = (titikJalur: { x: number; y: number }[]) =>
     titikJalur
       .map((p, i) => {
@@ -118,29 +158,34 @@ export function PetaPerjalanan({
       .join(' ')
   const d = ruas(jalur)
 
-  const pemain = typeof posisiPemain === 'number' ? Math.min(posisiPemain, simpul.length - 1) : null
-  const asal = pemain !== null ? titik[pemain] : undefined
+  const pemain =
+    typeof posisiPemain === 'number'
+      ? Math.max(-1, Math.min(posisiPemain, simpul.length - 1))
+      : null
+  const posisi = (index: number) => (index < 0 ? rumah : titik[index]!)
+  const asal = pemain !== null ? posisi(pemain) : undefined
   const langkah = tujuan !== null && pemain !== null ? Math.abs(tujuan - pemain) : 0
-  const durasi = Math.min(2600, Math.max(500, langkah * 900))
+  const durasi = durasiUntuk(langkah)
   const jalurPemain =
     tujuan !== null && pemain !== null && langkah > 0
       ? ruas(
           tujuan > pemain
-            ? titik.slice(pemain, tujuan + 1)
-            : titik.slice(tujuan, pemain + 1).reverse(),
+            ? jalur.slice(pemain + 1, tujuan + 2)
+            : jalur.slice(tujuan + 1, pemain + 2).reverse(),
         )
       : null
+  const hadapPemain: 'kiri' | 'kanan' =
+    tujuan !== null && pemain !== null && posisi(tujuan).x < posisi(pemain).x ? 'kiri' : 'kanan'
 
   const pilih = (item: SimpulPeta, index: number) => {
     if (!onSampai || tujuan !== null) return
     const cepat =
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    setTujuan(index)
     if (cepat || pemain === null || index === pemain) {
-      setTujuan(index)
       timer.current = setTimeout(() => onSampai(item, index), cepat ? 0 : 400)
       return
     }
-    setTujuan(index)
     timer.current = setTimeout(() => onSampai(item, index), durasiUntuk(Math.abs(index - pemain)))
   }
 
@@ -150,7 +195,7 @@ export function PetaPerjalanan({
       className="peta-jalan border-border-halus relative w-full overflow-hidden rounded-3xl border shadow-inner"
       style={{ height: tinggi }}
     >
-      {lebar > 0 ? (
+      {lebar > 0 && titik.length > 0 ? (
         <svg
           aria-hidden
           className="absolute inset-0"
@@ -161,16 +206,32 @@ export function PetaPerjalanan({
           <path
             d={d}
             fill="none"
+            stroke="rgb(0 0 0 / 0.22)"
+            strokeWidth={ponsel ? 36 : 44}
+            strokeLinecap="round"
+            transform="translate(0 7)"
+          />
+          <path
+            d={d}
+            fill="none"
             stroke="#d3cfc2"
-            strokeWidth={ponsel ? 34 : 40}
+            strokeWidth={ponsel ? 36 : 44}
             strokeLinecap="round"
           />
           <path
             d={d}
             fill="none"
-            stroke="#3b3f46"
-            strokeWidth={ponsel ? 24 : 30}
+            stroke="#2f333a"
+            strokeWidth={ponsel ? 26 : 32}
             strokeLinecap="round"
+          />
+          <path
+            d={d}
+            fill="none"
+            stroke="#4a4f57"
+            strokeWidth={ponsel ? 22 : 27}
+            strokeLinecap="round"
+            transform="translate(0 -2)"
           />
           <path
             d={d}
@@ -180,6 +241,26 @@ export function PetaPerjalanan({
             strokeDasharray="14 12"
             strokeLinecap="round"
           />
+          <Bangunan
+            id="rumah"
+            x={rumah.x + (ponsel ? 62 : 82)}
+            y={rumah.y - 8}
+            skala={ponsel ? 0.8 : 1}
+          />
+          {simpul.map((item, index) => {
+            const p = titik[index]!
+            const kiri = (POSISI_X[index % POSISI_X.length] ?? 50) < 50
+            const dx = ponsel ? 78 : 96
+            return (
+              <Bangunan
+                key={item.id}
+                id={item.id}
+                x={kiri ? p.x - dx : p.x + dx}
+                y={p.y - (ponsel ? 26 : 34)}
+                skala={ponsel ? 0.72 : 0.9}
+              />
+            )
+          })}
         </svg>
       ) : null}
 
@@ -189,7 +270,7 @@ export function PetaPerjalanan({
           aria-hidden
           size={size}
           strokeWidth={1.75}
-          className={`absolute text-[#7a8a6f] opacity-45 ${kecil ? 'hidden sm:block' : ''}`}
+          className={`absolute text-[#5f7a55] opacity-50 ${kecil ? 'hidden sm:block' : ''}`}
           style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%, -50%)' }}
         />
       ))}
@@ -198,21 +279,19 @@ export function PetaPerjalanan({
         <>
           <span
             className="bg-panggung text-sorot absolute z-20 flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider shadow-md"
-            style={{ left: titik[0]!.x, top: titik[0]!.y - 132, transform: 'translateX(-50%)' }}
+            style={{
+              left: asal ? asal.x : rumah.x,
+              top: (asal ? asal.y : rumah.y) - (asal && pemain !== null && pemain >= 0 ? 132 : 84),
+              transform: 'translateX(-50%)',
+            }}
           >
             <Flag aria-hidden size={13} />
-            {pemain !== null ? (teks.kamuDiSini ?? teks.mulaiDiSini) : teks.mulaiDiSini}
+            {pemain !== null && pemain >= 0
+              ? (teks.kamuDiSini ?? teks.mulaiDiSini)
+              : pemain === -1
+                ? `${teks.rumah ?? 'Rumah'} · ${teks.kamuDiSini ?? teks.mulaiDiSini}`
+                : `${teks.rumah ?? 'Rumah'} · ${teks.mulaiDiSini}`}
           </span>
-          <Footprints
-            aria-hidden
-            size={22}
-            className="absolute z-10 text-[#f2c94c] opacity-90"
-            style={{
-              left: (titik[0]!.x + (titik[1]?.x ?? titik[0]!.x)) / 2,
-              top: titik[0]!.y + tinggiBaris * 0.5,
-              transform: 'translate(-50%, -50%) rotate(20deg)',
-            }}
-          />
           <span
             className="absolute z-20 flex flex-col items-center gap-1"
             style={{ left: akhir.x, top: akhir.y, transform: 'translate(-50%, -100%)' }}
@@ -366,7 +445,7 @@ export function PetaPerjalanan({
           })
         : null}
 
-      {lebar > 0 && asal ? (
+      {lebar > 0 && titik.length > 0 && asal ? (
         <svg
           aria-hidden
           className="pointer-events-none absolute inset-0 z-30"
@@ -383,11 +462,13 @@ export function PetaPerjalanan({
                 path={jalurPemain}
               />
             ) : null}
-            <ellipse cx={0} cy={26} rx={16} ry={6} fill="rgb(0 0 0 / 0.25)" />
-            <g className={tujuan !== null ? 'peta-pejalan' : undefined}>
-              <circle cx={0} cy={4} r={20} fill="#201a13" stroke="#f2c94c" strokeWidth={3} />
-              <PersonStanding x={-13} y={-9} size={26} color="#f2c94c" strokeWidth={2.25} />
-            </g>
+            <Pejalan
+              karakter={karakter}
+              berjalan={tujuan !== null && jalurPemain !== null}
+              hadap={hadapPemain}
+              y={-12}
+              skala={ponsel ? 0.9 : 1}
+            />
           </g>
         </svg>
       ) : null}
