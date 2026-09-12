@@ -178,7 +178,7 @@ export function SceneBelajar({
                   showControls
                   signLabel={sign.gloss.id}
                   stageClassName="bg-zona-tenang zona-tenang-gradasi overflow-hidden rounded-3xl border-4 border-[#1c3a55]/30 shadow-[0_24px_50px_-20px_rgba(28,58,85,0.5)]"
-                  className="min-h-88 h-[52vh] sm:h-[58vh]"
+                  className="sm:h-[58vh]"
                 />
                 <PeronBelajar />
               </div>

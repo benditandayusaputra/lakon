@@ -257,9 +257,7 @@ export function PracticeBlock({
               showControls={kontrolPutar}
               sudutKontrol
               signLabel={signLabel}
-              className={
-                sejajar ? 'sm:aspect-4/3 aspect-[4/5] w-full' : 'h-[46vh] min-h-72 sm:h-[54vh]'
-              }
+              className={sejajar ? 'sm:aspect-4/3 w-full' : 'sm:h-[54vh]'}
             />
           </div>
         ) : null}

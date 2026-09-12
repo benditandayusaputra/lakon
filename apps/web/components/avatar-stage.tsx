@@ -1,7 +1,7 @@
 'use client'
 
 import { FlipHorizontal, Pause, Play, SkipBack, SkipForward } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { CompiledSign, CompilerRig } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
@@ -52,6 +52,8 @@ export function AvatarStage({
   const [sudut, setSudut] = useState<SudutPeraga>('depan')
   const [rigError, setRigError] = useState<string | null>(null)
   const [videoGagal, setVideoGagal] = useState(false)
+  const [sempit, setSempit] = useState(false)
+  const stageRef = useRef<HTMLDivElement | null>(null)
   const onRigReadyRef = useRef(onRigReady)
   onRigReadyRef.current = onRigReady
 
@@ -72,6 +74,24 @@ export function AvatarStage({
   useEffect(() => {
     setVideoGagal(false)
   }, [isyarat?.id])
+
+  useLayoutEffect(() => {
+    const el = stageRef.current
+    if (!el) return
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry) setSempit(entry.contentRect.width < 520)
+    })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  const dekat = sempit ? 0.92 : 1
+  const posisiKamera = [
+    KAMERA_SUDUT[sudut][0] * dekat,
+    KAMERA_SUDUT[sudut][1] + (sempit ? 0.08 : 0),
+    KAMERA_SUDUT[sudut][2] * dekat,
+  ] as const
+  const adaKontrol = Boolean(sudutKontrol ?? showControls)
 
   useEffect(() => {
     const el = videoRef.current
@@ -100,7 +120,10 @@ export function AvatarStage({
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      <div className={`relative min-h-0 flex-1 ${stageClassName}`}>
+      <div
+        ref={stageRef}
+        className={`relative min-h-0 flex-1 ${adaKontrol ? 'max-sm:min-h-[26rem]' : ''} ${stageClassName}`}
+      >
         <div className={`absolute inset-0 ${mirror ? '-scale-x-100' : ''}`}>
           {sumber ? (
             <video
@@ -116,14 +139,12 @@ export function AvatarStage({
               onError={() => setVideoGagal(true)}
             />
           ) : (
-            <Canvas
-              camera={{ fov: 30, position: [...KAMERA_SUDUT[sudut]] as [number, number, number] }}
-            >
+            <Canvas camera={{ fov: 30, position: [...posisiKamera] as [number, number, number] }}>
               <CompiledAvatar
                 playbackRef={playbackRef}
                 timeEl={timeEl}
                 sliderEl={sliderEl}
-                sudut={KAMERA_SUDUT[sudut]}
+                sudut={posisiKamera}
                 onRigReady={(rig) => onRigReadyRef.current?.(rig)}
                 onRigError={setRigError}
               />
@@ -170,11 +191,11 @@ export function AvatarStage({
         </div>
       ) : null}
       {showControls ? (
-        <div className="border-border-halus bg-kartu flex flex-wrap items-center justify-center gap-2 rounded-2xl border p-2 text-sm">
+        <div className="border-border-halus bg-kartu flex flex-wrap items-center justify-center gap-1.5 rounded-2xl border p-2 text-sm sm:gap-2">
           <button
             type="button"
             onClick={() => setPlaying((value) => !value)}
-            className={playing ? 'tombol-utama px-4 py-1.5' : 'tombol-sekunder px-4 py-1.5'}
+            className={playing ? 'tombol-utama px-3 py-1.5' : 'tombol-sekunder px-3 py-1.5'}
             style={{ minHeight: 48 }}
           >
             {playing ? (

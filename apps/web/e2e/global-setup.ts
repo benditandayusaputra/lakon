@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -8,6 +9,15 @@ const FRAMES = 30
 export const FAKE_VIDEO_PATH = join(import.meta.dirname, 'fixtures', 'gerak.y4m')
 
 export default function globalSetup() {
+  const seed = spawnSync(
+    'node',
+    [join(import.meta.dirname, '..', '..', '..', 'tools', 'seed.mjs')],
+    {
+      stdio: 'inherit',
+    },
+  )
+  if (seed.status !== 0) throw new Error('seed akun demo gagal, e2e butuh progres demo')
+
   mkdirSync(join(import.meta.dirname, 'fixtures'), { recursive: true })
 
   const header = `YUV4MPEG2 W${WIDTH} H${HEIGHT} F30:1 Ip A1:1 C420\n`

@@ -157,7 +157,7 @@ export function SceneBelajar({
                   showControls
                   signLabel={sign.gloss.id}
                   stageClassName="bg-zona-tenang zona-tenang-gradasi overflow-hidden rounded-3xl border-4 border-[#2b1a0e]/30 shadow-[0_24px_50px_-20px_rgba(0,0,0,0.6)]"
-                  className="min-h-88 h-[52vh] sm:h-[58vh]"
+                  className="sm:h-[58vh]"
                 />
                 <MejaLatihan />
               </div>

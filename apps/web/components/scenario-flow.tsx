@@ -230,7 +230,7 @@ export function ScenarioFlow({ scenarioId }: { scenarioId: string }) {
                           showControls
                           signLabel={sign.gloss.id}
                           stageClassName="bg-zona-tenang zona-tenang-gradasi overflow-hidden rounded-3xl"
-                          className="h-[56vh] min-h-96 sm:h-[62vh]"
+                          className="sm:h-[62vh]"
                         />
                         <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-stretch">
                           <div className="border-border-halus bg-kartu rounded-2xl border p-4">

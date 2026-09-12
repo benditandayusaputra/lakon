@@ -70,12 +70,7 @@ export function LatihanBaca({
     <div className="flex flex-col gap-4">
       <div className="bg-zona-tenang zona-tenang-gradasi relative w-full overflow-hidden rounded-2xl">
         {compiled ? (
-          <AvatarStage
-            compiled={compiled}
-            sign={sign}
-            showControls
-            className="h-[46vh] min-h-72 sm:h-[54vh]"
-          />
+          <AvatarStage compiled={compiled} sign={sign} showControls className="sm:h-[54vh]" />
         ) : (
           <p className="p-8 text-center">
             Peragaan isyarat ini belum tersedia. Tebak dari konteks percakapan.

@@ -217,7 +217,7 @@ export function SceneBelajarPuskesmas({
                   showControls
                   signLabel={sign.gloss.id}
                   stageClassName="bg-zona-tenang zona-tenang-gradasi overflow-hidden rounded-3xl border-4 border-[#c4dcca] shadow-[0_24px_50px_-20px_rgba(29,68,47,0.4)]"
-                  className="min-h-88 h-[52vh] sm:h-[58vh]"
+                  className="sm:h-[58vh]"
                 />
                 <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-stretch">
                   <div className="rounded-2xl border-2 border-[#c4dcca] bg-white p-4 shadow-lg">
