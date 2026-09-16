@@ -6,6 +6,8 @@ import { db, schema } from './index'
 export const SESSION_COOKIE = 'lakon_sesi'
 const SESSION_DAYS = 30
 
+export const isDemoAccount = (email: string) => /^demo(\.[a-z]+)?@lakon\.id$/.test(email)
+
 export const hashPassword = (password: string): string => {
   const salt = randomBytes(16).toString('hex')
   const hash = scryptSync(password, salt, 64).toString('hex')

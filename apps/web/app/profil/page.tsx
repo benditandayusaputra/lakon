@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { Profil } from '@/components/profil'
-import { getSessionUser } from '@/db/auth'
+import { getSessionUser, isDemoAccount } from '@/db/auth'
 
 export const metadata: Metadata = { title: 'Profil | Lakon' }
 
@@ -15,6 +15,7 @@ export default async function ProfilPage() {
       peran={user.role}
       avatarAwal={user.avatar}
       genderAwal={user.gender}
+      akunDemo={isDemoAccount(user.email)}
     />
   )
 }

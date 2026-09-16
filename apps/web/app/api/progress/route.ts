@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db, schema } from '@/db'
-import { getSessionUser } from '@/db/auth'
+import { getSessionUser, isDemoAccount } from '@/db/auth'
 
 const signEntry = z.object({
   signId: z.string().min(1),
@@ -109,6 +109,7 @@ export async function POST(request: Request) {
 export async function DELETE() {
   const user = await getSessionUser().catch(() => null)
   if (!user) return NextResponse.json({ ok: false }, { status: 401 })
+  if (isDemoAccount(user.email)) return NextResponse.json({ ok: false }, { status: 403 })
   await db.delete(schema.signProgress).where(eq(schema.signProgress.userId, user.id))
   await db.delete(schema.scenarioRuns).where(eq(schema.scenarioRuns.userId, user.id))
   await db.delete(schema.checkpoints).where(eq(schema.checkpoints.userId, user.id))

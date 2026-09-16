@@ -369,4 +369,17 @@ test.describe('alur inti', () => {
     await expect(page.getByRole('img', { name: /Adegan 6: Adegan baru/ })).toBeVisible()
     await expect(page.getByText('Masih dibangun')).toBeVisible()
   })
+
+  test('17. akun demo bersama tidak bisa menghapus data belajar', async ({ page }) => {
+    const masuk = await page.request.post('/api/auth/masuk', {
+      data: { email: 'demo.penuh@lakon.id', sandi: 'PenuhLakon2026' },
+    })
+    expect(masuk.ok()).toBe(true)
+    expect((await page.request.delete('/api/progress')).status()).toBe(403)
+    await page.goto('/profil')
+    await expect(page.getByText('Akun demo dipakai bersama')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Hapus seluruh data belajarku' })).toHaveCount(0)
+    await page.goto('/skenario')
+    await expect(page.getByText('5/5')).toBeVisible()
+  })
 })

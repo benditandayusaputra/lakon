@@ -59,12 +59,14 @@ export function Profil({
   peran,
   avatarAwal,
   genderAwal,
+  akunDemo,
 }: {
   nama: string
   email: string
   peran: string
   avatarAwal: string | null
   genderAwal: 'perempuan' | 'laki-laki' | null
+  akunDemo: boolean
 }) {
   const { content } = useContent()
   const [runs, setRuns] = useState<RunEntry[]>([])
@@ -521,7 +523,11 @@ export function Profil({
                 </span>
               ) : null}
             </p>
-            {minta ? (
+            {akunDemo ? (
+              <p className="text-sm font-bold">
+                Akun demo dipakai bersama, jadi data belajarnya tidak bisa dihapus.
+              </p>
+            ) : minta ? (
               <div className="flex flex-wrap items-center gap-3">
                 <p className="font-bold">Yakin hapus seluruh data belajarmu?</p>
                 <button type="button" onClick={hapus} className="tombol-utama">
