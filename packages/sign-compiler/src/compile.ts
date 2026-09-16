@@ -372,7 +372,7 @@ const resolveHandSpec = (
   shapes: Map<string, Handshape>,
 ): HandTarget => {
   const shape = shapes.get(spec.handshape)
-  if (!shape) throw new Error(`handshape tidak ditemukan: ${spec.handshape}`)
+  if (!shape) throw new Error(`handshape not found: ${spec.handshape}`)
 
   const base = anchors[spec.location.anchor]
   const mirrored = side !== dominance

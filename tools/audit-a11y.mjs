@@ -12,12 +12,12 @@ await mkdir(outDir, { recursive: true })
 
 const PAGES = [
   { name: 'landing', url: '/' },
-  { name: 'masuk', url: '/masuk' },
-  { name: 'daftar', url: '/daftar' },
-  { name: 'pilih-skenario', url: '/skenario' },
-  { name: 'skenario-intro', url: '/skenario/kedai-kopi?arah=deaf' },
-  { name: 'skenario-belajar', url: '/skenario/kedai-kopi?arah=deaf', click: 'Mulai belajar' },
-  { name: 'gerbang-internal', url: '/dev/pipeline' },
+  { name: 'sign-in', url: '/masuk' },
+  { name: 'register', url: '/daftar' },
+  { name: 'scenario-picker', url: '/skenario' },
+  { name: 'scenario-intro', url: '/skenario/kedai-kopi?arah=deaf' },
+  { name: 'scenario-learning', url: '/skenario/kedai-kopi?arah=deaf', click: 'Mulai belajar' },
+  { name: 'internal-gate', url: '/dev/pipeline' },
 ]
 
 const ADMIN_PAGES = [
@@ -57,7 +57,7 @@ const login = await page.request.post(`${BASE}/api/auth/masuk`, {
 if (login.ok()) {
   for (const entry of ADMIN_PAGES) results.push(await audit(entry))
 } else {
-  console.warn('login admin gagal, halaman internal dilewati')
+  console.warn('admin login failed, skipping internal pages')
 }
 
 await browser.close()
@@ -65,21 +65,21 @@ await browser.close()
 const date = new Date().toISOString().slice(0, 10)
 let totalViolations = 0
 const lines = [
-  `# Audit aksesibilitas axe-core (${date})`,
+  `# axe-core accessibility audit (${date})`,
   '',
-  `Standar: WCAG 2 A, AA, dan 2.2 AA. Basis: ${BASE}`,
+  `Standards: WCAG 2 A, AA and 2.2 AA. Base URL: \`${BASE}\``,
   '',
 ]
 for (const { name, url, violations } of results) {
   totalViolations += violations.length
   lines.push(`## ${name} (${url})`, '')
   if (violations.length === 0) {
-    lines.push('Tidak ada pelanggaran.', '')
+    lines.push('No violations.', '')
     continue
   }
   for (const violation of violations) {
     lines.push(
-      `- **${violation.id}** (${violation.impact}): ${violation.help} — ${violation.nodes.length} elemen`,
+      `- **${violation.id}** (${violation.impact}): ${violation.help} — ${violation.nodes.length} elements`,
     )
     for (const node of violation.nodes.slice(0, 3)) {
       lines.push(`  - \`${node.target.join(' ')}\``)
@@ -87,11 +87,11 @@ for (const { name, url, violations } of results) {
   }
   lines.push('')
 }
-lines.push(`Total pelanggaran: ${totalViolations}`)
+lines.push(`Total violations: ${totalViolations}`)
 
 await writeFile(join(outDir, 'axe-report.md'), lines.join('\n') + '\n')
 await writeFile(join(outDir, 'axe-report.json'), JSON.stringify(results, null, 2) + '\n')
-console.log(`selesai: ${totalViolations} pelanggaran, laporan di docs/accessibility-audit/`)
+console.log(`done: ${totalViolations} violations, report in docs/accessibility-audit/`)
 for (const { name, violations } of results) {
   console.log(`  ${name}: ${violations.length}`)
 }

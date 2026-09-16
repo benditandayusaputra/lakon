@@ -44,5 +44,5 @@ for (const berkas of readdirSync(sumber).filter((nama) => /\.(mp4|mov)$/i.test(n
 }
 
 if (dilewati.length > 0) {
-  console.log(`dilewati (belum ada berkas isyarat yang cocok): ${dilewati.join(', ')}`)
+  console.log(`skipped (no matching sign file): ${dilewati.join(', ')}`)
 }

@@ -186,7 +186,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     }
     if (message.type === 'model-error') {
       stats.classifierBackend = 'tanpa model'
-      console.warn('model klasifikasi tidak dimuat:', message.message)
+      console.warn('classification model not loaded:', message.message)
       return
     }
     if (message.type === 'prediction') {
@@ -196,7 +196,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     if (message.type === 'error') {
       inFlight = 0
       stats.queuedFrames = 0
-      console.warn('worker CV galat:', message.message)
+      console.warn('CV worker error:', message.message)
       setState({ status: 'error', message: message.message })
       return
     }

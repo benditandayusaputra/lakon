@@ -263,7 +263,7 @@ const parseAll = <S extends z.ZodTypeAny>(
     }
     const id = (result.data as { id: string }).id
     if (id !== name) {
-      issues.push({ file, path: 'id', message: `id "${id}" tidak sama dengan nama berkas` })
+      issues.push({ file, path: 'id', message: `id "${id}" does not match the file name` })
     }
     parsed.set(name, result.data)
   }
@@ -278,14 +278,14 @@ const validateSign = (file: string, sign: Sign, handshapeIds: Set<string>): Cont
       issues.push({
         file,
         path: `phases.${index}.dominant.handshape`,
-        message: `handshape "${phase.dominant.handshape}" tidak ada berkasnya`,
+        message: `handshape "${phase.dominant.handshape}" has no file`,
       })
     }
     if (phase.nonDominant && !handshapeIds.has(phase.nonDominant.handshape)) {
       issues.push({
         file,
         path: `phases.${index}.nonDominant.handshape`,
-        message: `handshape "${phase.nonDominant.handshape}" tidak ada berkasnya`,
+        message: `handshape "${phase.nonDominant.handshape}" has no file`,
       })
     }
   })
@@ -295,7 +295,7 @@ const validateSign = (file: string, sign: Sign, handshapeIds: Set<string>): Cont
     issues.push({
       file,
       path: 'duration',
-      message: `duration ${sign.duration} tidak sama dengan jumlah fase ${phaseTotal}`,
+      message: `duration ${sign.duration} does not match the phase total ${phaseTotal}`,
     })
   }
 
@@ -314,7 +314,7 @@ const validateScenario = (
       issues.push({
         file,
         path: 'vocab',
-        message: `isyarat "${word}" tidak ada berkasnya`,
+        message: `sign "${word}" has no file`,
       })
     }
   }
@@ -322,7 +322,7 @@ const validateScenario = (
   const nodeIds = new Set<string>()
   scenario.nodes.forEach((node, index) => {
     if (nodeIds.has(node.id)) {
-      issues.push({ file, path: `nodes.${index}.id`, message: `id simpul "${node.id}" ganda` })
+      issues.push({ file, path: `nodes.${index}.id`, message: `duplicate node id "${node.id}"` })
     }
     nodeIds.add(node.id)
   })
@@ -332,14 +332,14 @@ const validateScenario = (
       issues.push({
         file,
         path: `nodes.${index}.next`,
-        message: `menunjuk simpul "${node.next}" yang tidak ada`,
+        message: `points to missing node "${node.next}"`,
       })
     }
     if (node.onFail && !nodeIds.has(node.onFail)) {
       issues.push({
         file,
         path: `nodes.${index}.onFail`,
-        message: `menunjuk simpul "${node.onFail}" yang tidak ada`,
+        message: `points to missing node "${node.onFail}"`,
       })
     }
     if (node.task) {
@@ -350,7 +350,7 @@ const validateScenario = (
             issues.push({
               file,
               path: `nodes.${index}.task.${role}.correct`,
-              message: `indeks jawaban ${task.correct} di luar jumlah pilihan`,
+              message: `answer index ${task.correct} is out of range for the choices`,
             })
           }
           continue
@@ -359,14 +359,14 @@ const validateScenario = (
           issues.push({
             file,
             path: `nodes.${index}.task.${role}.sign`,
-            message: `isyarat "${task.sign}" tidak terdaftar di vocab`,
+            message: `sign "${task.sign}" is not in vocab`,
           })
         }
         if (task.type === 'receptive' && !task.options.includes(task.sign)) {
           issues.push({
             file,
             path: `nodes.${index}.task.${role}.options`,
-            message: `pilihan tidak memuat jawaban benar "${task.sign}"`,
+            message: `choices do not include the correct answer "${task.sign}"`,
           })
         }
       }
@@ -399,12 +399,12 @@ export const validateContent = (content: ContentSet): ContentIssue[] => {
 export const unapprovedSigns = (signs: Record<string, unknown>): ContentIssue[] => {
   const issues: ContentIssue[] = []
   for (const [name, raw] of Object.entries(signs)) {
-    const status = (raw as { review?: { status?: string } })?.review?.status ?? 'kosong'
+    const status = (raw as { review?: { status?: string } })?.review?.status ?? 'empty'
     if (status !== 'approved') {
       issues.push({
         file: `content/signs/${name}.json`,
         path: 'review.status',
-        message: `"${status}" bukan approved`,
+        message: `"${status}" is not approved`,
       })
     }
   }

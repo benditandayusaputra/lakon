@@ -193,14 +193,14 @@ def evaluate(model, x, y, device):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Latih pengklasifikasi isyarat Lakon")
-    parser.add_argument("data", nargs="+", help="berkas JSON hasil ekspor tools/collect")
+    parser = argparse.ArgumentParser(description="Train the Lakon sign classifier")
+    parser.add_argument("data", nargs="+", help="JSON files exported by tools/collect")
     parser.add_argument("--kind", choices=["static", "dynamic"], default="dynamic")
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--batch", type=int, default=64)
     parser.add_argument("--lr", type=float, default=1e-3)
-    parser.add_argument("--augment", type=int, default=3, help="salinan augmentasi per sampel")
-    parser.add_argument("--holdout", default="", help="kode kontributor uji, pisah koma")
+    parser.add_argument("--augment", type=int, default=3, help="augmented copies per sample")
+    parser.add_argument("--holdout", default="", help="held-out contributor codes, comma-separated")
     parser.add_argument("--out", default="lakon-classifier")
     parser.add_argument("--quantize", action="store_true")
     parser.add_argument("--seed", type=int, default=42)
@@ -213,15 +213,15 @@ def main():
     sessions = load_sessions(args.data)
     relevant = [s for s in sessions if (s["mode"] == "statis") == (args.kind == "static")]
     if not relevant:
-        raise SystemExit(f"tidak ada sesi mode {args.kind} di data")
+        raise SystemExit(f"no {args.kind} sessions in the data")
 
     labels = sorted({s["label"] for s in relevant})
     contributors = sorted({s["contributor"] for s in relevant})
     holdout = set(filter(None, args.holdout.split(","))) or (
         {contributors[-1]} if len(contributors) > 1 else set()
     )
-    print(f"kelas: {labels}")
-    print(f"kontributor: {contributors}, holdout: {sorted(holdout) or 'tidak ada'}")
+    print(f"classes: {labels}")
+    print(f"contributors: {contributors}, holdout: {sorted(holdout) or 'none'}")
 
     train_sessions = [s for s in relevant if s["contributor"] not in holdout]
     holdout_sessions = [s for s in relevant if s["contributor"] in holdout]
@@ -236,8 +236,8 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = (StaticModel if args.kind == "static" else DynamicModel)(len(labels)).to(device)
     params = sum(p.numel() for p in model.parameters())
-    print(f"parameter model: {params:,}")
-    assert params < 500_000, "model melebihi 500 ribu parameter"
+    print(f"model parameters: {params:,}")
+    assert params < 500_000, "model exceeds 500k parameters"
 
     dataset = TensorDataset(
         torch.from_numpy(x_train[train_idx]), torch.from_numpy(y_train[train_idx])
@@ -263,9 +263,9 @@ def main():
     seen_acc = evaluate(model, x_train[val_idx], y_train[val_idx], device)
     unseen_acc = evaluate(model, x_hold, y_hold, device)
     print()
-    print(f"akurasi kontributor DIKENAL (validasi): {seen_acc:.3f}")
-    print(f"akurasi kontributor TAK DIKENAL (holdout): {unseen_acc:.3f}")
-    print("angka kedua yang benar-benar berarti.")
+    print(f"accuracy on SEEN contributors (validation): {seen_acc:.3f}")
+    print(f"accuracy on UNSEEN contributors (holdout): {unseen_acc:.3f}")
+    print("the second number is the one that matters.")
 
     per_contributor = defaultdict(lambda: [0, 0])
     if len(y_hold):
@@ -299,14 +299,14 @@ def main():
         torch.onnx.export(model, dummy, str(out_path), external_data=False, **export_kwargs)
     except TypeError:
         torch.onnx.export(model, dummy, str(out_path), **export_kwargs)
-    print(f"ONNX tersimpan: {out_path} ({out_path.stat().st_size / 1024:.0f} KB)")
+    print(f"ONNX saved: {out_path} ({out_path.stat().st_size / 1024:.0f} KB)")
 
     if args.quantize:
         from onnxruntime.quantization import QuantType, quantize_dynamic
 
         quant_path = Path(f"{args.out}.int8.onnx")
         quantize_dynamic(str(out_path), str(quant_path), weight_type=QuantType.QInt8)
-        print(f"int8 tersimpan: {quant_path} ({quant_path.stat().st_size / 1024:.0f} KB)")
+        print(f"int8 saved: {quant_path} ({quant_path.stat().st_size / 1024:.0f} KB)")
 
     manifest = {
         "kind": args.kind,
@@ -319,7 +319,7 @@ def main():
         "accuracyUnseen": unseen_acc,
     }
     Path(f"{args.out}.json").write_text(json.dumps(manifest, indent=2))
-    print(f"manifest tersimpan: {args.out}.json")
+    print(f"manifest saved: {args.out}.json")
 
 
 if __name__ == "__main__":

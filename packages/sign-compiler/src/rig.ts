@@ -72,7 +72,7 @@ export const deriveAnchors = (rig: CompilerRig, dominance: Side): Record<Anchor,
   }
 
   for (const anchor of ANCHORS) {
-    if (!anchors[anchor]) throw new Error(`jangkar belum didefinisikan: ${anchor}`)
+    if (!anchors[anchor]) throw new Error(`anchor not defined: ${anchor}`)
   }
   return anchors
 }

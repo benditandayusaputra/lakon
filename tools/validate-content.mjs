@@ -40,11 +40,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const { validateContent } = await import('../packages/sign-schema/src/index.ts')
   const content = await loadContent()
   const issues = validateContent(content)
-  const counts = `${Object.keys(content.handshapes).length} handshape, ${Object.keys(content.signs).length} isyarat, ${Object.keys(content.scenarios).length} skenario`
+  const counts = `${Object.keys(content.handshapes).length} handshapes, ${Object.keys(content.signs).length} signs, ${Object.keys(content.scenarios).length} scenarios`
   if (issues.length > 0) {
-    console.error(`Konten tidak valid (${counts}):`)
+    console.error(`Invalid content (${counts}):`)
     report(issues)
     process.exit(1)
   }
-  console.log(`Konten valid: ${counts}`)
+  console.log(`Content valid: ${counts}`)
 }

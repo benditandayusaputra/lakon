@@ -27,12 +27,12 @@ const wasmTarget = join(publicDir, 'mediapipe', 'wasm')
 
 const from = (await exists(wasmSource)) ? wasmSource : wasmFallback
 if (!(await exists(from))) {
-  console.error('paket @mediapipe/tasks-vision belum terpasang, jalankan pnpm install')
+  console.error('@mediapipe/tasks-vision is not installed, run pnpm install')
   process.exit(1)
 }
 await mkdir(wasmTarget, { recursive: true })
 await cp(from, wasmTarget, { recursive: true })
-console.log('WASM MediaPipe disalin ke public/mediapipe/wasm')
+console.log('MediaPipe WASM copied to public/mediapipe/wasm')
 
 const MODELS = [
   [
@@ -50,14 +50,14 @@ await mkdir(modelDir, { recursive: true })
 for (const [name, url] of MODELS) {
   const target = join(modelDir, name)
   if (await exists(target)) {
-    console.log(`${name} sudah ada, lewati`)
+    console.log(`${name} already present, skipping`)
     continue
   }
   const response = await fetch(url)
   if (!response.ok) {
-    console.error(`gagal mengunduh ${name}: ${response.status}`)
+    console.error(`failed to download ${name}: ${response.status}`)
     process.exit(1)
   }
   await writeFile(target, Buffer.from(await response.arrayBuffer()))
-  console.log(`${name} terunduh (${((await stat(target)).size / 1e6).toFixed(1)} MB)`)
+  console.log(`${name} downloaded (${((await stat(target)).size / 1e6).toFixed(1)} MB)`)
 }

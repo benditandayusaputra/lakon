@@ -5,7 +5,7 @@ const content = await loadContent()
 
 const issues = validateContent(content)
 if (issues.length > 0) {
-  console.error('Build diblokir, konten tidak valid:')
+  console.error('Build blocked: invalid content:')
   report(issues)
   process.exit(1)
 }
@@ -14,7 +14,7 @@ const allowDraft = process.env.LAKON_ALLOW_DRAFT === '1'
 const drafts = unapprovedSigns(content.signs)
 if (drafts.length > 0 && !allowDraft) {
   console.error(
-    'Build diblokir, isyarat belum approved (set LAKON_ALLOW_DRAFT=1 untuk build pengembangan):',
+    'Build blocked: signs not approved (set LAKON_ALLOW_DRAFT=1 for a development build):',
   )
   report(drafts)
   process.exit(1)
@@ -23,8 +23,8 @@ if (drafts.length > 0 && !allowDraft) {
 const total = Object.keys(content.signs).length
 if (drafts.length > 0) {
   console.log(
-    `LAKON_ALLOW_DRAFT=1: ${drafts.length} dari ${total} isyarat belum approved, build dilanjutkan`,
+    `LAKON_ALLOW_DRAFT=1: ${drafts.length} of ${total} signs not approved, continuing the build`,
   )
 } else {
-  console.log(`${total} isyarat approved`)
+  console.log(`${total} signs approved`)
 }
