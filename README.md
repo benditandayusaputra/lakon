@@ -9,6 +9,25 @@ One scenario, two roles: the Deaf side learns to carry out the transaction,
 the service-worker side learns to serve Deaf customers. Lakon is a language
 learning tool for both sides — never framed as assistance for one.
 
+## Sample accounts
+
+Sign in at <https://lakon-learn.vercel.app/masuk>. Every account below is
+created by `node tools/seed.mjs`; re-running it resets the progress of the
+four `demo` accounts.
+
+| Email                 | Password          | Role      | What you see                                                   |
+| --------------------- | ----------------- | --------- | -------------------------------------------------------------- |
+| `demo.baru@lakon.id`  | BaruLakon2026     | Learner   | Brand-new account: no progress, only scene 1 open              |
+| `demo.dua@lakon.id`   | DuaLakon2026      | Learner   | Scenes 1–2 finished, scene 3 unlocked, in both roles           |
+| `demo.penuh@lakon.id` | PenuhLakon2026    | Learner   | All five scenes finished in both roles, new scenes coming soon |
+| `demo@lakon.id`       | CobaLakon2026     | Learner   | Partial progress: coffee shop finished on the Deaf side        |
+| `bendi@lakon.id`      | BendiLakon2026    | Learner   | Sample learner                                                 |
+| `kevin@lakon.id`      | KevinLakon2026    | Learner   | Sample learner                                                 |
+| `jessica@lakon.id`    | JessicaLakon2026  | Learner   | Sample learner                                                 |
+| `nawal@lakon.id`      | NawalLakon2026    | Learner   | Sample learner                                                 |
+| `admin@lakon.id`      | AdminLakon2026    | Admin     | Internal pages `/dev/*` and `/tools/*`                         |
+| `validator@lakon.id`  | ValidasiLakon2026 | Validator | Internal pages; may only change `review` fields of content     |
+
 ## Stack
 
 - Next.js App Router, TypeScript strict, Tailwind CSS
@@ -48,29 +67,6 @@ honestly labeled in the UI and awaiting a validation session.
 `predev`/`prebuild` run `tools/fetch-assets.mjs`, which copies the MediaPipe
 WASM from node_modules and downloads the two landmark models into
 `apps/web/public/` (self-hosted so practice works offline and without a CDN).
-
-## Demo accounts (seeded)
-
-| Role      | Email                 | Password          |
-| --------- | --------------------- | ----------------- |
-| Learner   | `demo@lakon.id`       | CobaLakon2026     |
-| Admin     | `admin@lakon.id`      | AdminLakon2026    |
-| Validator | `validator@lakon.id`  | ValidasiLakon2026 |
-| Learner   | `bendi@lakon.id`      | BendiLakon2026    |
-| Learner   | `kevin@lakon.id`      | KevinLakon2026    |
-| Learner   | `jessica@lakon.id`    | JessicaLakon2026  |
-| Learner   | `nawal@lakon.id`      | NawalLakon2026    |
-| Demo      | `demo.baru@lakon.id`  | BaruLakon2026     |
-| Demo      | `demo.dua@lakon.id`   | DuaLakon2026      |
-| Demo      | `demo.penuh@lakon.id` | PenuhLakon2026    |
-
-The demo account ships with partial progress so judges see the app in use.
-`/dev/*` and `/tools/*` require the admin or validator role; validators may
-only change `review` fields of content, never sign parameters.
-
-For presentations, `demo.baru` starts empty, `demo.dua` has the first two
-scenes finished (scene three unlocked) and `demo.penuh` has all five scenes
-finished, in both roles. Re-running `node tools/seed.mjs` resets all three.
 
 ## Technical documentation
 
