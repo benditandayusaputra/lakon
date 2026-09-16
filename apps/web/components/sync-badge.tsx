@@ -2,32 +2,28 @@
 
 import { useEffect, useState } from 'react'
 import { Check, CircleDashed, RefreshCw, WifiOff, type LucideIcon } from 'lucide-react'
-import { onSyncState, pullFromServer, syncNow, type SyncState } from '@/features/progress/store'
+import { onSyncState, type SyncState } from '@/features/progress/store'
 
 const LABEL: Record<SyncState, string> = {
-  lokal: 'tersimpan di perangkat',
-  menyinkron: 'menyinkron…',
-  tersinkron: 'progres tersimpan',
-  offline: 'offline, tersimpan di perangkat',
-  'tanpa-akun': 'tersimpan di perangkat (masuk untuk sinkron)',
+  menyimpan: 'menyimpan…',
+  tersimpan: 'progres tersimpan',
+  gagal: 'belum tersimpan, mencoba lagi',
+  offline: 'offline, menunggu koneksi',
+  'tanpa-akun': 'masuk untuk menyimpan progres',
 }
 
 const ICON: Record<SyncState, LucideIcon> = {
-  lokal: CircleDashed,
-  menyinkron: RefreshCw,
-  tersinkron: Check,
+  menyimpan: RefreshCw,
+  tersimpan: Check,
+  gagal: CircleDashed,
   offline: WifiOff,
   'tanpa-akun': CircleDashed,
 }
 
 export function SyncBadge() {
-  const [state, setState] = useState<SyncState>('lokal')
+  const [state, setState] = useState<SyncState>('tersimpan')
 
-  useEffect(() => {
-    const unsubscribe = onSyncState(setState)
-    void pullFromServer().then(() => syncNow())
-    return unsubscribe
-  }, [])
+  useEffect(() => onSyncState(setState), [])
 
   const Ikon = ICON[state]
   return (

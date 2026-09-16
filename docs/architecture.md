@@ -19,6 +19,7 @@ flowchart LR
       OVR[Overlay canvas\nvia ref, 30 fps]
       UI[Komponen React\nkeadaan berfrekuensi rendah]
       AVA[Avatar VRM\nthree.js + three-vrm]
+      VID[Video penanda\npublic/peraga, bawaan]
     end
     subgraph W[Web Worker cv.worker.ts]
       MP[MediaPipe\nHandLandmarker + PoseLandmarker] --> FEAT[frameFeatures\n134 dimensi]
@@ -46,8 +47,7 @@ flowchart LR
     API[API auth + progres + konten] --> DB[(Postgres/Neon\nDrizzle)]
   end
   UI <--> API
-  IDB[(IndexedDB\nprogres lokal-dulu)] <--> UI
-  IDB -. sinkron saat online .-> API
+  VID --> UI
 ```
 
 ## Struktur paket
@@ -77,5 +77,13 @@ flowchart LR
   demo dari model yang belum siap.
 - **Aset MediaPipe di-self-host** (`tools/fetch-assets.mjs` → `public/`) agar
   importScripts bebas dari CDN, ter-cache service worker, dan berfungsi offline.
-- **Progres lokal-dulu**: IndexedDB menulis sinkron-instan, antre sinkron ke
-  server saat online; akun tidak wajib untuk belajar.
+- **Progres langsung ke database**: progres isyarat, checkpoint, dan sesi
+  dikirim ke API dan disimpan di Postgres. Permintaan yang gagal (offline)
+  diantre di memori lalu dikirim ulang saat online; tidak ada salinan lokal.
+- **Peraga manusia sebagai bawaan**: isyarat dengan `media.video` diputar dari
+  video penanda (`pnpm peraga` memproses `content/BISINDO/`); avatar 3D tetap
+  tersedia lewat tombol dan untuk sudut kanan/kiri. Verifikasi tetap memakai
+  referensi dari spesifikasi parametrik.
+- **Layar besar**: mulai 1800px ukuran font akar naik bertahap
+  (`--skala-layar`) sehingga tata letak berbasis rem ikut membesar; peta
+  perjalanan membaca skala yang sama untuk geometri SVG-nya.

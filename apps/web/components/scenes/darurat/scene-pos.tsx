@@ -100,7 +100,7 @@ function GelembungWarga({ node }: { node: ScenarioNode }) {
           aria-hidden
           className="absolute -left-2.5 top-5 hidden h-5 w-5 rotate-45 bg-[#fbfcfd] lg:block"
         />
-        <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-[#a3620f]">
+        <p className="flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.25em] text-[#a3620f]">
           <Siren aria-hidden className="h-3.5 w-3.5" />
           Warga jaga · Pos Siaga RW 05
         </p>
@@ -330,7 +330,7 @@ export function ScenePos({
       <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(280px,360px)_1fr] lg:items-stretch">
         <PanggungWarga
           pose={pose}
-          className="h-64 rounded-3xl border-4 border-[#33465a]/40 shadow-[0_24px_50px_-20px_rgba(31,45,58,0.6)] sm:h-80 lg:h-auto lg:min-h-[460px]"
+          className="h-64 rounded-3xl border-4 border-[#33465a]/40 shadow-[0_24px_50px_-20px_rgba(31,45,58,0.6)] sm:h-80 lg:h-auto lg:min-h-[27rem]"
         />
 
         <div className="flex min-w-0 flex-col gap-4">

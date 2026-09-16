@@ -61,9 +61,49 @@
   --gerak-tahap: 420ms;
 }
 
+:root {
+  --skala-layar: 1;
+}
+
+@media (min-width: 1800px) {
+  :root {
+    --skala-layar: 1.12;
+    --container-6xl: 78rem;
+    --container-7xl: 90rem;
+  }
+}
+
+@media (min-width: 2200px) {
+  :root {
+    --skala-layar: 1.25;
+  }
+}
+
+@media (min-width: 2500px) {
+  :root {
+    --skala-layar: 1.35;
+  }
+}
+
+@media (min-width: 3000px) {
+  :root {
+    --skala-layar: 1.55;
+  }
+}
+
+@media (min-width: 3600px) {
+  :root {
+    --skala-layar: 1.8;
+  }
+}
+
 html {
-  font-size: 17px;
+  font-size: calc(17px * var(--skala-layar));
   scroll-behavior: smooth;
+}
+
+svg.lucide:not([class*=' h-'], [class*=':h-'], [class*=' size-']) {
+  zoom: var(--skala-layar);
 }
 
 section[id] {

@@ -1,4 +1,5 @@
 import { randomBytes, scryptSync } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join } from 'node:path'
 
@@ -61,8 +62,72 @@ await sql(
   [demoId, JSON.stringify(['halo', 'kopi', 'panas']), JSON.stringify(['berapa', 'terima-kasih'])],
 )
 
+const URUTAN_ADEGAN = ['kedai-kopi', 'puskesmas', 'transportasi', 'wawancara-kerja', 'darurat']
+
+const bacaAdegan = (id) =>
+  JSON.parse(
+    readFileSync(join(import.meta.dirname, '..', 'content', 'scenarios', `${id}.json`), 'utf8'),
+  )
+
+const isyaratAdegan = (adegan) => [
+  ...new Set([
+    ...adegan.vocab,
+    ...adegan.nodes.flatMap((node) =>
+      node.task
+        ? [node.task.deaf, node.task.service]
+            .filter((task) => task.type !== 'point' && task.sign)
+            .map((task) => task.sign)
+        : [],
+    ),
+  ]),
+]
+
+const siapkanAkunDemo = async (email, nama, sandi, jumlahSelesai) => {
+  const id = await upsertUser(email, nama, sandi, 'pengguna')
+  await sql(`delete from sign_progress where user_id = $1`, [id])
+  await sql(`delete from scenario_runs where user_id = $1`, [id])
+  await sql(`delete from checkpoints where user_id = $1`, [id])
+  if (jumlahSelesai === 0) {
+    await sql(`update users set avatar = null, gender = null where id = $1`, [id])
+  }
+  const selesai = URUTAN_ADEGAN.slice(0, jumlahSelesai).map(bacaAdegan)
+  for (const arah of ['deaf', 'service']) {
+    const dikuasai = new Set()
+    for (const [urutan, adegan] of selesai.entries()) {
+      const isyarat = isyaratAdegan(adegan)
+      for (const signId of isyarat) dikuasai.add(signId)
+      await sql(
+        `insert into scenario_runs (user_id, scenario_id, direction, duration_ms, mastered, needs_repeat, completed_at)
+         values ($1, $2, $3, $4, $5, '[]', now() - $6::int * interval '1 day')`,
+        [
+          id,
+          adegan.id,
+          arah,
+          adegan.estimatedMinutes * 60000,
+          JSON.stringify(isyarat),
+          jumlahSelesai - urutan,
+        ],
+      )
+    }
+    for (const signId of dikuasai) {
+      await sql(
+        `insert into sign_progress (user_id, sign_id, direction, status, attempts, updated_at)
+         values ($1, $2, $3, 'dikuasai', 2, now())`,
+        [id, signId, arah],
+      )
+    }
+  }
+}
+
+await siapkanAkunDemo('demo.baru@lakon.id', 'Demo Baru', 'BaruLakon2026', 0)
+await siapkanAkunDemo('demo.dua@lakon.id', 'Demo Dua Adegan', 'DuaLakon2026', 2)
+await siapkanAkunDemo('demo.penuh@lakon.id', 'Demo Penuh', 'PenuhLakon2026', URUTAN_ADEGAN.length)
+
 console.log('seed selesai: demo@lakon.id / CobaLakon2026 (progres parsial terisi)')
 console.log('              admin@lakon.id / AdminLakon2026')
 console.log('              validator@lakon.id / ValidasiLakon2026')
 console.log('              contoh: bendi@lakon.id / BendiLakon2026, kevin@lakon.id / KevinLakon2026,')
 console.log('                      jessica@lakon.id / JessicaLakon2026, nawal@lakon.id / NawalLakon2026')
+console.log('              presentasi: demo.baru@lakon.id / BaruLakon2026 (tanpa progres)')
+console.log('                          demo.dua@lakon.id / DuaLakon2026 (2 adegan selesai)')
+console.log('                          demo.penuh@lakon.id / PenuhLakon2026 (5 adegan selesai)')

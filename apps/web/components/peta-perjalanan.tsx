@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
   ArrowRight,
+  Construction,
   Flag,
   FlagTriangleRight,
   Hand,
@@ -38,12 +39,17 @@ export type TeksPeta = {
   menit: string
   mulaiDiSini: string
   garisAkhir: string
+  segera: string
+  adeganBaru: string
+  segeraKeterangan: string
+  dibangun: string
   kamuDiSini?: string
   rumah?: string
 }
 
 const POSISI_X = [22, 74, 24, 76, 30] as const
 const RUMAH_X = 60
+const JUMLAH_SEGERA = 2
 const durasiUntuk = (langkah: number) => Math.min(3200, Math.max(700, langkah * 1000))
 const DEKOR: { Icon: LucideIcon; x: number; y: number; size: number; kecil?: boolean }[] = [
   { Icon: TreeDeciduous, x: 8, y: 10, size: 28 },
@@ -59,11 +65,26 @@ function Bangunan({
   y,
   skala = 1,
 }: {
-  id: string | 'rumah'
+  id: string | 'rumah' | 'segera'
   x: number
   y: number
   skala?: number
 }) {
+  if (id === 'segera') {
+    return (
+      <g transform={`translate(${x} ${y}) scale(${skala})`} aria-hidden>
+        <ellipse cx={0} cy={26} rx={40} ry={9} fill="rgb(0 0 0 / 0.1)" />
+        <g fill="none" stroke="#9a9385" strokeWidth={2} strokeDasharray="5 4">
+          <polygon points="-30,-6 0,-20 30,-6 0,8" />
+          <polygon points="-30,-6 0,8 0,30 -30,16" />
+          <polygon points="30,-6 0,8 0,30 30,16" />
+        </g>
+        <path d="M-22 22 L-16 8 L-10 22 Z" fill="#e08a2e" />
+        <rect x={-19} y={13} width={6} height={3} fill="#fff8ea" />
+        <path d="M14 26 L14 -30 M14 -30 L34 -30 M30 -30 L30 -18" stroke="#b9803b" strokeWidth={3} />
+      </g>
+    )
+  }
   const palette = id === 'rumah' ? null : paletteFor(id)
   const atas = palette ? palette.tint : '#fbe9c9'
   const kiri = palette ? palette.ambient : '#e4b46f'
@@ -110,7 +131,7 @@ export function PetaPerjalanan({
   onSampai?: (item: SimpulPeta, index: number) => void
 }) {
   const ref = useRef<HTMLDivElement | null>(null)
-  const [lebar, setLebar] = useState(0)
+  const [ukuran, setUkuran] = useState({ lebar: 0, s: 1 })
   const [tujuan, setTujuan] = useState<number | null>(null)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
@@ -125,26 +146,33 @@ export function PetaPerjalanan({
     const el = ref.current
     if (!el) return
     const observer = new ResizeObserver(([entry]) => {
-      if (entry) setLebar(entry.contentRect.width)
+      if (!entry) return
+      const akar = parseFloat(getComputedStyle(document.documentElement).fontSize)
+      setUkuran({ lebar: entry.contentRect.width, s: akar > 0 ? akar / 17 : 1 })
     })
     observer.observe(el)
     return () => observer.disconnect()
   }, [])
 
+  const { lebar, s } = ukuran
+  const segera = simpul.length > 0 ? JUMLAH_SEGERA : 0
+  const total = simpul.length + segera
   const ponsel = lebar < 640
-  const tinggiBaris = ponsel ? 276 : 208
-  const atas = 250
-  const bawah = ponsel ? 330 : 150
-  const tinggi = atas + Math.max(0, simpul.length - 1) * tinggiBaris + bawah
+  const tinggiBaris = (ponsel ? 320 : 240) * s
+  const atas = 250 * s
+  const bawah = (ponsel ? 330 : 150) * s
+  const tinggi = atas + Math.max(0, total - 1) * tinggiBaris + bawah
 
-  const rumah = { x: (RUMAH_X / 100) * lebar, y: 96 }
-  const titik = simpul.map((_, index) => ({
+  const rumah = { x: (RUMAH_X / 100) * lebar, y: 96 * s }
+  const semuaTitik = Array.from({ length: total }, (_, index) => ({
     x: ((POSISI_X[index % POSISI_X.length] ?? 50) / 100) * lebar,
     y: atas + index * tinggiBaris,
   }))
+  const titik = semuaTitik.slice(0, simpul.length)
+  const titikSegera = semuaTitik.slice(simpul.length)
   const akhir = {
-    x: lebar * (simpul.length % 2 === 0 ? 0.26 : 0.72),
-    y: tinggi - (ponsel ? 44 : 56),
+    x: lebar * (total % 2 === 0 ? 0.26 : 0.72),
+    y: tinggi - (ponsel ? 44 : 56) * s,
   }
   const jalur = [rumah, ...titik, akhir]
   const ruas = (titikJalur: { x: number; y: number }[]) =>
@@ -156,7 +184,8 @@ export function PetaPerjalanan({
         return `C ${q.x} ${q.y + tarik} ${p.x} ${p.y - tarik} ${p.x} ${p.y}`
       })
       .join(' ')
-  const d = ruas(jalur)
+  const d = ruas(segera > 0 ? [rumah, ...titik] : jalur)
+  const dBangun = segera > 0 ? ruas([titik[titik.length - 1]!, ...titikSegera, akhir]) : null
 
   const pemain =
     typeof posisiPemain === 'number'
@@ -189,6 +218,17 @@ export function PetaPerjalanan({
     timer.current = setTimeout(() => onSampai(item, index), durasiUntuk(Math.abs(index - pemain)))
   }
 
+  const posisiKartu = (p: { x: number }, kiri: boolean) =>
+    ponsel
+      ? {
+          top: 100 * s,
+          [kiri ? 'left' : 'right']: -(kiri ? p.x : lebar - p.x) + lebar * 0.04 + 33 * s,
+          width: lebar * 0.7,
+        }
+      : { top: 0, [kiri ? 'left' : 'right']: 83 * s, width: Math.min(300 * s, lebar * 0.4) }
+  const kelasSimpul =
+    'group absolute z-10 block h-[4.6rem] w-[3.9rem] -translate-x-1/2 -translate-y-full rounded-full'
+
   return (
     <div
       ref={ref}
@@ -203,61 +243,94 @@ export function PetaPerjalanan({
           height={tinggi}
           viewBox={`0 0 ${lebar} ${tinggi}`}
         >
+          {dBangun ? (
+            <>
+              <path
+                d={dBangun}
+                fill="none"
+                stroke="rgb(0 0 0 / 0.1)"
+                strokeWidth={(ponsel ? 36 : 44) * s}
+                strokeLinecap="round"
+                transform={`translate(0 ${7 * s})`}
+              />
+              <path
+                d={dBangun}
+                fill="none"
+                stroke="#d3cfc2"
+                strokeWidth={(ponsel ? 36 : 44) * s}
+                strokeLinecap="round"
+              />
+              <path
+                d={dBangun}
+                fill="none"
+                stroke="#c2b59b"
+                strokeWidth={(ponsel ? 22 : 27) * s}
+                strokeDasharray={`${16 * s} ${9 * s}`}
+              />
+              <path
+                d={dBangun}
+                fill="none"
+                stroke="#e08a2e"
+                strokeWidth={3 * s}
+                strokeDasharray={`${6 * s} ${14 * s}`}
+                strokeLinecap="round"
+              />
+            </>
+          ) : null}
           <path
             d={d}
             fill="none"
             stroke="rgb(0 0 0 / 0.22)"
-            strokeWidth={ponsel ? 36 : 44}
+            strokeWidth={(ponsel ? 36 : 44) * s}
             strokeLinecap="round"
-            transform="translate(0 7)"
+            transform={`translate(0 ${7 * s})`}
           />
           <path
             d={d}
             fill="none"
             stroke="#d3cfc2"
-            strokeWidth={ponsel ? 36 : 44}
+            strokeWidth={(ponsel ? 36 : 44) * s}
             strokeLinecap="round"
           />
           <path
             d={d}
             fill="none"
             stroke="#2f333a"
-            strokeWidth={ponsel ? 26 : 32}
+            strokeWidth={(ponsel ? 26 : 32) * s}
             strokeLinecap="round"
           />
           <path
             d={d}
             fill="none"
             stroke="#4a4f57"
-            strokeWidth={ponsel ? 22 : 27}
+            strokeWidth={(ponsel ? 22 : 27) * s}
             strokeLinecap="round"
-            transform="translate(0 -2)"
+            transform={`translate(0 ${-2 * s})`}
           />
           <path
             d={d}
             fill="none"
             stroke="#f2c94c"
-            strokeWidth={3}
-            strokeDasharray="14 12"
+            strokeWidth={3 * s}
+            strokeDasharray={`${14 * s} ${12 * s}`}
             strokeLinecap="round"
           />
           <Bangunan
             id="rumah"
-            x={rumah.x + (ponsel ? 62 : 82)}
-            y={rumah.y - 8}
-            skala={ponsel ? 0.8 : 1}
+            x={rumah.x + (ponsel ? 62 : 82) * s}
+            y={rumah.y - 8 * s}
+            skala={(ponsel ? 0.8 : 1) * s}
           />
-          {simpul.map((item, index) => {
-            const p = titik[index]!
+          {semuaTitik.map((p, index) => {
             const kiri = (POSISI_X[index % POSISI_X.length] ?? 50) < 50
-            const dx = ponsel ? 78 : 96
+            const dx = (ponsel ? 78 : 96) * s
             return (
               <Bangunan
-                key={item.id}
-                id={item.id}
+                key={index}
+                id={simpul[index]?.id ?? 'segera'}
                 x={kiri ? p.x - dx : p.x + dx}
-                y={p.y - (ponsel ? 26 : 34)}
-                skala={ponsel ? 0.72 : 0.9}
+                y={p.y - (ponsel ? 26 : 34) * s}
+                skala={(ponsel ? 0.72 : 0.9) * s}
               />
             )
           })}
@@ -278,10 +351,12 @@ export function PetaPerjalanan({
       {lebar > 0 && titik.length > 0 ? (
         <>
           <span
-            className="bg-panggung text-sorot absolute z-20 flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider shadow-md"
+            className="bg-panggung text-sorot absolute z-20 flex items-center gap-1.5 rounded-full px-3 py-1.5 font-mono text-[0.65rem] font-bold uppercase tracking-wider shadow-md"
             style={{
               left: asal ? asal.x : rumah.x,
-              top: (asal ? asal.y : rumah.y) - (asal && pemain !== null && pemain >= 0 ? 132 : 84),
+              top:
+                (asal ? asal.y : rumah.y) -
+                (asal && pemain !== null && pemain >= 0 ? (ponsel ? 104 : 132) : 84) * s,
               transform: 'translateX(-50%)',
             }}
           >
@@ -296,9 +371,13 @@ export function PetaPerjalanan({
             className="absolute z-20 flex flex-col items-center gap-1"
             style={{ left: akhir.x, top: akhir.y, transform: 'translate(-50%, -100%)' }}
           >
-            <span className="bg-kartu border-border-halus text-teks flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider shadow-md">
-              <FlagTriangleRight aria-hidden size={13} className="text-berhasil" />
-              {teks.garisAkhir}
+            <span className="bg-kartu border-border-halus text-teks flex items-center gap-1.5 whitespace-nowrap rounded-full border px-3 py-1.5 font-mono text-[0.65rem] font-bold uppercase tracking-wider shadow-md">
+              {segera > 0 ? (
+                <Construction aria-hidden size={13} className="text-[#b45f14]" />
+              ) : (
+                <FlagTriangleRight aria-hidden size={13} className="text-berhasil" />
+              )}
+              {segera > 0 ? teks.dibangun : teks.garisAkhir}
             </span>
             <span aria-hidden className="bg-panggung h-6 w-1.5 rounded-full" />
           </span>
@@ -320,7 +399,7 @@ export function PetaPerjalanan({
                   kunci ? 'opacity-80' : ''
                 }`}
               >
-                <span className="text-teks-samar font-mono text-[11px] uppercase tracking-[0.2em]">
+                <span className="text-teks-samar font-mono text-[0.65rem] uppercase tracking-[0.2em]">
                   {teks.adegan} {index + 1}
                   {kunci ? ` · ${teks.terkunci}` : ''}
                 </span>
@@ -333,7 +412,7 @@ export function PetaPerjalanan({
                 <span className="text-teks-sekunder text-xs sm:text-sm">
                   {item.keterangan ?? item.suasana}
                 </span>
-                <span className="text-teks-samar mt-0.5 font-mono text-[11px]">
+                <span className="text-teks-samar mt-0.5 font-mono text-[0.65rem]">
                   {item.isyarat} {teks.isyarat} · ±{item.menit} {teks.menit}
                 </span>
                 {typeof item.persen === 'number' && !kunci ? (
@@ -358,7 +437,7 @@ export function PetaPerjalanan({
             const pin = (
               <span
                 aria-hidden
-                className="relative flex h-[66px] w-[66px] items-center justify-center rounded-full border-4 border-white shadow-[0_12px_24px_-10px_rgba(0,0,0,0.6)] transition-transform group-hover:-translate-y-1 group-focus-visible:-translate-y-1"
+                className="relative flex h-[3.9rem] w-[3.9rem] items-center justify-center rounded-full border-4 border-white shadow-[0_12px_24px_-10px_rgba(0,0,0,0.6)] transition-transform group-hover:-translate-y-1 group-focus-visible:-translate-y-1"
                 style={{ backgroundColor: warna }}
               >
                 <span
@@ -388,30 +467,21 @@ export function PetaPerjalanan({
                 ) : null}
               </span>
             )
-            const posisiKartu = ponsel
-              ? {
-                  top: 100,
-                  [kiri ? 'left' : 'right']: -(kiri ? p.x : lebar - p.x) + lebar * 0.04 + 33,
-                  width: lebar * 0.7,
-                }
-              : { top: 0, [kiri ? 'left' : 'right']: 83, width: Math.min(300, lebar * 0.4) }
             const isi = (
               <>
                 {pin}
-                <span className="absolute" style={posisiKartu}>
+                <span className="absolute" style={posisiKartu(p, kiri)}>
                   {kartu}
                 </span>
               </>
             )
-            const kelas =
-              'group absolute z-10 block h-[78px] w-[66px] -translate-x-1/2 -translate-y-full rounded-full'
             const label = `${teks.adegan} ${index + 1}: ${item.judul}${kunci ? `, ${teks.terkunci}` : ''}`
             if (onSampai && !kunci) {
               return (
                 <button
                   key={item.id}
                   type="button"
-                  className={kelas}
+                  className={kelasSimpul}
                   style={{ left: p.x, top: p.y }}
                   aria-label={label}
                   aria-busy={tujuan === index}
@@ -424,7 +494,7 @@ export function PetaPerjalanan({
             return kunci ? (
               <span
                 key={item.id}
-                className={kelas}
+                className={kelasSimpul}
                 style={{ left: p.x, top: p.y }}
                 aria-label={label}
                 role="img"
@@ -435,12 +505,51 @@ export function PetaPerjalanan({
               <Link
                 key={item.id}
                 href={item.href}
-                className={kelas}
+                className={kelasSimpul}
                 style={{ left: p.x, top: p.y }}
                 aria-label={label}
               >
                 {isi}
               </Link>
+            )
+          })
+        : null}
+
+      {lebar > 0
+        ? titikSegera.map((p, urutan) => {
+            const nomor = simpul.length + urutan + 1
+            const kiri = (POSISI_X[(nomor - 1) % POSISI_X.length] ?? 50) < 50
+            return (
+              <span
+                key={`segera-${nomor}`}
+                className={kelasSimpul}
+                style={{ left: p.x, top: p.y }}
+                aria-label={`${teks.adegan} ${nomor}: ${teks.adeganBaru}, ${teks.segera}`}
+                role="img"
+              >
+                <span
+                  aria-hidden
+                  className="relative flex h-[3.9rem] w-[3.9rem] items-center justify-center rounded-full border-4 border-dashed border-[#b0a591] bg-[#f3eee6] shadow-[0_12px_24px_-12px_rgba(0,0,0,0.35)]"
+                >
+                  <Construction size={24} strokeWidth={2} className="text-[#8a7f6a]" />
+                  <span className="absolute -left-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-[#8a7f6a] font-mono text-xs font-bold text-white">
+                    {nomor}
+                  </span>
+                </span>
+                <span className="absolute" style={posisiKartu(p, kiri)}>
+                  <span className="flex flex-col gap-0.5 rounded-2xl border-2 border-dashed border-[#c9bfa9] bg-[#faf7f2]/90 p-3 text-left">
+                    <span className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[#8a5f10]">
+                      {teks.adegan} {nomor} · {teks.segera}
+                    </span>
+                    <span className="font-display text-base font-semibold leading-tight text-[#6f6759] sm:text-lg">
+                      {teks.adeganBaru}
+                    </span>
+                    <span className="text-teks-sekunder text-xs sm:text-sm">
+                      {teks.segeraKeterangan}
+                    </span>
+                  </span>
+                </span>
+              </span>
             )
           })
         : null}
@@ -466,8 +575,8 @@ export function PetaPerjalanan({
               karakter={karakter}
               berjalan={tujuan !== null && jalurPemain !== null}
               hadap={hadapPemain}
-              y={-12}
-              skala={ponsel ? 0.9 : 1}
+              y={-12 * s}
+              skala={(ponsel ? 0.9 : 1) * s}
             />
           </g>
         </svg>

@@ -73,6 +73,11 @@
     "head": "bahu terangkat, tubuh mengkerut",
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/dingin.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

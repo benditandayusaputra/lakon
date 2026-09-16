@@ -74,6 +74,11 @@
     "head": null,
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/halo.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

@@ -73,6 +73,11 @@
     "head": "sedikit menunduk",
     "gaze": "ke lawan bicara"
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/maaf.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

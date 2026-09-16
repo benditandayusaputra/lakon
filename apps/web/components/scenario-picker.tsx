@@ -6,9 +6,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowRight, Eye, Flag, Hand, Info, LogOut, MapPinned, Repeat, Users } from 'lucide-react'
 import { useContent } from '@/features/content/use-content'
 import {
-  listRuns,
-  listSignProgress,
-  pullFromServer,
+  bacaProgres,
   type Arah,
   type RunEntry,
   type SignProgressEntry,
@@ -57,18 +55,16 @@ export function ScenarioPicker() {
     gender: 'perempuan' | 'laki-laki' | null
   } | null>(null)
   const [progresSiap, setProgresSiap] = useState(false)
+  const [progresGagal, setProgresGagal] = useState(false)
 
   useEffect(() => {
-    void pullFromServer()
-      .catch(() => {})
-      .then(() => {
-        void Promise.all([listRuns(), listSignProgress()])
-          .then(([semuaRun, semuaSign]) => {
-            setRuns(semuaRun)
-            setSigns(semuaSign)
-          })
-          .finally(() => setProgresSiap(true))
+    void bacaProgres()
+      .then((progres) => {
+        setRuns(progres.runs)
+        setSigns(progres.signs)
       })
+      .catch(() => setProgresGagal(true))
+      .finally(() => setProgresSiap(true))
     void fetch('/api/auth/saya')
       .then((response) => response.json())
       .then(
@@ -155,7 +151,9 @@ export function ScenarioPicker() {
                 avatar={account?.avatar ?? null}
                 ukuran={24}
               />
-              <span className="max-w-28 truncate">{account?.displayName ?? 'Profil'}</span>
+              <span className="max-w-28 truncate max-[359px]:sr-only">
+                {account?.displayName ?? 'Profil'}
+              </span>
             </Link>
             <button
               type="button"
@@ -231,7 +229,7 @@ export function ScenarioPicker() {
                 {berikutnya
                   ? `Berikutnya: ${berikutnya.title.id}.`
                   : selesai === scenarios.length && scenarios.length > 0
-                    ? 'Semua adegan selesai untuk peran ini. Ulangi kapan saja.'
+                    ? 'Semua adegan selesai untuk peran ini. Adegan baru segera hadir.'
                     : 'Mulai dari adegan pertama.'}
               </p>
             </div>
@@ -239,7 +237,7 @@ export function ScenarioPicker() {
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl flex-1 gap-6 px-4 pb-16 pt-8 sm:px-6 xl:grid-cols-[320px_minmax(0,1fr)] xl:gap-8">
+      <section className="mx-auto grid w-full max-w-7xl flex-1 gap-6 px-4 pb-16 pt-8 sm:px-6 xl:grid-cols-[19rem_minmax(0,1fr)] xl:gap-8">
         <aside className="flex flex-col gap-5 xl:sticky xl:top-24 xl:self-start">
           <fieldset>
             <legend className="font-display flex items-center gap-2 text-xl font-semibold">
@@ -294,7 +292,7 @@ export function ScenarioPicker() {
               className="border-border-halus bg-kartu shadow-kartu hidden flex-col gap-3 rounded-2xl border p-4 xl:flex"
               style={{ borderTopColor: paletteFor(berikutnya.id).accent, borderTopWidth: 4 }}
             >
-              <p className="text-teks-samar font-mono text-[11px] uppercase tracking-[0.2em]">
+              <p className="text-teks-samar font-mono text-[0.65rem] uppercase tracking-[0.2em]">
                 Berikutnya untuk {activeRole.ctaName}
               </p>
               <p className="font-display text-lg font-semibold leading-tight">
@@ -319,16 +317,18 @@ export function ScenarioPicker() {
         </aside>
 
         <div className="min-w-0">
-          {error ? (
+          {error || progresGagal ? (
             <div
               role="alert"
               className="border-border-halus bg-kartu shadow-kartu mb-6 flex items-start gap-3 rounded-2xl border p-5"
             >
               <Info aria-hidden size={20} className="text-galat mt-0.5 shrink-0" />
               <div>
-                <p className="font-bold">Adegan gagal dimuat</p>
+                <p className="font-bold">
+                  {error ? 'Adegan gagal dimuat' : 'Progres gagal dimuat'}
+                </p>
                 <p className="text-teks-sekunder mt-1 text-sm">
-                  {error} Muat ulang halaman untuk mencoba lagi.
+                  {error ?? 'Periksa koneksi internet.'} Muat ulang halaman untuk mencoba lagi.
                 </p>
               </div>
             </div>
@@ -372,6 +372,10 @@ export function ScenarioPicker() {
                 kamuDiSini: 'Kamu di sini',
                 rumah: 'Rumah',
                 garisAkhir: 'Garis akhir',
+                segera: 'segera',
+                adeganBaru: 'Adegan baru',
+                segeraKeterangan: 'Sedang disiapkan. Nantikan di rilis berikutnya.',
+                dibangun: 'Masih dibangun',
               }}
               onSampai={(item) => router.push(item.href)}
             />

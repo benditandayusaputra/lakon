@@ -87,6 +87,11 @@
     "head": null,
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/manis.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

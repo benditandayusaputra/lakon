@@ -84,6 +84,11 @@
     "head": null,
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/terima-kasih.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

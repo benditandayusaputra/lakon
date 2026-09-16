@@ -67,8 +67,8 @@ const label: Record<
 const features = [
   {
     icon: Hand,
-    title: 'Peragaan karakter 3D',
-    body: 'Tiga kecepatan, bisa dijeda per frame.',
+    title: 'Peraga manusia asli dan 3D',
+    body: 'Video penanda asli, atau avatar 3D dari tiga sudut.',
   },
   {
     icon: Monitor,

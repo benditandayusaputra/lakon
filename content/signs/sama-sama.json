@@ -73,6 +73,11 @@
     "head": "sedikit mengangguk",
     "gaze": "ke lawan bicara"
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/sama-sama.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

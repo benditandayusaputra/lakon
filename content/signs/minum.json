@@ -72,6 +72,11 @@
     "head": "sedikit mendongak",
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/minum.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

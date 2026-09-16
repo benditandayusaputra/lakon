@@ -156,11 +156,11 @@ export function SceneBelajarPuskesmas({
 
   return (
     <AmbienRuangTunggu>
-      <div className="grid flex-1 gap-5 lg:grid-cols-[1fr_232px]">
+      <div className="grid flex-1 gap-5 lg:grid-cols-[1fr_13.65rem]">
         <div className="flex min-w-0 flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border-2 border-[#c4dcca] bg-white px-5 py-3.5 shadow-lg">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#2f7d52]">
+              <p className="text-[0.65rem] font-bold uppercase tracking-[0.25em] text-[#2f7d52]">
                 Latihan sebelum berobat
               </p>
               <h1 className="font-display text-2xl font-bold capitalize sm:text-3xl">
@@ -221,7 +221,7 @@ export function SceneBelajarPuskesmas({
                 />
                 <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-stretch">
                   <div className="rounded-2xl border-2 border-[#c4dcca] bg-white p-4 shadow-lg">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#2f7d52]">
+                    <p className="text-[0.65rem] font-bold uppercase tracking-[0.25em] text-[#2f7d52]">
                       Isyarat ini
                     </p>
                     <p className="font-display mt-1 text-xl font-bold">{sign.gloss.id}</p>

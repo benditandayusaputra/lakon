@@ -36,7 +36,7 @@ const copy = {
     heroKicker: 'BISINDO Varian Jakarta',
     heroTitle: 'Latihan percakapan BISINDO di dalam transaksi yang benar-benar Anda jalani.',
     heroBody:
-      'Lima adegan, dua peran. Pelajari isyarat dari peragaan tiga sudut, peragakan di depan kamera, umpan baliknya muncul di tempat.',
+      'Lima adegan, dua peran. Pelajari isyarat dari video penanda asli atau avatar 3D tiga sudut, peragakan di depan kamera, umpan baliknya muncul di tempat.',
     heroCta: 'Coba satu isyarat, 20 detik',
     heroSecondary: 'Lihat lima adegan',
     statSigns: 'isyarat',
@@ -44,7 +44,7 @@ const copy = {
     statSides: 'peran',
     tryTitle: 'Coba satu isyarat, sekarang',
     tryBody: 'Tanpa akun, tanpa unduhan. Selesai dalam 20 detik.',
-    trySteps: ['Lihat peragaan dari tiga sudut', 'Nyalakan kamera', 'Peragakan, nilai langsung'],
+    trySteps: ['Lihat peraga manusia atau 3D', 'Nyalakan kamera', 'Peragakan, nilai langsung'],
     tryMissing: 'Isyarat contoh sedang disiapkan. Pilih salah satu adegan untuk mulai belajar.',
     loading: 'Memuat…',
     loadBlock: 'Muat blok latihan',
@@ -63,6 +63,10 @@ const copy = {
     mapStart: 'Mulai di sini',
     mapHome: 'Rumah',
     mapFinish: 'Garis akhir',
+    mapSoon: 'segera',
+    mapNewScene: 'Adegan baru',
+    mapSoonBody: 'Sedang disiapkan. Nantikan di rilis berikutnya.',
+    mapBuilding: 'Masih dibangun',
     scenarioMoods: {
       'kedai-kopi': 'Amber pagi, kayu jati',
       puskesmas: 'Hijau teduh, ruang tunggu',
@@ -92,7 +96,7 @@ const copy = {
     heroKicker: 'BISINDO Jakarta variant',
     heroTitle: 'BISINDO conversation practice inside transactions you actually live.',
     heroBody:
-      'Five scenes, two roles. Learn each sign from three camera angles, perform it on camera, and get feedback on the spot.',
+      'Five scenes, two roles. Learn each sign from a real signer on video or a 3D avatar with three angles, perform it on camera, and get feedback on the spot.',
     heroCta: 'Try one sign in 20 seconds',
     heroSecondary: 'See the five scenes',
     statSigns: 'signs',
@@ -101,7 +105,7 @@ const copy = {
     tryTitle: 'Try one sign, right now',
     tryBody: 'No account, no download. Done in 20 seconds.',
     trySteps: [
-      'Watch the sign from three angles',
+      'Watch a real signer or the 3D avatar',
       'Turn on the camera',
       'Perform it, get instant feedback',
     ],
@@ -123,6 +127,10 @@ const copy = {
     mapStart: 'Start here',
     mapHome: 'Home',
     mapFinish: 'Finish line',
+    mapSoon: 'coming soon',
+    mapNewScene: 'A new scene',
+    mapSoonBody: 'In the works. Watch for the next release.',
+    mapBuilding: 'Under construction',
     scenarioMoods: {
       'kedai-kopi': 'Morning amber, teak wood',
       puskesmas: 'Calm green, waiting room',
@@ -378,6 +386,10 @@ export function Landing() {
               mulaiDiSini: t.mapStart,
               rumah: t.mapHome,
               garisAkhir: t.mapFinish,
+              segera: t.mapSoon,
+              adeganBaru: t.mapNewScene,
+              segeraKeterangan: t.mapSoonBody,
+              dibangun: t.mapBuilding,
             }}
           />
         </div>

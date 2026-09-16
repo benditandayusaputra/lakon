@@ -504,7 +504,7 @@ export function SceneUjianPuskesmas({
         <PanggungMedis
           peran={peran}
           pose={pose}
-          className="h-64 rounded-3xl border-4 border-[#9dbfa9]/60 shadow-[0_24px_50px_-20px_rgba(29,68,47,0.5)] sm:h-80 lg:h-auto lg:min-h-[460px]"
+          className="h-64 rounded-3xl border-4 border-[#9dbfa9]/60 shadow-[0_24px_50px_-20px_rgba(29,68,47,0.5)] sm:h-80 lg:h-auto lg:min-h-[27rem]"
         />
 
         <div className="flex min-w-0 flex-col gap-4">
@@ -514,7 +514,7 @@ export function SceneUjianPuskesmas({
                 aria-hidden
                 className="absolute -left-2.5 top-5 hidden h-5 w-5 rotate-45 border-b-2 border-l-2 border-[#c4dcca] bg-white lg:block"
               />
-              <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-[#2f7d52]">
+              <p className="flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.25em] text-[#2f7d52]">
                 <Stethoscope aria-hidden className="h-3.5 w-3.5" />
                 {NAMA_AKTOR[node.actor] ?? prettify(node.actor)}
               </p>

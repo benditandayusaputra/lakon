@@ -1,17 +1,20 @@
 'use client'
 
-import { FlipHorizontal, Pause, Play, SkipBack, SkipForward } from 'lucide-react'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Box, FlipHorizontal, Pause, Play, SkipBack, SkipForward, UserRound } from 'lucide-react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { CompiledSign, CompilerRig } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { CompiledAvatar, type Playback } from '@/components/compile-lab'
 import { signTersimpan } from '@/features/content/use-content'
 import {
+  gantiMode,
+  gantiSudut,
   KAMERA_SUDUT,
   SUDUT_PERAGA,
   sudutTersedia,
   sumberSudut,
+  type ModePeraga,
   type SudutPeraga,
 } from '@/features/ui/peraga'
 
@@ -20,6 +23,13 @@ const LABEL_SUDUT: Record<SudutPeraga, string> = {
   kanan: 'Kanan',
   kiri: 'Kiri',
 }
+
+const PILIHAN_MODE = [
+  ['manusia', UserRound, 'Manusia'],
+  ['3d', Box, '3D'],
+] as const
+
+let modeTerakhir: ModePeraga = 'manusia'
 
 export function AvatarStage({
   compiled,
@@ -50,6 +60,7 @@ export function AvatarStage({
   const [speed, setSpeed] = useState(1)
   const [mirror, setMirror] = useState(mirrorDefault)
   const [sudut, setSudut] = useState<SudutPeraga>('depan')
+  const [modePilihan, setModePilihan] = useState<ModePeraga>(modeTerakhir)
   const [rigError, setRigError] = useState<string | null>(null)
   const [videoGagal, setVideoGagal] = useState(false)
   const [sempit, setSempit] = useState(false)
@@ -58,8 +69,18 @@ export function AvatarStage({
   onRigReadyRef.current = onRigReady
 
   const isyarat = sign ?? (compiled ? signTersimpan(compiled.id) : undefined)
-  const video = isyarat?.media?.video
-  const sumber = videoGagal ? undefined : sumberSudut(video, sudut)
+  const video = videoGagal ? undefined : isyarat?.media?.video
+  const mode: ModePeraga = video ? modePilihan : '3d'
+  const sumber = mode === 'manusia' ? sumberSudut(video, sudut) : undefined
+  const teruskanRig = useCallback((rig: CompilerRig) => onRigReadyRef.current?.(rig), [])
+
+  const terapkan = (hasil: { mode: ModePeraga; sudut: SudutPeraga }) => {
+    if (video) {
+      modeTerakhir = hasil.mode
+      setModePilihan(hasil.mode)
+    }
+    setSudut(hasil.sudut)
+  }
 
   useEffect(() => {
     playbackRef.current.compiled = compiled
@@ -122,7 +143,7 @@ export function AvatarStage({
     <div className={`flex flex-col gap-2 ${className}`}>
       <div
         ref={stageRef}
-        className={`relative min-h-0 flex-1 ${adaKontrol ? 'max-sm:min-h-[26rem]' : ''} ${stageClassName}`}
+        className={`relative min-h-0 flex-1 ${adaKontrol ? (sumber ? 'max-sm:aspect-4/3' : 'max-sm:min-h-[26rem]') : ''} ${stageClassName}`}
       >
         <div className={`absolute inset-0 ${mirror ? '-scale-x-100' : ''}`}>
           {sumber ? (
@@ -145,15 +166,38 @@ export function AvatarStage({
                 timeEl={timeEl}
                 sliderEl={sliderEl}
                 sudut={posisiKamera}
-                onRigReady={(rig) => onRigReadyRef.current?.(rig)}
+                onRigReady={teruskanRig}
                 onRigError={setRigError}
               />
             </Canvas>
           )}
         </div>
-        <p className="text-halaman absolute right-3 top-3 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
-          {sumber ? 'video penanda' : 'peraga 3D'} · {sudut}
-        </p>
+        {video ? (
+          <div
+            role="group"
+            aria-label="Pilih peraga"
+            className="absolute right-3 top-3 flex gap-1 rounded-full bg-black/60 p-1 text-xs font-bold text-white"
+          >
+            {PILIHAN_MODE.map(([id, Ikon, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => terapkan(gantiMode(video, id, sudut))}
+                aria-pressed={mode === id}
+                className={`flex min-h-9 items-center gap-1.5 rounded-full px-3 transition-colors ${
+                  mode === id ? 'bg-halaman text-teks' : 'hover:bg-white/15'
+                }`}
+              >
+                <Ikon aria-hidden className="h-[1.15em] w-[1.15em]" />
+                {label}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-halaman absolute right-3 top-3 rounded-lg bg-black/60 px-2.5 py-1 font-mono text-xs">
+            peraga 3D · {sudut}
+          </p>
+        )}
         {signLabel ? (
           <p className="text-halaman absolute bottom-3 left-3 rounded-lg bg-black/60 px-3 py-1.5 font-mono text-sm font-bold uppercase tracking-wide">
             {signLabel}
@@ -175,17 +219,21 @@ export function AvatarStage({
             <button
               key={id}
               type="button"
-              onClick={() => setSudut(id)}
+              onClick={() => terapkan(gantiSudut(video, mode, id))}
               aria-pressed={sudut === id}
-              disabled={sumber ? !sudutTersedia(video, id) : false}
-              className={
-                sudut === id
-                  ? 'tombol-utama flex-1 px-3 py-1.5'
-                  : 'tombol-sekunder flex-1 px-3 py-1.5'
-              }
+              className={`relative flex-1 px-3 py-1.5 ${sudut === id ? 'tombol-utama' : 'tombol-sekunder'}`}
               style={{ minHeight: 48 }}
             >
               {LABEL_SUDUT[id]}
+              {sumber && !sudutTersedia(video, id) ? (
+                <>
+                  <Box
+                    aria-hidden
+                    className="absolute right-1.5 top-1.5 h-[0.8em] w-[0.8em] opacity-60"
+                  />
+                  <span className="sr-only"> (avatar 3D)</span>
+                </>
+              ) : null}
             </button>
           ))}
         </div>

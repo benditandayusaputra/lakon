@@ -1,9 +1,9 @@
 # Lakon
 
 A web app for learning Indonesian Sign Language (BISINDO, Jakarta variant)
-through real transaction scenarios. Learners study each sign from a 3D avatar,
-practise it in front of their webcam with on-device verification, then play a
-full branching conversation simulation.
+through real transaction scenarios. Learners study each sign from a video of a
+real signer or a 3D avatar, practise it in front of their webcam with on-device
+verification, then play a full branching conversation simulation.
 
 One scenario, two roles: the Deaf side learns to carry out the transaction,
 the service-worker side learns to serve Deaf customers. Lakon is a language
@@ -17,8 +17,8 @@ learning tool for both sides — never framed as assistance for one.
 - ONNX Runtime Web (WebGPU, WASM SIMD fallback) for the optional classifier
 - Custom sign compiler: one parametric spec → avatar keyframes **and** the
   DTW verification reference (single source of truth)
-- Drizzle ORM + Postgres (Neon), session auth, IndexedDB-first progress,
-  service-worker offline cache
+- Drizzle ORM + Postgres (Neon), session auth, progress saved straight to the
+  database, service-worker offline cache
 - Vitest (63 unit tests), Playwright (13 end-to-end tests incl. offline and
   camera-denied flows)
 
@@ -31,6 +31,11 @@ pnpm db:push                  # apply schema
 node tools/seed.mjs           # demo + admin + validator accounts
 pnpm dev                      # http://localhost:3000 (assets auto-fetched)
 ```
+
+Human demonstration videos: put renamed clips (e.g. `SAMA SAMA.MP4`) in
+`content/BISINDO/` (kept out of git) and run `pnpm peraga`. It crops them to
+4:3, encodes 720p H.264 without audio into `apps/web/public/peraga/` and links
+each clip to the sign with the matching name.
 
 Production build: `LAKON_ALLOW_DRAFT=1 pnpm build`. Without that variable the
 build **fails if any sign is not `approved`** — that is the content-governance
@@ -46,19 +51,26 @@ WASM from node_modules and downloads the two landmark models into
 
 ## Demo accounts (seeded)
 
-| Role      | Email                | Password          |
-| --------- | -------------------- | ----------------- |
-| Learner   | `demo@lakon.id`      | CobaLakon2026     |
-| Admin     | `admin@lakon.id`     | AdminLakon2026    |
-| Validator | `validator@lakon.id` | ValidasiLakon2026 |
-| Learner   | `bendi@lakon.id`     | BendiLakon2026    |
-| Learner   | `kevin@lakon.id`     | KevinLakon2026    |
-| Learner   | `jessica@lakon.id`   | JessicaLakon2026  |
-| Learner   | `nawal@lakon.id`     | NawalLakon2026    |
+| Role      | Email                 | Password          |
+| --------- | --------------------- | ----------------- |
+| Learner   | `demo@lakon.id`       | CobaLakon2026     |
+| Admin     | `admin@lakon.id`      | AdminLakon2026    |
+| Validator | `validator@lakon.id`  | ValidasiLakon2026 |
+| Learner   | `bendi@lakon.id`      | BendiLakon2026    |
+| Learner   | `kevin@lakon.id`      | KevinLakon2026    |
+| Learner   | `jessica@lakon.id`    | JessicaLakon2026  |
+| Learner   | `nawal@lakon.id`      | NawalLakon2026    |
+| Demo      | `demo.baru@lakon.id`  | BaruLakon2026     |
+| Demo      | `demo.dua@lakon.id`   | DuaLakon2026      |
+| Demo      | `demo.penuh@lakon.id` | PenuhLakon2026    |
 
 The demo account ships with partial progress so judges see the app in use.
 `/dev/*` and `/tools/*` require the admin or validator role; validators may
 only change `review` fields of content, never sign parameters.
+
+For presentations, `demo.baru` starts empty, `demo.dua` has the first two
+scenes finished (scene three unlocked) and `demo.penuh` has all five scenes
+finished, in both roles. Re-running `node tools/seed.mjs` resets all three.
 
 ## Technical documentation
 

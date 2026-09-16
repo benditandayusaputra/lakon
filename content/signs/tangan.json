@@ -88,6 +88,11 @@
     "head": null,
     "gaze": "melihat ke tangan"
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/tangan.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

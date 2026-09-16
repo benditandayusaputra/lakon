@@ -84,6 +84,11 @@
     "head": null,
     "gaze": "melihat ke tangan"
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/kopi.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

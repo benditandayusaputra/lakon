@@ -23,10 +23,8 @@ import { Logo } from '@/components/logo'
 import { SyncBadge } from '@/components/sync-badge'
 import { useContent } from '@/features/content/use-content'
 import {
+  bacaProgres,
   clearAllProgress,
-  listRuns,
-  listSignProgress,
-  pullFromServer,
   type Arah,
   type RunEntry,
   type SignProgressEntry,
@@ -78,17 +76,16 @@ export function Profil({
   const [fotoSibuk, setFotoSibuk] = useState(false)
   const [dihapus, setDihapus] = useState(false)
   const [minta, setMinta] = useState(false)
+  const [hapusGagal, setHapusGagal] = useState(false)
   const fileRef = useRef<HTMLInputElement | null>(null)
 
-  const muat = () => {
-    void listSignProgress().then(setSigns)
-    void listRuns().then(setRuns)
-  }
-
   useEffect(() => {
-    void pullFromServer()
+    void bacaProgres()
+      .then((progres) => {
+        setSigns(progres.signs)
+        setRuns(progres.runs)
+      })
       .catch(() => {})
-      .then(muat)
   }, [])
 
   const scenarios = useMemo(
@@ -178,12 +175,15 @@ export function Profil({
   }
 
   const hapus = () => {
-    void clearAllProgress().then(() => {
-      setRuns([])
-      setSigns([])
-      setMinta(false)
-      setDihapus(true)
-    })
+    setHapusGagal(false)
+    void clearAllProgress()
+      .then(() => {
+        setRuns([])
+        setSigns([])
+        setMinta(false)
+        setDihapus(true)
+      })
+      .catch(() => setHapusGagal(true))
   }
 
   const totalSesi = runs.length
@@ -267,7 +267,7 @@ export function Profil({
               </h1>
               <p className="text-halaman/70 truncate">{email}</p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <span className="border-halaman/25 bg-halaman/10 flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] uppercase tracking-wide">
+                <span className="border-halaman/25 bg-halaman/10 flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-wide">
                   <UserRound aria-hidden size={12} />
                   {peran}
                 </span>
@@ -407,7 +407,7 @@ export function Profil({
                               <span className="min-w-0 truncate font-bold">
                                 {scenario.title.id}
                               </span>
-                              <span className="text-teks-samar shrink-0 font-mono text-[11px]">
+                              <span className="text-teks-samar shrink-0 font-mono text-[0.65rem]">
                                 {kuasai}/{total}
                                 {sesi > 0 ? ` · ${sesi}×` : ''}
                               </span>
@@ -485,8 +485,8 @@ export function Profil({
               Akun
             </h2>
             <p className="text-teks-sekunder text-sm">
-              Video latihan tidak pernah meninggalkan perangkatmu. Progres disinkronkan ke akun ini
-              saat daring.
+              Video latihan tidak pernah meninggalkan perangkatmu. Progres tersimpan langsung di
+              database akun ini, jadi bisa dilanjutkan dari perangkat mana pun.
             </p>
             <div className="flex flex-wrap gap-3">
               <button
@@ -506,14 +506,18 @@ export function Profil({
               Hapus data belajar
             </h2>
             <p className="text-teks-sekunder max-w-prose text-sm">
-              Menghapus seluruh progres isyarat dan riwayat sesi, di perangkat ini dan di server.
-              Akunmu tetap ada. Tindakan ini tidak bisa dibatalkan.
+              Menghapus seluruh progres isyarat, checkpoint, dan riwayat sesi dari database. Akunmu
+              tetap ada. Tindakan ini tidak bisa dibatalkan.
             </p>
             <p aria-live="polite" className="text-sm">
               {dihapus ? (
                 <span className="text-berhasil flex items-center gap-2 font-bold">
                   <CheckCircle2 aria-hidden size={16} />
                   Seluruh data belajarmu sudah dihapus.
+                </span>
+              ) : hapusGagal ? (
+                <span className="font-bold">
+                  Data belum terhapus. Periksa koneksi lalu coba lagi.
                 </span>
               ) : null}
             </p>

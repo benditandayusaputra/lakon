@@ -77,6 +77,11 @@
     "head": null,
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/dokter.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

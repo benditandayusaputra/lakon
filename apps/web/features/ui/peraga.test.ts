@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { KAMERA_SUDUT, sudutTersedia, sumberSudut } from './peraga'
+import { gantiMode, gantiSudut, KAMERA_SUDUT, sudutTersedia, sumberSudut } from './peraga'
 
 describe('peraga', () => {
   it('tanpa video: semua sudut dilayani peraga 3D', () => {
@@ -24,5 +24,19 @@ describe('peraga', () => {
   it('kamera kanan dan kiri saling cermin di sumbu x', () => {
     expect(KAMERA_SUDUT.kanan[0]).toBe(-KAMERA_SUDUT.kiri[0])
     expect(KAMERA_SUDUT.depan[0]).toBe(0)
+  })
+
+  it('sudut yang tidak direkam video pindah ke avatar 3D', () => {
+    const video = { depan: '/d.mp4' }
+    expect(gantiSudut(video, 'manusia', 'kanan')).toEqual({ mode: '3d', sudut: 'kanan' })
+    expect(gantiSudut(video, 'manusia', 'depan')).toEqual({ mode: 'manusia', sudut: 'depan' })
+    expect(gantiSudut(undefined, 'manusia', 'depan')).toEqual({ mode: '3d', sudut: 'depan' })
+  })
+
+  it('kembali ke manusia memakai sudut yang ada videonya', () => {
+    const video = { depan: '/d.mp4', kiri: '/ki.mp4' }
+    expect(gantiMode(video, 'manusia', 'kanan')).toEqual({ mode: 'manusia', sudut: 'depan' })
+    expect(gantiMode(video, 'manusia', 'kiri')).toEqual({ mode: 'manusia', sudut: 'kiri' })
+    expect(gantiMode(undefined, 'manusia', 'kiri')).toEqual({ mode: '3d', sudut: 'kiri' })
   })
 })

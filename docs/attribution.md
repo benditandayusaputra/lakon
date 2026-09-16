@@ -57,3 +57,11 @@ per berkas ada di field `notes` masing-masing.
 | halo | Surya Sahetapy | Gogirl! TV | <https://www.youtube.com/watch?v=G_MnbyHWa50> | Jakarta | Creative Commons (reuse allowed) | 1 Sep 2026 |
 | terima-kasih | Surya Sahetapy | Gogirl! TV | <https://www.youtube.com/watch?v=G_MnbyHWa50> | Jakarta | Creative Commons (reuse allowed) | 1 Sep 2026 |
 | panas | (tidak disebutkan) | Balai Bahasa Provinsi Jawa Timur, Kemendikdasmen | <https://balaibahasajatim.kemendikdasmen.go.id/video> | Jawa Timur | situs publikasi pemerintah | 1 Sep 2026 |
+
+## Video peraga manusia
+
+Video di `apps/web/public/peraga/` berasal dari rekaman peraga manusia yang
+diserahkan tim (berkas mentah di `content/BISINDO/`, tidak masuk repositori).
+Skrip `pnpm peraga` memotongnya menjadi 4:3, mengodekan ulang ke 720p tanpa
+audio, dan menautkannya ke isyarat bernama sama lewat `media.video`. Status
+`review` tiap isyarat tidak berubah karena video ini.

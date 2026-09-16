@@ -92,6 +92,11 @@
     "head": null,
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/pahit.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

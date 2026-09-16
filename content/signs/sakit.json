@@ -77,6 +77,11 @@
     "head": "sedikit miring",
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/sakit.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

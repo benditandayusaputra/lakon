@@ -85,6 +85,11 @@
     "head": "miring menjauhi tangan, kesan gerah",
     "gaze": null
   },
+  "media": {
+    "video": {
+      "depan": "/peraga/panas.mp4"
+    }
+  },
   "review": {
     "status": "draft",
     "validatedBy": null,

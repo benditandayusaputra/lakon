@@ -286,8 +286,12 @@ test.describe('alur inti', () => {
     await enterScenario(page, 'deaf')
     await page.getByRole('button', { name: 'Lanjut ke praktik' }).click()
     await page.getByRole('button', { name: 'Tanpa kamera' }).click()
+    const tersimpan = page.waitForResponse(
+      (response) =>
+        response.url().endsWith('/api/progress') && response.request().method() === 'POST',
+    )
     await page.getByRole('button', { name: 'Sudah cukup mirip, lanjut' }).click()
-    await page.waitForTimeout(500)
+    expect((await tersimpan).ok()).toBe(true)
 
     await page.goto('/skenario')
     await expect(page.getByText(/Isyarat yang sudah dipelajari: [1-9]/)).toBeVisible()
@@ -335,6 +339,11 @@ test.describe('alur inti', () => {
   test('15. praktik menyembunyikan peragaan sampai ditoggle', async ({ page }) => {
     await masukAkunBaru(page)
     await enterScenario(page, 'deaf')
+    await expect(page.getByRole('button', { name: 'Manusia', exact: true })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await expect(page.locator('video[src^="/peraga/"]')).toHaveCount(1)
     await page.getByRole('button', { name: 'Lanjut ke praktik' }).click()
     const toggle = page.getByRole('button', { name: 'Tampilkan peragaan' })
     await expect(toggle).toBeVisible()
@@ -344,5 +353,16 @@ test.describe('alur inti', () => {
     await expect(page.getByRole('button', { name: 'Depan' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Kanan' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Kiri' })).toBeVisible()
+  })
+
+  test('16. akun demo penuh: semua adegan selesai, adegan baru segera hadir', async ({ page }) => {
+    await page.goto('/masuk')
+    await page.getByLabel('Email').fill('demo.penuh@lakon.id')
+    await page.getByLabel('Kata sandi', { exact: true }).fill('PenuhLakon2026')
+    await page.getByRole('button', { name: 'Masuk' }).click()
+    await page.waitForURL('**/skenario')
+    await expect(page.getByText('5/5')).toBeVisible()
+    await expect(page.getByRole('img', { name: /Adegan 6: Adegan baru/ })).toBeVisible()
+    await expect(page.getByText('Masih dibangun')).toBeVisible()
   })
 })

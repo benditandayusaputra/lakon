@@ -65,7 +65,7 @@ function CatatanPewawancara() {
       <span className="absolute left-1/2 top-0 z-10 h-3 w-12 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-[#8a8378]" />
       <div className="rounded-xl bg-[#b47a45] p-2 pt-3 shadow-lg">
         <div className="wk-kertas rounded-md px-3 py-3">
-          <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-[#8a5f10]">
+          <p className="flex items-center gap-1.5 text-[0.59rem] font-bold uppercase tracking-[0.2em] text-[#8a5f10]">
             <Lightbulb className="h-3.5 w-3.5" />
             Catatan pewawancara
           </p>
@@ -158,11 +158,11 @@ export function SceneBelajar({
   const orderIndex = learning.order().indexOf(currentSignId)
 
   return (
-    <div className="grid flex-1 gap-5 lg:grid-cols-[1fr_232px]">
+    <div className="grid flex-1 gap-5 lg:grid-cols-[1fr_13.65rem]">
       <div className="flex min-w-0 flex-col gap-4">
         <div className="wk-kertas flex flex-wrap items-center justify-between gap-3 rounded-2xl px-5 py-3.5 shadow-lg">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#8a5f10]">
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.25em] text-[#8a5f10]">
               Persiapan sebelum wawancara
             </p>
             <h1 className="font-display text-2xl font-bold capitalize sm:text-3xl">
@@ -193,7 +193,7 @@ export function SceneBelajar({
               </div>
               <div className="grid gap-3 md:grid-cols-[1fr_auto] md:items-stretch">
                 <div className="wk-kertas rounded-2xl p-4 shadow-lg">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#8a5f10]">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.25em] text-[#8a5f10]">
                     Isyarat ini
                   </p>
                   <p className="font-display mt-1 text-xl font-bold">{sign.gloss.id}</p>

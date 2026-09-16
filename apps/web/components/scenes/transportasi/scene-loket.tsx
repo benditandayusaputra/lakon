@@ -100,7 +100,7 @@ function GelembungPetugas({ node }: { node: ScenarioNode }) {
           aria-hidden
           className="absolute -left-2.5 top-5 hidden h-5 w-5 rotate-45 bg-[#fdfefe] lg:block"
         />
-        <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.25em] text-[#26496b]">
+        <p className="flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.25em] text-[#26496b]">
           <Ticket aria-hidden className="h-3.5 w-3.5" />
           Petugas loket · Halte Lakon
         </p>
@@ -289,7 +289,7 @@ export function SceneLoket({
       <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(280px,360px)_1fr] lg:items-stretch">
         <PanggungLoket
           pose={pose}
-          className="h-64 rounded-3xl border-4 border-[#1c3a55]/40 shadow-[0_24px_50px_-20px_rgba(28,58,85,0.55)] sm:h-80 lg:h-auto lg:min-h-[460px]"
+          className="h-64 rounded-3xl border-4 border-[#1c3a55]/40 shadow-[0_24px_50px_-20px_rgba(28,58,85,0.55)] sm:h-80 lg:h-auto lg:min-h-[27rem]"
         />
 
         <div className="flex min-w-0 flex-col gap-4">
