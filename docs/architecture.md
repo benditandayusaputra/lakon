@@ -1,89 +1,91 @@
-# Arsitektur Lakon
+# Lakon architecture
 
-## Prinsip
+## Principles
 
-1. Main thread tidak pernah memproses frame; seluruh CV di Web Worker.
-2. Data 30 fps tidak pernah melewati state React; overlay digambar ke canvas via ref.
-3. Satu sumber kebenaran: animasi avatar dan referensi verifikasi dikompilasi
-   dari spesifikasi parametrik yang sama.
-4. Tidak ada frame video yang meninggalkan perangkat.
+1. The main thread never processes frames; all computer vision runs in a Web Worker.
+2. 30 fps data never passes through React state; overlays are drawn to a canvas via a ref.
+3. One source of truth: the avatar animation and the verification reference are compiled
+   from the same parametric specification.
+4. No video frame ever leaves the device.
 
-## Diagram alur data
+## Data-flow diagram
 
 ```mermaid
 flowchart LR
-  subgraph Peramban
+  subgraph Browser
     subgraph MainThread[Main thread]
-      CAM[Kamera\ngetUserMedia] --> CAP[capture.ts\nWebCodecs / rVFC]
+      CAM[Camera\ngetUserMedia] --> CAP[capture.ts\nWebCodecs / rVFC]
       CAP -- "VideoFrame (transfer)" --> W
       OVR[Overlay canvas\nvia ref, 30 fps]
-      UI[Komponen React\nkeadaan berfrekuensi rendah]
-      AVA[Avatar VRM\nthree.js + three-vrm]
-      VID[Video penanda\npublic/peraga, bawaan]
+      UI[React components\nlow-frequency state]
+      AVA[VRM avatar\nthree.js + three-vrm]
+      VID[Signer video\npublic/peraga, default]
     end
     subgraph W[Web Worker cv.worker.ts]
-      MP[MediaPipe\nHandLandmarker + PoseLandmarker] --> FEAT[frameFeatures\n134 dimensi]
-      FEAT --> ORT[ONNX Runtime Web\nklasifikasi + stabilisasi]
+      MP[MediaPipe\nHandLandmarker + PoseLandmarker] --> FEAT[frameFeatures\n134 dimensions]
+      FEAT --> ORT[ONNX Runtime Web\nclassification + stabilization]
     end
     W -- "worldLandmarks" --> OVR
-    W -- "worldLandmarks" --> VER[cv-core\nsegmentasi → DTW → umpan balik]
-    W -- "prediksi stabil" --> FUSE[fuseDecision\nklasifikasi + DTW]
+    W -- "worldLandmarks" --> VER[cv-core\nsegmentation → DTW → feedback]
+    W -- "stable prediction" --> FUSE[fuseDecision\nclassification + DTW]
     VER --> FUSE
     FUSE --> UI
-    SW[Service worker\ncache offline]
+    SW[Service worker\noffline cache]
   end
 
-  subgraph Konten[content/ satu sumber kebenaran]
+  subgraph Content[content/ single source of truth]
     HS[handshapes/*.json] --> COMP
     SG[signs/*.json] --> COMP[sign-compiler\ncompileSign]
-    SC[scenarios/*.json] --> ENG[Mesin skenario]
+    SC[scenarios/*.json] --> ENG[Scenario engine]
   end
 
-  COMP -- "keyframe tulang" --> AVA
-  COMP -- "referensi 134 dim + fase" --> VER
+  COMP -- "bone keyframes" --> AVA
+  COMP -- "134-dim reference + phases" --> VER
   ENG --> UI
 
   subgraph Server[Next.js server]
-    API[API auth + progres + konten] --> DB[(Postgres/Neon\nDrizzle)]
+    API[API auth + progress + content] --> DB[(Postgres/Neon\nDrizzle)]
   end
   UI <--> API
   VID --> UI
 ```
 
-## Struktur paket
+## Package layout
 
-| Paket / direktori        | Isi                                                                                                                        | Aturan                                |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
-| `packages/sign-schema`   | Skema Zod + enum tertutup + validator konten                                                                               | Murni, tanpa DOM                      |
-| `packages/sign-compiler` | Spesifikasi → keyframe (IK lengan, SLERP, lintasan, simetri, kontak) → referensi DTW; sumbu engsel bersama M2/M4           | Murni, tanpa DOM (three = matematika) |
-| `packages/cv-core`       | frameFeatures 134-dim, DTW terperinci, segmentasi, umpan balik, stabilisasi + fusi klasifikasi                             | Murni, tanpa DOM                      |
-| `apps/web/workers`       | cv.worker: MediaPipe + fitur + ONNX                                                                                        | Satu-satunya tempat memproses frame   |
-| `apps/web/features`      | avatar (penyelesai rotasi, pemutar), practice (pipeline, overlay, verifikasi), scenario (mesin), progress, collect, editor | Logika tanpa komponen React           |
-| `apps/web/components`    | Layar dan blok UI                                                                                                          | Tanpa logika CV                       |
-| `content/`               | handshapes, signs, scenarios (JSON, derajat, kebab-case)                                                                   | Gerbang build `review.status`         |
-| `training/`              | PyTorch → ONNX; featurisasi Python cermin dari cv-core                                                                     | Laporan akurasi per kontributor       |
-| `tools/`                 | validator, seed, fetch-assets, audit aksesibilitas                                                                         | Node, dipakai skrip build             |
+| Package / directory      | Contents                                                                                                                   | Rule                               |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `packages/sign-schema`   | Zod schemas + closed enums + content validator                                                                             | Pure, no DOM                       |
+| `packages/sign-compiler` | Spec → keyframes (arm IK, SLERP, trajectories, symmetry, contact) → DTW reference; hinge axes shared by M2/M4              | Pure, no DOM (three for math only) |
+| `packages/cv-core`       | 134-dim frameFeatures, detailed DTW, segmentation, feedback, stabilization + classification fusion                         | Pure, no DOM                       |
+| `apps/web/workers`       | cv.worker: MediaPipe + features + ONNX                                                                                     | The only place that handles frames |
+| `apps/web/features`      | avatar (rotation solver, player), practice (pipeline, overlay, verification), scenario (engine), progress, collect, editor | Logic without React components     |
+| `apps/web/components`    | Screens and UI blocks                                                                                                      | No CV logic                        |
+| `content/`               | handshapes, signs, scenarios (JSON, degrees, kebab-case)                                                                   | `review.status` build gate         |
+| `training/`              | PyTorch → ONNX; Python featurization mirrors cv-core                                                                       | Per-contributor accuracy report    |
+| `tools/`                 | validator, seed, fetch-assets, accessibility audit                                                                         | Node, used by build scripts        |
 
-## Keputusan penting
+## Key decisions
 
-- **Penyelesai rotasi (M2)** bekerja pada rig humanoid ternormalisasi three-vrm
-  sehingga sumbu engsel jari menjadi konstanta lintas-rig; konstanta yang sama
-  dipakai compiler (M4) — satu sumber kebenaran geometri.
-- **Referensi verifikasi** dihasilkan dengan membaca balik posisi sendi avatar
-  yang telah dipose per frame, lalu melalui `frameFeatures` yang sama dengan
-  runtime; tidak ada jalur ganda.
-- **Klasifikasi bersifat opsional saat runtime**: tanpa berkas
-  `public/models/classifier.json`, sistem menilai dengan DTW saja — melindungi
-  demo dari model yang belum siap.
-- **Aset MediaPipe di-self-host** (`tools/fetch-assets.mjs` → `public/`) agar
-  importScripts bebas dari CDN, ter-cache service worker, dan berfungsi offline.
-- **Progres langsung ke database**: progres isyarat, checkpoint, dan sesi
-  dikirim ke API dan disimpan di Postgres. Permintaan yang gagal (offline)
-  diantre di memori lalu dikirim ulang saat online; tidak ada salinan lokal.
-- **Peraga manusia sebagai bawaan**: isyarat dengan `media.video` diputar dari
-  video penanda (`pnpm peraga` memproses `content/BISINDO/`); avatar 3D tetap
-  tersedia lewat tombol dan untuk sudut kanan/kiri. Verifikasi tetap memakai
-  referensi dari spesifikasi parametrik.
-- **Layar besar**: mulai 1800px ukuran font akar naik bertahap
-  (`--skala-layar`) sehingga tata letak berbasis rem ikut membesar; peta
-  perjalanan membaca skala yang sama untuk geometri SVG-nya.
+- **The rotation solver (M2)** works on three-vrm's normalized humanoid rig, so
+  finger hinge axes become cross-rig constants; the compiler (M4) uses the same
+  constants — one source of truth for geometry.
+- **The verification reference** is produced by reading back the joint
+  positions of the avatar posed frame by frame, then passing them through the
+  same `frameFeatures` as the runtime; there is no second path.
+- **Classification is optional at runtime**: without
+  `public/models/classifier.json`, the system scores with DTW alone — which
+  protects the demo from a model that is not ready.
+- **MediaPipe assets are self-hosted** (`tools/fetch-assets.mjs` → `public/`) so
+  importScripts does not depend on a CDN, the service worker caches them, and
+  practice works offline.
+- **Progress goes straight to the database**: sign progress, checkpoints and
+  scenario runs are sent to the API and stored in Postgres. Failed (offline)
+  requests are queued in memory and resent once back online; there is no local
+  copy.
+- **Human demonstration by default**: signs with `media.video` play the signer's
+  video (`pnpm peraga` processes `content/BISINDO/`); the 3D avatar stays
+  available through a toggle and for the right/left views. Verification still
+  uses the reference compiled from the parametric specification.
+- **Large screens**: from 1800px the root font size grows in steps
+  (`--skala-layar`), so the rem-based layout scales with it; the journey map
+  reads the same scale for its SVG geometry.

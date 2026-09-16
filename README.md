@@ -9,6 +9,45 @@ One scenario, two roles: the Deaf side learns to carry out the transaction,
 the service-worker side learns to serve Deaf customers. Lakon is a language
 learning tool for both sides — never framed as assistance for one.
 
+**Live demo: <https://lakon-learn.vercel.app>** — built for the GAYATAMA 5
+International Web Technology Competition 2026. The app is in Indonesian and
+the landing page has an English switch. Practice uses a webcam (desktop Chrome
+recommended); every exercise also has a camera-free path.
+
+## Why it matters
+
+Communication between Deaf people and service workers breaks down on both
+sides, yet most tools only translate signs for the hearing party and teach
+vocabulary rather than whole situations. Lakon teaches both sides the same
+everyday transactions, in the language Deaf Indonesians use with each other.
+
+| SDG                                   | Contribution                                                                   |
+| ------------------------------------- | ------------------------------------------------------------------------------ |
+| 4 Quality Education                   | BISINDO lessons built around real situations, outside formal special education |
+| 10 Reduced Inequalities               | Service workers learn to adapt instead of leaving the burden on Deaf customers |
+| 8 Decent Work and Economic Growth     | Job-interview scenario and inclusive service skills                            |
+| 3 Good Health and Well-being          | Health-centre and emergency scenarios                                          |
+| 11 Sustainable Cities and Communities | Transport scenario for independent mobility                                    |
+
+## Features
+
+- **Five scenes, two roles**: coffee shop, community health centre, transport,
+  emergency and job interview, each an eight-step conversation playable from
+  the Deaf side or the service-worker side, with progress tracked per role.
+- **Journey map**: scenes unlock in order and a walking character travels to
+  the next one; checkpoints resume a scene where the learner left it.
+- **Sign demonstration**: a real signer's video by default, or a 3D avatar with
+  front, right and left views; both offer 1×, 0.5× and 0.25× speed, frame
+  stepping and a mirror toggle.
+- **Webcam practice verified on the device**: MediaPipe runs in a Web Worker,
+  and DTW against the compiled reference highlights the part of the hand to
+  fix. No video frame leaves the device. After three failed attempts the
+  demonstration opens so the learner is never stuck.
+- **Reading practice for the service side**: the customer signs and the learner
+  picks the meaning.
+- **Accessible by design**: no audio, no colour-only states, keyboard
+  alternatives and `prefers-reduced-motion` support.
+
 ## Sample accounts
 
 Sign in at <https://lakon-learn.vercel.app/masuk>. Every account below is
@@ -28,6 +67,10 @@ four `demo` accounts.
 | `admin@lakon.id`      | AdminLakon2026    | Admin     | Internal pages `/dev/*` and `/tools/*`                         |
 | `validator@lakon.id`  | ValidasiLakon2026 | Validator | Internal pages; may only change `review` fields of content     |
 
+These accounts are shared, and the four `demo` accounts cannot delete their
+learning data. To start from a clean slate, register your own account at
+<https://lakon-learn.vercel.app/daftar>.
+
 ## Stack
 
 - Next.js App Router, TypeScript strict, Tailwind CSS
@@ -38,18 +81,27 @@ four `demo` accounts.
   DTW verification reference (single source of truth)
 - Drizzle ORM + Postgres (Neon), session auth, progress saved straight to the
   database, service-worker offline cache
-- Vitest (63 unit tests), Playwright (13 end-to-end tests incl. offline and
+- Vitest (68 unit tests), Playwright (21 end-to-end tests incl. offline and
   camera-denied flows)
 
 ## Getting started
 
+Requirements: Node.js 20.12 or newer, pnpm 9 or newer, a
+[Neon](https://neon.tech) Postgres database (the app uses Neon's serverless
+driver; the free tier is enough) and internet access on the first run to
+download the MediaPipe models. `ffmpeg` is only needed for `pnpm peraga`, and
+Python 3 with `training/requirements.txt` only for training.
+
 ```bash
 pnpm install
-cp .env.example .env          # set DATABASE_URL (Postgres/Neon)
-pnpm db:push                  # apply schema
-node tools/seed.mjs           # demo + admin + validator accounts
-pnpm dev                      # http://localhost:3000 (assets auto-fetched)
+cp .env.example .env                  # set DATABASE_URL (Neon Postgres)
+ln -s ../../.env apps/web/.env.local  # Next.js reads env files from apps/web
+pnpm db:push                          # apply schema
+node tools/seed.mjs                   # demo + admin + validator accounts
+pnpm dev                              # http://localhost:3000 (assets auto-fetched)
 ```
+
+On Windows, copy `.env` to `apps/web/.env.local` instead of linking it.
 
 Human demonstration videos: put renamed clips (e.g. `SAMA SAMA.MP4`) in
 `content/BISINDO/` (kept out of git) and run `pnpm peraga`. It crops them to
@@ -60,9 +112,10 @@ Production build: `LAKON_ALLOW_DRAFT=1 pnpm build`. Without that variable the
 build **fails if any sign is not `approved`** — that is the content-governance
 gate, enforced by script, not memory.
 
-Current coffee-shop signs (halo, terima-kasih, panas) are drafts derived from
-videos of Deaf signers (see [docs/attribution.md](docs/attribution.md)),
-honestly labeled in the UI and awaiting a validation session.
+All 16 signs in the five scenes are still drafts derived from public BISINDO
+videos and animations (sources in [docs/attribution.md](docs/attribution.md)).
+They are labeled as not yet validated in the UI and await a Deaf validation
+session, which is why the live demo is built with `LAKON_ALLOW_DRAFT=1`.
 
 `predev`/`prebuild` run `tools/fetch-assets.mjs`, which copies the MediaPipe
 WASM from node_modules and downloads the two landmark models into
@@ -72,11 +125,12 @@ WASM from node_modules and downloads the two landmark models into
 
 - [docs/architecture.md](docs/architecture.md) — data-flow diagram, package
   layout, key decisions
-- [docs/attribution.md](docs/attribution.md) — third-party licenses and the
-  VRM avatar's embedded permission metadata
+- [docs/attribution.md](docs/attribution.md) — sign sources, third-party
+  licenses and the VRM avatar's embedded permission metadata
 - [docs/accessibility-audit/](docs/accessibility-audit/) — axe-core (0
   violations across 10 screens) and Lighthouse reports, performance budget
-- [docs/uji-lintas-perangkat.md](docs/uji-lintas-perangkat.md) — manual
+  (1 Sep 2026)
+- [docs/cross-device-testing.md](docs/cross-device-testing.md) — manual
   cross-device checklist and presentation prep
 
 Internal pages (admin): `/dev/pipeline` (CV diagnostics), `/dev/mirror`
@@ -108,12 +162,14 @@ handoff checklist:
 - **17 px base typography**, short sentences: many Deaf users read long
   written Indonesian with extra effort.
 - **No audio anywhere**, and no hearing metaphors in copy.
-- **Sign forms are never guessed**: BISINDO signs enter the product only
-  after validation by Deaf signers or interpreters (enforced by the build
-  gate). The current `uji-gerak` sign is an honestly-labeled technical test.
+- **Sign forms are never guessed**: BISINDO signs are published only after
+  validation by Deaf signers or interpreters (enforced by the build gate; the
+  current demo overrides it and labels every sign as a draft). The `uji-gerak`
+  sign is an honestly-labeled technical test.
 
 ## Credits
 
 3D avatar (development stand-in): **"Seed-san" © VirtualCast, Inc.**, used
-under the [VRM Public License 1.0](https://vrm.dev/licenses/1.0/). See
-[docs/attribution.md](docs/attribution.md) for full details.
+under the [VRM Public License 1.0](https://vrm.dev/licenses/1.0/). Sign
+sources, human demonstration videos, and library and font licenses are listed
+in [docs/attribution.md](docs/attribution.md).

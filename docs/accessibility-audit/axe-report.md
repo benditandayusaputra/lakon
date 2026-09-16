@@ -1,45 +1,45 @@
-# Audit aksesibilitas axe-core (2026-09-01)
+# axe-core accessibility audit (2026-09-01)
 
-Standar: WCAG 2 A, AA, dan 2.2 AA. Basis: http://localhost:3000
+Standards: WCAG 2 A, AA and 2.2 AA. Base URL: `http://localhost:3000`
 
 ## landing (/)
 
-Tidak ada pelanggaran.
+No violations.
 
-## masuk (/masuk)
+## sign-in (/masuk)
 
-Tidak ada pelanggaran.
+No violations.
 
-## daftar (/daftar)
+## register (/daftar)
 
-Tidak ada pelanggaran.
+No violations.
 
-## pilih-skenario (/skenario)
+## scenario-picker (/skenario)
 
-Tidak ada pelanggaran.
+No violations.
 
-## skenario-intro (/skenario/kedai-kopi?arah=deaf)
+## scenario-intro (/skenario/kedai-kopi?arah=deaf)
 
-Tidak ada pelanggaran.
+No violations.
 
-## skenario-belajar (/skenario/kedai-kopi?arah=deaf)
+## scenario-learning (/skenario/kedai-kopi?arah=deaf)
 
-Tidak ada pelanggaran.
+No violations.
 
-## gerbang-internal (/dev/pipeline)
+## internal-gate (/dev/pipeline)
 
-Tidak ada pelanggaran.
+No violations.
 
 ## dev-pipeline (/dev/pipeline)
 
-Tidak ada pelanggaran.
+No violations.
 
 ## dev-verify (/dev/verify)
 
-Tidak ada pelanggaran.
+No violations.
 
 ## tools-collect (/tools/collect)
 
-Tidak ada pelanggaran.
+No violations.
 
-Total pelanggaran: 0
+Total violations: 0

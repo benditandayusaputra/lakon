@@ -5,32 +5,32 @@
     "violations": []
   },
   {
-    "name": "masuk",
+    "name": "sign-in",
     "url": "/masuk",
     "violations": []
   },
   {
-    "name": "daftar",
+    "name": "register",
     "url": "/daftar",
     "violations": []
   },
   {
-    "name": "pilih-skenario",
+    "name": "scenario-picker",
     "url": "/skenario",
     "violations": []
   },
   {
-    "name": "skenario-intro",
+    "name": "scenario-intro",
     "url": "/skenario/kedai-kopi?arah=deaf",
     "violations": []
   },
   {
-    "name": "skenario-belajar",
+    "name": "scenario-learning",
     "url": "/skenario/kedai-kopi?arah=deaf",
     "violations": []
   },
   {
-    "name": "gerbang-internal",
+    "name": "internal-gate",
     "url": "/dev/pipeline",
     "violations": []
   },
