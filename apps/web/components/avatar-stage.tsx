@@ -9,7 +9,6 @@ import { CompiledAvatar, type Playback } from '@/components/compile-lab'
 import { signTersimpan } from '@/features/content/use-content'
 import {
   gantiMode,
-  gantiSudut,
   KAMERA_SUDUT,
   SUDUT_PERAGA,
   sudutTersedia,
@@ -113,6 +112,7 @@ export function AvatarStage({
     KAMERA_SUDUT[sudut][2] * dekat,
   ] as const
   const adaKontrol = Boolean(sudutKontrol ?? showControls)
+  const sudutAda = SUDUT_PERAGA.filter((id) => !sumber || sudutTersedia(video, id))
 
   useEffect(() => {
     const el = videoRef.current
@@ -209,31 +209,22 @@ export function AvatarStage({
           Peraga gagal dimuat: {rigError}
         </p>
       ) : null}
-      {(sudutKontrol ?? showControls) ? (
+      {adaKontrol && sudutAda.length > 1 ? (
         <div
           role="group"
           aria-label="Sudut pandang peragaan"
           className="border-border-halus bg-kartu flex items-center justify-center gap-2 rounded-2xl border p-2 text-sm"
         >
-          {SUDUT_PERAGA.map((id) => (
+          {sudutAda.map((id) => (
             <button
               key={id}
               type="button"
-              onClick={() => terapkan(gantiSudut(video, mode, id))}
+              onClick={() => setSudut(id)}
               aria-pressed={sudut === id}
-              className={`relative flex-1 px-3 py-1.5 ${sudut === id ? 'tombol-utama' : 'tombol-sekunder'}`}
+              className={`flex-1 px-3 py-1.5 ${sudut === id ? 'tombol-utama' : 'tombol-sekunder'}`}
               style={{ minHeight: 48 }}
             >
               {LABEL_SUDUT[id]}
-              {sumber && !sudutTersedia(video, id) ? (
-                <>
-                  <Box
-                    aria-hidden
-                    className="absolute right-1.5 top-1.5 h-[0.8em] w-[0.8em] opacity-60"
-                  />
-                  <span className="sr-only"> (avatar 3D)</span>
-                </>
-              ) : null}
             </button>
           ))}
         </div>

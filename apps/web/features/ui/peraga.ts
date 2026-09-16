@@ -18,11 +18,6 @@ export const sumberSudut = (video: VideoPeraga, sudut: SudutPeraga): string | un
 export const sudutTersedia = (video: VideoPeraga, sudut: SudutPeraga): boolean =>
   video ? Boolean(video[sudut]) : true
 
-export const gantiSudut = (video: VideoPeraga, mode: ModePeraga, sudut: SudutPeraga) => ({
-  sudut,
-  mode: mode === 'manusia' && !(video && video[sudut]) ? ('3d' as const) : mode,
-})
-
 export const gantiMode = (video: VideoPeraga, mode: ModePeraga, sudut: SudutPeraga) =>
   mode === 'manusia' && video
     ? { mode, sudut: video[sudut] ? sudut : ('depan' as const) }

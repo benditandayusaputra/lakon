@@ -350,9 +350,13 @@ test.describe('alur inti', () => {
     await expect(page.getByRole('button', { name: 'Depan' })).toHaveCount(0)
     await toggle.click()
     await expect(page.getByRole('button', { name: 'Sembunyikan peragaan' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Kanan' })).toHaveCount(0)
+    await page.getByRole('button', { name: '3D', exact: true }).click()
     await expect(page.getByRole('button', { name: 'Depan' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Kanan' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Kiri' })).toBeVisible()
+    await page.getByRole('button', { name: 'Manusia', exact: true }).click()
+    await expect(page.getByRole('button', { name: 'Kiri' })).toHaveCount(0)
   })
 
   test('16. akun demo penuh: semua adegan selesai, adegan baru segera hadir', async ({ page }) => {
