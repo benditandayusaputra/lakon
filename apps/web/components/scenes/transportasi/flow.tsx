@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { ArrowLeft, Bus, Ticket } from 'lucide-react'
+import { Bus, Ticket } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
 import { IzinKamera } from '@/components/scenes/izin-kamera'
+import { KeluarAdegan } from '@/components/scenes/keluar-adegan'
 import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
 import { useCompilerRig } from '@/features/avatar/use-rig'
@@ -216,13 +217,7 @@ export function TransportasiFlow() {
 
   const kepala = (
     <header className="relative z-30 mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 text-[#12283c] sm:px-6">
-      <Link
-        href="/skenario"
-        className="flex min-h-11 items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-bold underline-offset-4 hover:underline"
-      >
-        <ArrowLeft aria-hidden className="h-4 w-4" />
-        Skenario
-      </Link>
+      <KeluarAdegan tanya={tahap === 'belajar' || tahap === 'ujian'} />
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-x-3 gap-y-1">
         <p className="text-sm font-bold sm:text-base">
           <span className="font-display">Transportasi</span>

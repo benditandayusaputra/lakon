@@ -383,3 +383,17 @@ test.describe('alur inti', () => {
     await expect(page.getByText('5/5')).toBeVisible()
   })
 })
+
+  test('18. keluar dari adegan yang berjalan meminta konfirmasi', async ({ page }) => {
+    await masukAkunBaru(page)
+    await enterScenario(page, 'deaf')
+    await page.getByRole('link', { name: 'Skenario' }).click()
+    const dialog = page.getByRole('dialog', { name: 'Keluar dari sesi ini?' })
+    await expect(dialog).toBeVisible()
+    await dialog.getByRole('button', { name: 'Tetap di sini' }).click()
+    await expect(dialog).toBeHidden()
+    await expect(page).toHaveURL(/\/skenario\/kedai-kopi/)
+    await page.getByRole('link', { name: 'Skenario' }).click()
+    await page.getByRole('dialog').getByRole('link', { name: 'Keluar' }).click()
+    await page.waitForURL('**/skenario')
+  })
