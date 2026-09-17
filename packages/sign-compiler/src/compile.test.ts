@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { Vector3 } from 'three'
-import { FRAME_FEATURE_DIM, frameFeatures } from '@lakon/cv-core'
+import { FLAGS_OFFSET, FRAME_FEATURE_DIM, frameFeatures } from '@lakon/cv-core'
 import type { Handshape, Sign } from '@lakon/sign-schema'
 import { COMPILE_FPS, compileSign, evalPath, sampleCompiled, type CompiledFrame } from './compile'
 import { frameFromDirections } from './geometry'
@@ -210,6 +210,10 @@ describe('compileSign', () => {
       expect(frame.hands.left.wristPos).toEqual(first)
     }
     expect(first[1]).toBeLessThan(1.1)
+    for (const frame of compiled.reference) {
+      expect(frame[FLAGS_OFFSET]).toBe(0)
+      expect(frame[FLAGS_OFFSET + 1]).toBe(1)
+    }
   })
 
   it('kontak menggeser tangan aktif sehingga titik kontak bertemu', () => {

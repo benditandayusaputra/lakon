@@ -7,7 +7,9 @@ import {
   dtwDetailed,
   frameFeatures,
   translateFeedback,
+  FLAGS_OFFSET,
   FRAME_FEATURE_DIM,
+  maskUnusedHands,
   type Vec3,
 } from './index'
 
@@ -133,6 +135,25 @@ describe('segmentasi', () => {
     }
     expect(result.phase).toBe('done')
     if (result.phase === 'done') expect(result.frames.length).toBeGreaterThan(3)
+  })
+
+  it('tangan yang tidak dipakai referensi tidak memengaruhi skor dan kehadiran', () => {
+    const reference = Array.from({ length: 8 }, () => frame(false))
+    const user = Array.from({ length: 8 }, () =>
+      frameFeatures({
+        hands: [
+          { handedness: 'Left', world: handWithRing(false) },
+          { handedness: 'Right', world: handWithRing(true) },
+        ],
+        pose: pose(),
+      }),
+    )
+    expect(user[0]![FLAGS_OFFSET + 1]).toBe(1)
+    const masked = maskUnusedHands(user, reference)
+    const result = dtwDetailed(masked, reference)
+    expect(result.score).toBeLessThan(1e-6)
+    const analysis = analyzePath(masked, reference, result.path)
+    expect(analysis.hands.map((hand) => [hand.side, hand.present])).toEqual([['Left', true]])
   })
 
   it('dimensi fitur konsisten', () => {

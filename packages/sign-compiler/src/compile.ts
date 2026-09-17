@@ -558,6 +558,8 @@ export const compileSign = (
   const reference: Float32Array[] = []
   const phaseByFrame: number[] = []
   const nonDomMoves = sign.structure === 'symmetric'
+  const referenceSides: Side[] =
+    sign.structure === 'dominant-only' ? [dominance] : ['left', 'right']
 
   const phaseStarts: number[] = []
   {
@@ -692,10 +694,10 @@ export const compileSign = (
     framePose[POSE.leftWrist] = { x: -rightWristFk.x, y: -rightWristFk.y, z: -rightWristFk.z }
 
     const frameInput: FrameInput = {
-      hands: [
-        { handedness: 'Left', world: toMp(landmarksBySide.left) },
-        { handedness: 'Right', world: toMp(landmarksBySide.right) },
-      ],
+      hands: referenceSides.map((side) => ({
+        handedness: side === 'left' ? ('Left' as const) : ('Right' as const),
+        world: toMp(landmarksBySide[side]),
+      })),
       pose: framePose,
     }
     reference.push(frameFeatures(frameInput))

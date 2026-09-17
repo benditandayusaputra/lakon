@@ -3,6 +3,7 @@ import {
   FINGER_LANDMARKS,
   FINGER_TIPS,
   FLAGS_OFFSET,
+  HAND_BLOCK_DIMS,
   HAND_LABEL_TO_USER_SIDE,
   HAND_LANDMARK_DIMS,
   HAND_LANDMARKS,
@@ -54,6 +55,25 @@ const tipMagnitude = (frame: Float32Array, offset: number, landmark: number): nu
   const y = frame[base + 1] ?? 0
   const z = frame[base + 2] ?? 0
   return Math.sqrt(x * x + y * y + z * z)
+}
+
+export const maskUnusedHands = (
+  user: readonly Float32Array[],
+  reference: readonly Float32Array[],
+): Float32Array[] => {
+  const unused = (['Left', 'Right'] as HandLabel[]).filter(
+    (side) =>
+      !reference.some((frame) => (frame[FLAGS_OFFSET + (side === 'Left' ? 0 : 1)] ?? 0) > 0.5),
+  )
+  if (unused.length === 0) return [...user]
+  return user.map((frame) => {
+    const masked = frame.slice()
+    for (const side of unused) {
+      masked.fill(0, SIDE_OFFSET[side], SIDE_OFFSET[side] + HAND_BLOCK_DIMS)
+      masked[FLAGS_OFFSET + (side === 'Left' ? 0 : 1)] = 0
+    }
+    return masked
+  })
 }
 
 export const analyzePath = (
