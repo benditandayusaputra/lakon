@@ -128,7 +128,7 @@ export function SceneBelajar({
               Latihan sebelum minta tolong
             </p>
             <h1 className="font-display text-2xl font-bold capitalize sm:text-3xl">
-              {prettify(currentSignId)}
+              {direction === 'service' ? `Isyarat ${orderIndex + 1}` : prettify(currentSignId)}
             </h1>
           </div>
           <div className="flex items-center gap-3">
@@ -140,7 +140,7 @@ export function SceneBelajar({
         </div>
 
         {compiled && sign ? (
-          learnView === 'demo' ? (
+          learnView === 'demo' && direction === 'deaf' ? (
             <div className="kk-muncul flex flex-col gap-4">
               <div>
                 <AvatarStage

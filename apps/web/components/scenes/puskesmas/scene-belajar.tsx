@@ -164,7 +164,7 @@ export function SceneBelajarPuskesmas({
                 Latihan sebelum berobat
               </p>
               <h1 className="font-display text-2xl font-bold capitalize sm:text-3xl">
-                {prettify(isyaratAktif)}
+                {direction === 'service' ? `Isyarat ${orderIndex + 1}` : prettify(isyaratAktif)}
               </h1>
             </div>
             <div className="flex items-center gap-3">
@@ -209,7 +209,7 @@ export function SceneBelajarPuskesmas({
           </div>
 
           {compiled && sign ? (
-            tampilan === 'demo' ? (
+            tampilan === 'demo' && direction === 'deaf' ? (
               <div className="kk-muncul flex flex-col gap-4">
                 <AvatarStage
                   compiled={compiled}

@@ -249,7 +249,7 @@ test.describe('alur inti', () => {
       .getByRole('button', { name: 'Lanjut tanpa kamera' })
       .click({ timeout: 10_000 })
       .catch(() => {})
-    await expect(page.getByRole('heading', { name: 'halo' })).toBeVisible({ timeout: 60_000 })
+    await expect(page.getByRole('heading', { name: 'Isyarat 1' })).toBeVisible({ timeout: 60_000 })
 
     await skipAllLearning(page)
     await page.getByRole('button', { name: 'Menuju kasir' }).click()
