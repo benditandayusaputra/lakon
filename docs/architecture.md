@@ -69,9 +69,7 @@ flowchart LR
 - **The rotation solver (M2)** works on three-vrm's normalized humanoid rig, so
   finger hinge axes become cross-rig constants; the compiler (M4) uses the same
   constants — one source of truth for geometry.
-- **The verification reference** is produced by reading back the joint
-  positions of the avatar posed frame by frame, then passing them through the
-  same `frameFeatures` as the runtime; there is no second path.
+- **The verification reference** is computed in the same pass as the avatar keyframes, by forward kinematics over the avatar's measured skeleton, and passed through the same `frameFeatures` as the runtime; there is no second path.
 - **Classification is optional at runtime**: without
   `public/models/classifier.json`, the system scores with DTW alone — which
   protects the demo from a model that is not ready.

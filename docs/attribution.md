@@ -13,7 +13,7 @@
 | ONNX Runtime Web (Microsoft)                                 | MIT                                   | Optional classifier inference in the Web Worker (WebGPU/WASM)  |
 | Drizzle ORM                                                  | Apache-2.0                            | Database access                                                |
 | @neondatabase/serverless                                     | MIT                                   | Postgres driver for Neon                                       |
-| Zod, Zustand                                                 | MIT                                   | Validation, application state                                  |
+| Zod                                                          | MIT                                   | Validation                                                     |
 | Tailwind CSS                                                 | MIT                                   | Styling                                                        |
 | Lucide icons (`lucide-react`)                                | ISC                                   | Icons                                                          |
 | Fraunces typeface (Google Fonts, via `next/font`)            | SIL Open Font License 1.1             | Typeface                                                       |
@@ -52,11 +52,10 @@ stand-in until those models are finished.
 The team does not invent BISINDO sign forms. Every sign in `content/signs/` was
 drafted with the sign editor's video import (reverse path) from the public
 sources below and stays `draft` until a Deaf signer or certified interpreter
-approves it in the file's `review` field. The UI labels these signs as not yet
-validated, and a production build rejects them unless `LAKON_ALLOW_DRAFT=1` is
-set. Only sign forms were derived: no third-party footage or image is included
-in this repository or loaded by the app. Clip timestamps for each sign are in
-its `notes` field.
+approves it in the file's `review` field. A production build rejects draft
+signs unless `LAKON_ALLOW_DRAFT=1` is set. Only sign forms were derived: no
+third-party footage or image is included in this repository or loaded by the
+app. Clip timestamps for each sign are in its `notes` field.
 
 | Signs                                                                    | Source                                                                                                                                                              | Signer                                                | Variant    | Terms                                                                         | Accessed   |
 | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- | ---------- | ----------------------------------------------------------------------------- | ---------- |
@@ -72,8 +71,8 @@ candidates from the team's inventory document, not claims about BISINDO forms.
 
 ## Human demonstration videos
 
-The 16 clips in `apps/web/public/peraga/` are recordings of a human signer
-supplied by the Lakon team; the raw files stay out of git (`content/BISINDO/`).
+The 16 clips in `apps/web/public/peraga/` show Lakon team member Jessica Anabella as the signer and are published with consent; the raw files stay out of
+git (`content/BISINDO/`).
 `pnpm peraga` crops them to 4:3, re-encodes them to 720p without audio and
 links each clip to the sign of the same name through `media.video`. The videos
 do not change any sign's `review` status.

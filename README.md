@@ -37,16 +37,13 @@ everyday transactions, in the language Deaf Indonesians use with each other.
 - **Journey map**: scenes unlock in order and a walking character travels to
   the next one; checkpoints resume a scene where the learner left it.
 - **Sign demonstration**: a real signer's video by default, or a 3D avatar with
-  front, right and left views; both offer 1×, 0.5× and 0.25× speed, frame
-  stepping and a mirror toggle.
+  front, right and left views; both offer 1×, 0.5× and 0.25× speed, step playback and a mirror toggle.
 - **Webcam practice verified on the device**: MediaPipe runs in a Web Worker,
   and DTW against the compiled reference highlights the part of the hand to
-  fix. No video frame leaves the device. After three failed attempts the
-  demonstration opens so the learner is never stuck.
+  fix. No video frame leaves the device. In the learning phase, three failed attempts reveal the demonstration and a self-comparison option.
 - **Reading practice for the service side**: the customer signs and the learner
   picks the meaning.
-- **Accessible by design**: no audio, no colour-only states, keyboard
-  alternatives and `prefers-reduced-motion` support.
+- **Accessible by design**: no audio, no colour-only states, keyboard-operable controls and `prefers-reduced-motion` support.
 
 ## Sample accounts
 
@@ -81,7 +78,7 @@ learning data. To start from a clean slate, register your own account at
   DTW verification reference (single source of truth)
 - Drizzle ORM + Postgres (Neon), session auth, progress saved straight to the
   database, service-worker offline cache
-- Vitest (68 unit tests), Playwright (21 end-to-end tests incl. offline and
+- Vitest (69 unit tests), Playwright (21 end-to-end tests incl. offline and
   camera-denied flows)
 
 ## Getting started
@@ -114,8 +111,7 @@ gate, enforced by script, not memory.
 
 All 16 signs in the five scenes are still drafts derived from public BISINDO
 videos and animations (sources in [docs/attribution.md](docs/attribution.md)).
-They are labeled as not yet validated in the UI and await a Deaf validation
-session, which is why the live demo is built with `LAKON_ALLOW_DRAFT=1`.
+They are recorded as drafts in their data files and await a Deaf validation session, which is why the live demo is built with `LAKON_ALLOW_DRAFT=1`; the scene interface does not yet label them as drafts.
 
 `predev`/`prebuild` run `tools/fetch-assets.mjs`, which copies the MediaPipe
 WASM from node_modules and downloads the two landmark models into
@@ -163,8 +159,7 @@ handoff checklist:
   written Indonesian with extra effort.
 - **No audio anywhere**, and no hearing metaphors in copy.
 - **Sign forms are never guessed**: BISINDO signs are published only after
-  validation by Deaf signers or interpreters (enforced by the build gate; the
-  current demo overrides it and labels every sign as a draft). The `uji-gerak`
+  validation by Deaf signers or interpreters (enforced by the build gate on review status; the current demo overrides it, and every sign is still recorded as a draft). The `uji-gerak`
   sign is an honestly-labeled technical test.
 
 ## Credits
