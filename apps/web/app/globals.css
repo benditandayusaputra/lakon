@@ -593,6 +593,19 @@ input[type='range'] {
   }
 }
 
+.umpan-jawab[open] {
+  animation: umpan-naik var(--gerak-sedang) ease-out both;
+}
+
+@keyframes umpan-naik {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
 .kk-kartu-menu {
   transition:
     transform var(--gerak-cepat) ease-out,

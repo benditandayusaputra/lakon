@@ -1,6 +1,6 @@
 'use client'
 
-import { Check, RotateCcw, VideoOff } from 'lucide-react'
+import { VideoOff } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   createExplicitSegmenter,
@@ -11,9 +11,9 @@ import {
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
+import { UmpanJawab } from '@/components/umpan-jawab'
 import { kameraHidup } from '@/features/practice/capture'
 import { createPipeline, type Pipeline, type PipelineState } from '@/features/practice/pipeline'
-import type { OverlayHighlight } from '@/features/practice/overlay'
 import {
   createVerifyRun,
   scoreAgainstReference,
@@ -83,7 +83,6 @@ export function PracticeBlock({
           ? 'siap'
           : 'kamera-mati',
     )
-    pipelineRef.current?.setHighlights([])
     setFailures(0)
     setResult(null)
     setVerdict(null)
@@ -156,7 +155,6 @@ export function PracticeBlock({
   const startAttempt = useCallback(() => {
     setResult(null)
     setVerdict(null)
-    pipelineRef.current?.setHighlights([])
     setPhase('hitung-mundur')
 
     const segmenter = createExplicitSegmenter({
@@ -196,35 +194,30 @@ export function PracticeBlock({
           return
         }
         if (decision.kind === 'belum-tepat') {
-          pipelineRef.current?.setHighlights(
-            scored.feedback.highlights.map((highlight): OverlayHighlight => ({
-              side: highlight.side,
-              part: highlight.part,
-            })),
-          )
-          setFailures((count) => {
-            const next = count + 1
-            onFailedAttempt?.(scored)
-            return next
-          })
+          setFailures((count) => count + 1)
+          onFailedAttempt?.(scored)
           setPhase('belum-tepat')
         } else {
           setFailures(0)
           setPhase('berhasil')
-          onPassed?.(decision, scored)
         }
       },
     )
-  }, [compiled, onFailedAttempt, onPassed])
+  }, [compiled, onFailedAttempt])
+
+  const cameraRunning = pipelineState.status === 'running'
+  const kembaliSiap = () => setPhase(cameraRunning ? 'siap' : 'kamera-mati')
 
   const selfAssess = () => {
-    setPhase('berhasil')
-    setVerdict(null)
+    setFailures(0)
+    kembaliSiap()
     onSelfAssessed?.()
   }
 
-  const showEscape = failures >= 3 || phase === 'jalan-keluar'
-  const cameraRunning = pipelineState.status === 'running'
+  const lanjutBerhasil = () => {
+    kembaliSiap()
+    if (verdict && result) onPassed?.(verdict, result)
+  }
 
   const peragaWajib = failures >= PERAGA_SETELAH_GAGAL
 
@@ -360,60 +353,21 @@ export function PracticeBlock({
         {phase === 'memeriksa' ? <p>Memeriksa gerakanmu…</p> : null}
 
         {phase === 'berhasil' ? (
-          <div className="border-berhasil flex flex-col gap-2 rounded-xl border-2 p-4">
-            <p className="text-berhasil text-lg font-bold">
-              <Check aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
-              Berhasil
-            </p>
-            {verdict?.kind === 'lulus-dengan-catatan' && result ? (
-              <ul className="list-inside list-disc text-sm">
-                {result.feedback.messages.slice(0, 3).map((message, index) => (
-                  <li key={index}>catatan: {message}</li>
-                ))}
-              </ul>
-            ) : null}
-            <div className="flex flex-wrap gap-3">
-              <button type="button" onClick={startAttempt} className="tombol-sekunder">
-                Ulangi lagi
-              </button>
-            </div>
-          </div>
+          <UmpanJawab
+            benar
+            jawaban={signLabel}
+            onLanjut={lanjutBerhasil}
+            onCobaLagi={kembaliSiap}
+          />
         ) : null}
 
         {phase === 'belum-tepat' ? (
-          <div className="border-ulang flex flex-col gap-2 rounded-xl border-2 p-4">
-            <p className="text-ulang text-lg font-bold">
-              <RotateCcw
-                aria-hidden
-                className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
-              />
-              Belum tepat
-            </p>
-            {result ? (
-              <ul className="list-inside list-disc text-sm">
-                {result.feedback.messages.slice(0, 4).map((message, index) => (
-                  <li key={index}>{message}</li>
-                ))}
-              </ul>
-            ) : null}
-            <p className="text-teks-samar text-sm">
-              Titik kuning di pratinjau menunjukkan bagian yang perlu disesuaikan.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <button type="button" onClick={startAttempt} className="tombol-utama">
-                Coba lagi
-              </button>
-              {showEscape ? (
-                <button
-                  type="button"
-                  onClick={() => setPhase('jalan-keluar')}
-                  className="tombol-sekunder"
-                >
-                  Bandingkan sendiri
-                </button>
-              ) : null}
-            </div>
-          </div>
+          <UmpanJawab
+            benar={false}
+            pesanSalah="Masih belum sesuai. Perhatikan peragaan, lalu coba lagi."
+            onCobaLagi={kembaliSiap}
+            onLewati={failures >= PERAGA_SETELAH_GAGAL ? selfAssess : undefined}
+          />
         ) : null}
 
         {phase === 'jalan-keluar' ? (

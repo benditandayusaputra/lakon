@@ -7,15 +7,20 @@ import { MENU_UTAMA, rupiah, type MenuKedai } from './types'
 export function PilihanMenu({
   prompt,
   options,
+  ditunjuk,
   onPilih,
 }: {
   prompt: string
   options: string[]
+  ditunjuk?: number
   onPilih: (index: number, entri: MenuKedai | undefined) => void
 }) {
+  const otomatis = ditunjuk !== undefined
   return (
     <div className="kk-muncul flex flex-col gap-3">
-      <p className="font-bold text-[#f5e9d7]">{prompt}</p>
+      <p aria-live="polite" className="font-bold text-[#f5e9d7]">
+        {prompt}
+      </p>
       <div className="grid gap-3 sm:grid-cols-3">
         {options.map((option, index) => {
           const entri = MENU_UTAMA.find((m) => m.opsi === option)
@@ -24,7 +29,14 @@ export function PilihanMenu({
               key={option}
               type="button"
               onClick={() => onPilih(index, entri)}
-              className="kk-kartu-menu kk-kertas relative flex flex-col items-center gap-1 rounded-2xl border-2 border-[#c9b695] p-4 pt-5 text-center shadow-lg"
+              disabled={otomatis}
+              className={`kk-kartu-menu kk-kertas relative flex flex-col items-center gap-1 rounded-2xl border-2 p-4 pt-5 text-center shadow-lg transition ${
+                ditunjuk === index
+                  ? 'scale-105 border-[#d9a521] ring-4 ring-[#d9a521]/60'
+                  : otomatis && ditunjuk !== -1
+                    ? 'border-[#c9b695] opacity-50'
+                    : 'border-[#c9b695]'
+              }`}
             >
               {entri?.badge ? (
                 <span className="absolute -top-2.5 left-1/2 flex -translate-x-1/2 items-center gap-1 rounded-full bg-[#b4632c] px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider text-[#fdf6ea] shadow-md">
@@ -42,9 +54,16 @@ export function PilihanMenu({
               <span className="mt-1 rounded-full bg-[#6b4226] px-3 py-0.5 text-sm font-bold text-[#f8efdf]">
                 {entri ? rupiah(entri.harga) : ''}
               </span>
-              <span className="text-teks-samar mt-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wider">
-                <Hand aria-hidden className="h-3.5 w-3.5" /> tunjuk ini
-              </span>
+              {ditunjuk === index ? (
+                <span className="mt-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-[#8a5f10]">
+                  <Hand aria-hidden className="h-3.5 w-3.5 motion-safe:animate-bounce" /> ditunjuk
+                  pelanggan
+                </span>
+              ) : otomatis ? null : (
+                <span className="text-teks-samar mt-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wider">
+                  <Hand aria-hidden className="h-3.5 w-3.5" /> tunjuk ini
+                </span>
+              )}
             </button>
           )
         })}

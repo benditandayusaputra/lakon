@@ -380,6 +380,7 @@ export function KedaiKopiFlow() {
           node={node}
           task={task}
           engine={engine}
+          direction={direction}
           pesanan={pesanan}
           getCompiled={getCompiled}
           onMaju={majuSetelah}

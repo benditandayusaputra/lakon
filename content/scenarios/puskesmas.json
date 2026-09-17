@@ -25,17 +25,7 @@
           "options": ["halo", "maaf", "sama-sama"]
         }
       },
-      "next": "daftar",
-      "onFail": "repair-sapa"
-    },
-    {
-      "id": "repair-sapa",
-      "actor": "petugas",
-      "line": {
-        "id": "Maaf, bisa diulang?"
-      },
-      "hint": "Mulai dari sapaan.",
-      "next": "sapa"
+      "next": "daftar"
     },
     {
       "id": "daftar",
@@ -61,18 +51,7 @@
           "correct": 0
         }
       },
-      "next": "antre",
-      "onFail": "repair-daftar",
-      "hint": "Menunjukkan kartu identitas adalah cara mendaftar yang lazim."
-    },
-    {
-      "id": "repair-daftar",
-      "actor": "petugas",
-      "line": {
-        "id": "Cukup tunjukkan KTP atau kartu BPJS ya."
-      },
-      "hint": "Tunjukkan kartu identitasmu.",
-      "next": "daftar"
+      "next": "antre"
     },
     {
       "id": "antre",
@@ -102,18 +81,7 @@
           "correct": 0
         }
       },
-      "next": "keluhan",
-      "onFail": "repair-antre",
-      "hint": "Layar antrean adalah penanda visual, andalkan itu."
-    },
-    {
-      "id": "repair-antre",
-      "actor": "petugas",
-      "line": {
-        "id": "Lihat layar antrean, nomormu sebentar lagi."
-      },
-      "hint": "Perhatikan nomor di layar.",
-      "next": "antre"
+      "next": "keluhan"
     },
     {
       "id": "keluhan",
@@ -132,17 +100,7 @@
           "options": ["sakit", "panas", "minum"]
         }
       },
-      "next": "bagian",
-      "onFail": "repair-keluhan"
-    },
-    {
-      "id": "repair-keluhan",
-      "actor": "dokter",
-      "line": {
-        "id": "Pelan-pelan saja, sampaikan keluhanmu."
-      },
-      "hint": "Sampaikan bahwa kamu sakit.",
-      "next": "keluhan"
+      "next": "bagian"
     },
     {
       "id": "bagian",
@@ -164,18 +122,7 @@
           "correct": 0
         }
       },
-      "next": "gejala",
-      "onFail": "repair-bagian",
-      "hint": "Menunjuk bagian tubuh adalah cara yang jelas dan sopan."
-    },
-    {
-      "id": "repair-bagian",
-      "actor": "dokter",
-      "line": {
-        "id": "Tunjuk bagian tubuh yang terasa sakit."
-      },
-      "hint": "Tunjuk bagian yang pusing.",
-      "next": "bagian"
+      "next": "gejala"
     },
     {
       "id": "gejala",
@@ -194,17 +141,7 @@
           "options": ["panas", "sakit", "makan"]
         }
       },
-      "next": "apotek",
-      "onFail": "repair-gejala"
-    },
-    {
-      "id": "repair-gejala",
-      "actor": "dokter",
-      "line": {
-        "id": "Badannya demam atau tidak?"
-      },
-      "hint": "Jawab soal panas badan.",
-      "next": "gejala"
+      "next": "apotek"
     },
     {
       "id": "apotek",
@@ -234,18 +171,7 @@
           "correct": 0
         }
       },
-      "next": "tutup",
-      "onFail": "repair-apotek",
-      "hint": "Label obat adalah informasi visual, baca angkanya."
-    },
-    {
-      "id": "repair-apotek",
-      "actor": "petugas-apotek",
-      "line": {
-        "id": "Lihat labelnya: 3×1 artinya tiga kali sehari."
-      },
-      "hint": "Baca lagi angka di label.",
-      "next": "apotek"
+      "next": "tutup"
     },
     {
       "id": "tutup",
@@ -264,17 +190,7 @@
           "options": ["terima-kasih", "halo", "maaf"]
         }
       },
-      "next": null,
-      "onFail": "repair-tutup"
-    },
-    {
-      "id": "repair-tutup",
-      "actor": "dokter",
-      "line": {
-        "id": "Sama-sama, jaga kesehatan!"
-      },
-      "hint": "Ucapkan terima kasih.",
-      "next": "tutup"
+      "next": null
     }
   ]
 }

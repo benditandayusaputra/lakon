@@ -25,17 +25,7 @@
           "options": ["halo", "maaf", "tolong"]
         }
       },
-      "next": "pesan",
-      "onFail": "repair-sapa"
-    },
-    {
-      "id": "repair-sapa",
-      "actor": "barista",
-      "line": {
-        "id": "Maaf, bisa diulang?"
-      },
-      "hint": "Mulai dari sapaan.",
-      "next": "sapa"
+      "next": "pesan"
     },
     {
       "id": "pesan",
@@ -52,23 +42,12 @@
         },
         "service": {
           "type": "point",
-          "prompt": "Pelanggan menunjuk menu. Minuman apa yang ditunjuk?",
+          "prompt": "Pelanggan melihat menu dan memilih minuman.",
           "options": ["Kopi", "Teh", "Cokelat"],
           "correct": 0
         }
       },
-      "next": "suhu",
-      "onFail": "repair-pesan",
-      "hint": "Menunjuk menu adalah cara yang lazim dan sopan di kedai kopi ramah Tuli."
-    },
-    {
-      "id": "repair-pesan",
-      "actor": "barista",
-      "line": {
-        "id": "Kopi, teh, atau susu?"
-      },
-      "hint": "Tunjukkan minuman yang kamu mau.",
-      "next": "pesan"
+      "next": "suhu"
     },
     {
       "id": "suhu",
@@ -87,17 +66,7 @@
           "options": ["panas", "dingin"]
         }
       },
-      "next": "rasa",
-      "onFail": "repair-suhu"
-    },
-    {
-      "id": "repair-suhu",
-      "actor": "barista",
-      "line": {
-        "id": "Maaf, panas atau dingin?"
-      },
-      "hint": "Pilih suhu minumanmu.",
-      "next": "suhu"
+      "next": "rasa"
     },
     {
       "id": "rasa",
@@ -116,17 +85,7 @@
           "options": ["manis", "pahit", "dingin"]
         }
       },
-      "next": "harga",
-      "onFail": "repair-rasa"
-    },
-    {
-      "id": "repair-rasa",
-      "actor": "barista",
-      "line": {
-        "id": "Maaf, manis atau pahit?"
-      },
-      "hint": "Pilih rasa minumanmu.",
-      "next": "rasa"
+      "next": "harga"
     },
     {
       "id": "harga",
@@ -152,23 +111,13 @@
           "correct": 0
         }
       },
-      "next": "bayar",
-      "onFail": "repair-harga"
-    },
-    {
-      "id": "repair-harga",
-      "actor": "barista",
-      "line": {
-        "id": "Totalnya ada di layar kasir."
-      },
-      "hint": "Lihat angka di layar kasir.",
-      "next": "harga"
+      "next": "bayar"
     },
     {
       "id": "bayar",
       "actor": "barista",
       "line": {
-        "id": "Semuanya dua puluh ribu rupiah. Bayarnya bagaimana?"
+        "id": "Totalnya seperti di layar ya. Bayarnya bagaimana?"
       },
       "task": {
         "deaf": {
@@ -192,17 +141,7 @@
           "correct": 0
         }
       },
-      "next": "ambil",
-      "onFail": "repair-bayar"
-    },
-    {
-      "id": "repair-bayar",
-      "actor": "barista",
-      "line": {
-        "id": "Bisa pindai QRIS di stiker meja."
-      },
-      "hint": "Tunjukkan bukti pembayaranmu.",
-      "next": "bayar"
+      "next": "ambil"
     },
     {
       "id": "ambil",
@@ -232,18 +171,7 @@
           "correct": 0
         }
       },
-      "next": "tutup",
-      "onFail": "repair-ambil",
-      "hint": "Papan nomor adalah penanda visual, andalkan itu."
-    },
-    {
-      "id": "repair-ambil",
-      "actor": "barista",
-      "line": {
-        "id": "Nomor 12, sudah siap di meja ambil."
-      },
-      "hint": "Lihat papan nomor yang diangkat barista.",
-      "next": "ambil"
+      "next": "tutup"
     },
     {
       "id": "tutup",
@@ -262,17 +190,7 @@
           "options": ["terima-kasih", "halo", "maaf"]
         }
       },
-      "next": null,
-      "onFail": "repair-tutup"
-    },
-    {
-      "id": "repair-tutup",
-      "actor": "barista",
-      "line": {
-        "id": "Sama-sama!"
-      },
-      "hint": "Ucapkan terima kasih.",
-      "next": "tutup"
+      "next": null
     }
   ]
 }

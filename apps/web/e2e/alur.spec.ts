@@ -13,19 +13,24 @@ const masukAkunBaru = async (page: Page) => {
   expect(response.ok()).toBe(true)
 }
 
+const tutupUmpan = async (page: Page) => {
+  const lembar = page.getByRole('dialog')
+  await expect(lembar).toBeVisible()
+  const lewati = lembar.getByRole('button', { name: 'Lewati' })
+  if (await lewati.isVisible().catch(() => false)) await lewati.click()
+  await lembar.getByRole('button', { name: 'Lanjut' }).click()
+  await page.waitForTimeout(250)
+}
+
 const jawabLatihanBaca = async (page: Page) => {
   const soal = page.getByText('Pelanggan berisyarat. Apa maknanya?')
   if (!(await soal.isVisible().catch(() => false))) return false
-  const judul = (await page.getByRole('heading', { level: 1 }).textContent()) ?? ''
-  const jawaban = page.getByRole('button', {
-    name: new RegExp(`^${judul.trim()}$`, 'i'),
-  })
-  if (await jawaban.isVisible().catch(() => false)) {
-    await jawaban.click()
-    await page.waitForTimeout(250)
-    return true
-  }
-  return false
+  await page
+    .locator('p:has-text("Pelanggan berisyarat. Apa maknanya?") + div button')
+    .first()
+    .click()
+  await tutupUmpan(page)
+  return true
 }
 
 const skipAllLearning = async (page: Page) => {
@@ -45,7 +50,6 @@ const skipAllLearning = async (page: Page) => {
       'Lanjut ke praktik',
       'Tanpa kamera',
       'Sudah cukup mirip, lanjut',
-      'Sudah paham, lanjut',
     ]) {
       const button = page.getByRole('button', { name })
       if (await button.isVisible().catch(() => false)) {
@@ -69,6 +73,15 @@ const finishExam = async (page: Page) => {
         .catch(() => false)
     ) {
       return
+    }
+    if (
+      await page
+        .getByRole('dialog')
+        .isVisible()
+        .catch(() => false)
+    ) {
+      await tutupUmpan(page)
+      continue
     }
     const tirai = page.getByRole('button', { name: 'Lihat ringkasan' })
     if (await tirai.isVisible().catch(() => false)) {
@@ -94,7 +107,7 @@ const finishExam = async (page: Page) => {
       await page.waitForTimeout(250)
       continue
     }
-    const option = page.locator('button.kk-kartu-menu').first()
+    const option = page.locator('button.kk-kartu-menu:enabled').first()
     if (await option.isVisible().catch(() => false)) {
       await option.click()
       await page.waitForTimeout(250)
@@ -208,20 +221,22 @@ test.describe('alur inti', () => {
     await expect(start).toBeVisible({ timeout: 90_000 })
 
     const belumTepat = page.getByText('Belum tepat', { exact: false })
+    const lewati = page.getByRole('button', { name: 'Lewati' })
     await start.click()
     await expect(belumTepat).toBeVisible({ timeout: 30_000 })
-    await expect(page.getByText('tangan', { exact: false }).first()).toBeVisible()
+    await expect(page.getByText('Masih belum sesuai', { exact: false })).toBeVisible()
+    await expect(lewati).toHaveCount(0)
 
     for (let attempt = 2; attempt <= 3; attempt++) {
       await page.getByRole('button', { name: 'Coba lagi' }).click()
       await expect(belumTepat).toBeHidden()
+      await start.click()
       await expect(belumTepat).toBeVisible({ timeout: 30_000 })
     }
 
-    await page.getByRole('button', { name: 'Bandingkan sendiri' }).click()
-    await expect(page.getByText('Kamu yang menilai', { exact: false })).toBeVisible()
-    await page.getByRole('button', { name: 'Sudah cukup mirip, lanjut' }).click()
-    await expect(page.getByText('Berhasil')).toBeVisible()
+    await lewati.click()
+    await expect(belumTepat).toBeHidden()
+    await expect(start).toBeVisible()
   })
 
   test('7. arah B: tugas reseptif sampai ringkasan', async ({ page }) => {
@@ -256,7 +271,7 @@ test.describe('alur inti', () => {
     })
     await page.getByRole('button', { name: 'Latihan tanpa kamera' }).click()
     await page.getByRole('button', { name: 'Sudah cukup mirip, lanjut' }).click()
-    await expect(page.getByText('Berhasil')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Nyalakan kamera' })).toBeVisible()
   })
 
   test('9. offline: seluruh skenario masih bisa dijalankan', async ({ page, context }) => {
@@ -382,7 +397,6 @@ test.describe('alur inti', () => {
     await page.goto('/skenario')
     await expect(page.getByText('5/5')).toBeVisible()
   })
-})
 
   test('18. keluar dari adegan yang berjalan meminta konfirmasi', async ({ page }) => {
     await masukAkunBaru(page)
@@ -397,3 +411,4 @@ test.describe('alur inti', () => {
     await page.getByRole('dialog').getByRole('link', { name: 'Keluar' }).click()
     await page.waitForURL('**/skenario')
   })
+})

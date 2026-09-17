@@ -7,7 +7,6 @@ import {
   Map,
   MapPin,
   MessageCircleQuestion,
-  Pencil,
   Pointer,
   ReceiptText,
   Sparkles,
@@ -17,6 +16,7 @@ import type { CompiledSign } from '@lakon/sign-compiler'
 import type { ScenarioNode } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
 import { PracticeBlock } from '@/components/practice-block'
+import { useJawab } from '@/components/umpan-jawab'
 import type { ScenarioEngine } from '@/features/scenario/engine'
 import { PanggungLoket } from './petugas'
 import { BayarTap, LayarLoketHarga, PilihJumlah, PilihTujuan, PilihTurun } from './scene-tugas'
@@ -110,12 +110,6 @@ function GelembungPetugas({ node }: { node: ScenarioNode }) {
         >
           “{node.line.id}”
         </p>
-        {node.hint ? (
-          <p className="mt-2 rounded-lg bg-[#1c3a55] px-3 py-1.5 text-sm font-bold text-[#cfe9ff]">
-            <Pencil aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
-            {node.hint}
-          </p>
-        ) : null}
       </div>
     </div>
   )
@@ -127,12 +121,14 @@ function TugasLoket({
   engine,
   getCompiled,
   onMaju,
+  jawab,
 }: {
   node: ScenarioNode
   task: ReturnType<ScenarioEngine['currentTask']>
   engine: ScenarioEngine
   getCompiled: (signId: string) => CompiledSign | null
   onMaju: (moved: string) => void
+  jawab: (benar: boolean, jawaban: string) => void
 }) {
   const idUtama = simpulUtama(node.id)
 
@@ -149,23 +145,22 @@ function TugasLoket({
   }
 
   if (task.type === 'point') {
-    const jawab = (index: number) =>
-      onMaju(engine.answer(index === task.correct ? 'benar' : 'salah'))
+    const pilih = (index: number) => jawab(index === task.correct, task.options[task.correct]!)
 
     if (idUtama === 'rute') {
-      return <PilihTujuan prompt={task.prompt} options={task.options} onPilih={jawab} />
+      return <PilihTujuan prompt={task.prompt} options={task.options} onPilih={pilih} />
     }
     if (idUtama === 'tiket') {
-      return <PilihJumlah prompt={task.prompt} options={task.options} onPilih={jawab} />
+      return <PilihJumlah prompt={task.prompt} options={task.options} onPilih={pilih} />
     }
     if (idUtama === 'harga') {
-      return <LayarLoketHarga prompt={task.prompt} options={task.options} onPilih={jawab} />
+      return <LayarLoketHarga prompt={task.prompt} options={task.options} onPilih={pilih} />
     }
     if (idUtama === 'bayar') {
-      return <BayarTap prompt={task.prompt} options={task.options} onPilih={jawab} />
+      return <BayarTap prompt={task.prompt} options={task.options} onPilih={pilih} />
     }
     if (idUtama === 'turun') {
-      return <PilihTurun prompt={task.prompt} options={task.options} onPilih={jawab} />
+      return <PilihTurun prompt={task.prompt} options={task.options} onPilih={pilih} />
     }
 
     return (
@@ -176,7 +171,7 @@ function TugasLoket({
             <button
               key={option}
               type="button"
-              onClick={() => jawab(index)}
+              onClick={() => pilih(index)}
               className="kk-kartu-menu tombol-sekunder bg-white/80 text-left"
             >
               <Pointer
@@ -245,22 +240,13 @@ function TugasLoket({
           <button
             key={option}
             type="button"
-            onClick={() => onMaju(engine.answer(option === task.sign ? 'benar' : 'salah'))}
+            onClick={() => jawab(option === task.sign, prettify(task.sign))}
             className="kk-kartu-menu tombol-sekunder bg-white/80 text-left capitalize"
           >
             {prettify(option)}
           </button>
         ))}
       </div>
-      {engine.attemptsAtCurrent() >= 3 ? (
-        <button
-          type="button"
-          onClick={() => onMaju(engine.skip())}
-          className="tombol-sekunder mt-3"
-        >
-          Lewati simpul ini
-        </button>
-      ) : null}
     </div>
   )
 }
@@ -278,12 +264,14 @@ export function SceneLoket({
   getCompiled: (signId: string) => CompiledSign | null
   onMaju: (moved: string) => void
 }) {
+  const { jawab, umpan } = useJawab(engine, onMaju)
   const idUtama = simpulUtama(node.id)
   const pose = POSE_SIMPUL[idUtama] ?? 'netral'
   const langkahIndex = LANGKAH.findIndex((langkah) => langkah.id === idUtama)
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 pb-12 pt-1 sm:px-6">
+      {umpan}
       <LangkahPercakapan aktifIndex={langkahIndex} />
 
       <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(280px,360px)_1fr] lg:items-stretch">
@@ -301,6 +289,7 @@ export function SceneLoket({
             engine={engine}
             getCompiled={getCompiled}
             onMaju={onMaju}
+            jawab={jawab}
           />
         </div>
       </div>

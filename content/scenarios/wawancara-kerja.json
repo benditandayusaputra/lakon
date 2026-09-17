@@ -25,17 +25,7 @@
           "options": ["halo", "maaf", "terima-kasih"]
         }
       },
-      "next": "berkas",
-      "onFail": "repair-sapa"
-    },
-    {
-      "id": "repair-sapa",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Selamat pagi."
-      },
-      "hint": "Mulai dari sapaan.",
-      "next": "sapa"
+      "next": "berkas"
     },
     {
       "id": "berkas",
@@ -65,18 +55,7 @@
           "correct": 0
         }
       },
-      "hint": "Berkas lamaranmu ada di meja. Menunjuk berkas itu cara yang sah.",
-      "next": "kopi",
-      "onFail": "repair-berkas"
-    },
-    {
-      "id": "repair-berkas",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Boleh lihat berkas lamaranmu?"
-      },
-      "hint": "Tunjukkan bagian pengalaman di CV.",
-      "next": "berkas"
+      "next": "kopi"
     },
     {
       "id": "kopi",
@@ -95,17 +74,7 @@
           "options": ["kopi", "minum", "makan"]
         }
       },
-      "next": "menu",
-      "onFail": "repair-kopi"
-    },
-    {
-      "id": "repair-kopi",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Kopi, suka?"
-      },
-      "hint": "Jawab dengan isyarat kopi.",
-      "next": "kopi"
+      "next": "menu"
     },
     {
       "id": "menu",
@@ -127,18 +96,7 @@
           "correct": 0
         }
       },
-      "hint": "Minuman paling laris punya tanda favorit di menu.",
-      "next": "pelanggan",
-      "onFail": "repair-menu"
-    },
-    {
-      "id": "repair-menu",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Yang paling laris ada tanda favorit di menu."
-      },
-      "hint": "Cari tanda favorit.",
-      "next": "menu"
+      "next": "pelanggan"
     },
     {
       "id": "pelanggan",
@@ -146,7 +104,6 @@
       "line": {
         "id": "Bagus. Kalau pelanggan Tuli datang ke kasir, apa yang kamu lakukan?"
       },
-      "hint": "Kontak mata dan menunjuk menu lebih jelas daripada suara.",
       "task": {
         "deaf": {
           "type": "point",
@@ -169,17 +126,7 @@
           "correct": 0
         }
       },
-      "next": "panas",
-      "onFail": "repair-pelanggan"
-    },
-    {
-      "id": "repair-pelanggan",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Ingat, pelanggan Tuli mengandalkan mata, bukan telinga."
-      },
-      "hint": "Pilih cara yang bisa dilihat.",
-      "next": "pelanggan"
+      "next": "panas"
     },
     {
       "id": "panas",
@@ -198,17 +145,7 @@
           "options": ["panas", "dingin", "manis"]
         }
       },
-      "next": "maaf",
-      "onFail": "repair-panas"
-    },
-    {
-      "id": "repair-panas",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Panas, bukan dingin."
-      },
-      "hint": "Peragakan isyarat panas.",
-      "next": "panas"
+      "next": "maaf"
     },
     {
       "id": "maaf",
@@ -227,17 +164,7 @@
           "options": ["maaf", "terima-kasih", "halo"]
         }
       },
-      "next": "tutup",
-      "onFail": "repair-maaf"
-    },
-    {
-      "id": "repair-maaf",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Pelanggan kecewa. Kamu bilang apa?"
-      },
-      "hint": "Minta maaf dengan isyarat.",
-      "next": "maaf"
+      "next": "tutup"
     },
     {
       "id": "tutup",
@@ -256,17 +183,7 @@
           "options": ["terima-kasih", "maaf", "halo"]
         }
       },
-      "next": null,
-      "onFail": "repair-tutup"
-    },
-    {
-      "id": "repair-tutup",
-      "actor": "pewawancara",
-      "line": {
-        "id": "Terima kasih kembali."
-      },
-      "hint": "Ucapkan terima kasih.",
-      "next": "tutup"
+      "next": null
     }
   ]
 }

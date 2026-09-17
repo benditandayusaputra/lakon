@@ -8,7 +8,6 @@ import {
   Flame,
   Hand,
   HeartHandshake,
-  Pencil,
   Pointer,
   Sparkles,
   Users,
@@ -17,6 +16,7 @@ import type { CompiledSign } from '@lakon/sign-compiler'
 import type { ScenarioNode } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
 import { PracticeBlock } from '@/components/practice-block'
+import { useJawab } from '@/components/umpan-jawab'
 import type { ScenarioEngine } from '@/features/scenario/engine'
 import { PanggungPewawancara } from './pewawancara'
 import { PilihanMenu, SerahkanBerkas } from './scene-tugas'
@@ -110,12 +110,6 @@ function GelembungPewawancara({ node }: { node: ScenarioNode }) {
         >
           “{node.line.id}”
         </p>
-        {node.hint ? (
-          <p className="wk-font-kapur mt-2 rounded-lg bg-[#26301f] px-3 py-1.5 text-lg text-[#d9d3bd]">
-            <Pencil aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
-            {node.hint}
-          </p>
-        ) : null}
       </div>
     </div>
   )
@@ -127,6 +121,7 @@ function TugasWawancara({
   engine,
   getCompiled,
   onMaju,
+  jawab,
   onPilihMenu,
 }: {
   node: ScenarioNode
@@ -134,6 +129,7 @@ function TugasWawancara({
   engine: ScenarioEngine
   getCompiled: (signId: string) => CompiledSign | null
   onMaju: (moved: string) => void
+  jawab: (benar: boolean, jawaban: string) => void
   onPilihMenu: (entri: MenuTes) => void
 }) {
   const idUtama = simpulUtama(node.id)
@@ -151,11 +147,10 @@ function TugasWawancara({
   }
 
   if (task.type === 'point') {
-    const jawab = (index: number) =>
-      onMaju(engine.answer(index === task.correct ? 'benar' : 'salah'))
+    const pilih = (index: number) => jawab(index === task.correct, task.options[task.correct]!)
 
     if (idUtama === 'berkas') {
-      return <SerahkanBerkas prompt={task.prompt} options={task.options} onPilih={jawab} />
+      return <SerahkanBerkas prompt={task.prompt} options={task.options} onPilih={pilih} />
     }
 
     if (idUtama === 'menu') {
@@ -165,7 +160,7 @@ function TugasWawancara({
           options={task.options}
           onPilih={(index, entri) => {
             if (index === task.correct && entri) onPilihMenu(entri)
-            jawab(index)
+            pilih(index)
           }}
         />
       )
@@ -179,7 +174,7 @@ function TugasWawancara({
             <button
               key={option}
               type="button"
-              onClick={() => jawab(index)}
+              onClick={() => pilih(index)}
               className="wk-kartu tombol-sekunder bg-white/80 text-left"
             >
               <Pointer
@@ -248,22 +243,13 @@ function TugasWawancara({
           <button
             key={option}
             type="button"
-            onClick={() => onMaju(engine.answer(option === task.sign ? 'benar' : 'salah'))}
+            onClick={() => jawab(option === task.sign, prettify(task.sign))}
             className="wk-kartu tombol-sekunder bg-white/80 text-left capitalize"
           >
             {prettify(option)}
           </button>
         ))}
       </div>
-      {engine.attemptsAtCurrent() >= 3 ? (
-        <button
-          type="button"
-          onClick={() => onMaju(engine.skip())}
-          className="tombol-sekunder mt-3"
-        >
-          Lewati simpul ini
-        </button>
-      ) : null}
     </div>
   )
 }
@@ -283,12 +269,14 @@ export function SceneWawancara({
   onMaju: (moved: string) => void
   onPilihMenu: (entri: MenuTes) => void
 }) {
+  const { jawab, umpan } = useJawab(engine, onMaju)
   const idUtama = simpulUtama(node.id)
   const pose = POSE_SIMPUL[idUtama] ?? 'netral'
   const langkahIndex = LANGKAH.findIndex((langkah) => langkah.id === idUtama)
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 pb-12 pt-1 sm:px-6">
+      {umpan}
       <LangkahWawancara aktifIndex={langkahIndex} />
 
       <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(280px,360px)_1fr] lg:items-stretch">
@@ -308,6 +296,7 @@ export function SceneWawancara({
             getCompiled={getCompiled}
             onMaju={onMaju}
             onPilihMenu={onPilihMenu}
+            jawab={jawab}
           />
         </div>
       </div>

@@ -25,17 +25,7 @@
           "options": ["halo", "maaf", "sama-sama"]
         }
       },
-      "next": "rute",
-      "onFail": "repair-sapa"
-    },
-    {
-      "id": "repair-sapa",
-      "actor": "petugas-loket",
-      "line": {
-        "id": "Maaf, bisa diulang?"
-      },
-      "hint": "Mulai dari sapaan.",
-      "next": "sapa"
+      "next": "rute"
     },
     {
       "id": "rute",
@@ -43,7 +33,6 @@
       "line": {
         "id": "Tujuannya ke mana?"
       },
-      "hint": "Menunjuk peta rute adalah cara yang jelas untuk semua orang.",
       "task": {
         "deaf": {
           "type": "point",
@@ -58,17 +47,7 @@
           "correct": 0
         }
       },
-      "next": "ulang",
-      "onFail": "repair-rute"
-    },
-    {
-      "id": "repair-rute",
-      "actor": "petugas-loket",
-      "line": {
-        "id": "Coba tunjuk lagi di peta rute."
-      },
-      "hint": "Tunjukkan halte tujuanmu di peta.",
-      "next": "rute"
+      "next": "ulang"
     },
     {
       "id": "ulang",
@@ -76,7 +55,6 @@
       "line": {
         "id": "Balai Kota ya. Lewat koridor satu, transit di Pasar Lama, lalu lanjut ke…"
       },
-      "hint": "Kalau petugas terlalu cepat, minta maaf lalu minta diulang. Itu sopan.",
       "task": {
         "deaf": {
           "type": "produce",
@@ -88,17 +66,7 @@
           "options": ["maaf", "halo", "sama-sama"]
         }
       },
-      "next": "tiket",
-      "onFail": "repair-ulang"
-    },
-    {
-      "id": "repair-ulang",
-      "actor": "petugas-loket",
-      "line": {
-        "id": "Pelan-pelan saja, saya ulangi."
-      },
-      "hint": "Minta ulang dengan isyarat maaf.",
-      "next": "ulang"
+      "next": "tiket"
     },
     {
       "id": "tiket",
@@ -120,17 +88,7 @@
           "correct": 0
         }
       },
-      "next": "harga",
-      "onFail": "repair-tiket"
-    },
-    {
-      "id": "repair-tiket",
-      "actor": "petugas-loket",
-      "line": {
-        "id": "Satu tiket ya?"
-      },
-      "hint": "Tunjukkan jumlah tiket dengan jarimu.",
-      "next": "tiket"
+      "next": "harga"
     },
     {
       "id": "harga",
@@ -156,17 +114,7 @@
           "correct": 0
         }
       },
-      "next": "bayar",
-      "onFail": "repair-harga"
-    },
-    {
-      "id": "repair-harga",
-      "actor": "petugas-loket",
-      "line": {
-        "id": "Totalnya ada di layar loket."
-      },
-      "hint": "Lihat angka di layar loket.",
-      "next": "harga"
+      "next": "bayar"
     },
     {
       "id": "bayar",
@@ -196,17 +144,7 @@
           "correct": 0
         }
       },
-      "next": "turun",
-      "onFail": "repair-bayar"
-    },
-    {
-      "id": "repair-bayar",
-      "actor": "petugas-loket",
-      "line": {
-        "id": "Tempelkan kartunya di alat dekat kaca."
-      },
-      "hint": "Tunjukkan alat tempel kartu.",
-      "next": "bayar"
+      "next": "turun"
     },
     {
       "id": "turun",
@@ -232,17 +170,7 @@
           "correct": 0
         }
       },
-      "next": "tutup",
-      "onFail": "repair-turun"
-    },
-    {
-      "id": "repair-turun",
-      "actor": "petugas-loket",
-      "line": {
-        "id": "Turunnya di halte ketiga."
-      },
-      "hint": "Hitung titik halte di peta.",
-      "next": "turun"
+      "next": "tutup"
     },
     {
       "id": "tutup",
@@ -261,17 +189,7 @@
           "options": ["terima-kasih", "halo", "sama-sama"]
         }
       },
-      "next": null,
-      "onFail": "repair-tutup"
-    },
-    {
-      "id": "repair-tutup",
-      "actor": "petugas-loket",
-      "line": {
-        "id": "Sama-sama!"
-      },
-      "hint": "Ucapkan terima kasih.",
-      "next": "tutup"
+      "next": null
     }
   ]
 }

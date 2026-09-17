@@ -7,20 +7,21 @@ import {
   Coffee,
   Flame,
   Hand,
-  Pencil,
   Pointer,
   QrCode,
   ReceiptText,
   Sparkles,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { ScenarioNode } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
 import { PracticeBlock } from '@/components/practice-block'
-import type { ScenarioEngine } from '@/features/scenario/engine'
+import { useJawab } from '@/components/umpan-jawab'
+import type { Direction, ScenarioEngine } from '@/features/scenario/engine'
 import { PanggungBarista } from './barista'
 import { BayarQris, LayarKasir, PilihanMenu } from './scene-menu'
-import { prettify, simpulUtama, type MenuKedai, type PoseBarista } from './types'
+import { MENU_UTAMA, prettify, simpulUtama, type MenuKedai, type PoseBarista } from './types'
 
 const LANGKAH = [
   { id: 'sapa', label: 'Sapa', Icon: Hand },
@@ -110,14 +111,43 @@ function GelembungBarista({ node }: { node: ScenarioNode }) {
         >
           “{node.line.id}”
         </p>
-        {node.hint ? (
-          <p className="kk-font-kapur mt-2 rounded-lg bg-[#26301f] px-3 py-1.5 text-lg text-[#d9d3bd]">
-            <Pencil aria-hidden className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom" />
-            {node.hint}
-          </p>
-        ) : null}
       </div>
     </div>
+  )
+}
+
+function PesananPelanggan({
+  prompt,
+  options,
+  onSelesai,
+}: {
+  prompt: string
+  options: string[]
+  onSelesai: (entri: MenuKedai | undefined) => void
+}) {
+  const [pilihan] = useState(() => Math.floor(Math.random() * options.length))
+  const [ditunjuk, setDitunjuk] = useState<number | undefined>(undefined)
+  const entri = MENU_UTAMA.find((menu) => menu.opsi === options[pilihan])
+
+  useEffect(() => {
+    const cepat = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const tunjuk = setTimeout(() => setDitunjuk(pilihan), cepat ? 200 : 1200)
+    const selesai = setTimeout(() => onSelesai(entri), cepat ? 1800 : 3600)
+    return () => {
+      clearTimeout(tunjuk)
+      clearTimeout(selesai)
+    }
+  }, [])
+
+  return (
+    <PilihanMenu
+      prompt={
+        ditunjuk === undefined ? prompt : `Pelanggan menunjuk ${entri?.nama ?? options[pilihan]}.`
+      }
+      options={options}
+      ditunjuk={ditunjuk ?? -1}
+      onPilih={() => {}}
+    />
   )
 }
 
@@ -125,17 +155,21 @@ function TugasKedai({
   node,
   task,
   engine,
+  direction,
   pesanan,
   getCompiled,
   onMaju,
+  jawab,
   onPesan,
 }: {
   node: ScenarioNode
   task: ReturnType<ScenarioEngine['currentTask']>
   engine: ScenarioEngine
+  direction: Direction
   pesanan: MenuKedai | null
   getCompiled: (signId: string) => CompiledSign | null
   onMaju: (moved: string) => void
+  jawab: (benar: boolean, jawaban: string) => void
   onPesan: (entri: MenuKedai) => void
 }) {
   const idUtama = simpulUtama(node.id)
@@ -153,6 +187,19 @@ function TugasKedai({
   }
 
   if (task.type === 'point') {
+    if (idUtama === 'pesan' && direction === 'service') {
+      return (
+        <PesananPelanggan
+          prompt={task.prompt}
+          options={task.options}
+          onSelesai={(entri) => {
+            if (entri) onPesan(entri)
+            onMaju(engine.continueNode())
+          }}
+        />
+      )
+    }
+
     if (idUtama === 'pesan') {
       return (
         <PilihanMenu
@@ -161,7 +208,7 @@ function TugasKedai({
           onPilih={(index, entri) => {
             const benar = index === task.correct
             if (benar && entri) onPesan(entri)
-            onMaju(engine.answer(benar ? 'benar' : 'salah'))
+            jawab(benar, task.options[task.correct]!)
           }}
         />
       )
@@ -173,7 +220,7 @@ function TugasKedai({
           prompt={task.prompt}
           options={task.options}
           pesanan={pesanan}
-          onPilih={(index) => onMaju(engine.answer(index === task.correct ? 'benar' : 'salah'))}
+          onPilih={(index) => jawab(index === task.correct, task.options[task.correct]!)}
         />
       )
     }
@@ -183,7 +230,7 @@ function TugasKedai({
         <BayarQris
           prompt={task.prompt}
           options={task.options}
-          onPilih={(index) => onMaju(engine.answer(index === task.correct ? 'benar' : 'salah'))}
+          onPilih={(index) => jawab(index === task.correct, task.options[task.correct]!)}
         />
       )
     }
@@ -196,7 +243,7 @@ function TugasKedai({
             <button
               key={option}
               type="button"
-              onClick={() => onMaju(engine.answer(index === task.correct ? 'benar' : 'salah'))}
+              onClick={() => jawab(index === task.correct, task.options[task.correct]!)}
               className="kk-kartu-menu tombol-sekunder bg-white/80 text-left"
             >
               <Pointer
@@ -265,22 +312,13 @@ function TugasKedai({
           <button
             key={option}
             type="button"
-            onClick={() => onMaju(engine.answer(option === task.sign ? 'benar' : 'salah'))}
+            onClick={() => jawab(option === task.sign, prettify(task.sign))}
             className="kk-kartu-menu tombol-sekunder bg-white/80 text-left capitalize"
           >
             {prettify(option)}
           </button>
         ))}
       </div>
-      {engine.attemptsAtCurrent() >= 3 ? (
-        <button
-          type="button"
-          onClick={() => onMaju(engine.skip())}
-          className="tombol-sekunder mt-3"
-        >
-          Lewati simpul ini
-        </button>
-      ) : null}
     </div>
   )
 }
@@ -289,6 +327,7 @@ export function SceneKasir({
   node,
   task,
   engine,
+  direction,
   pesanan,
   getCompiled,
   onMaju,
@@ -297,17 +336,20 @@ export function SceneKasir({
   node: ScenarioNode
   task: ReturnType<ScenarioEngine['currentTask']>
   engine: ScenarioEngine
+  direction: Direction
   pesanan: MenuKedai | null
   getCompiled: (signId: string) => CompiledSign | null
   onMaju: (moved: string) => void
   onPesan: (entri: MenuKedai) => void
 }) {
+  const { jawab, umpan } = useJawab(engine, onMaju)
   const idUtama = simpulUtama(node.id)
   const pose = POSE_SIMPUL[idUtama] ?? 'netral'
   const langkahIndex = LANGKAH.findIndex((langkah) => langkah.id === idUtama)
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 pb-12 pt-1 sm:px-6">
+      {umpan}
       <LangkahPercakapan aktifIndex={langkahIndex} />
 
       <div className="grid flex-1 gap-4 lg:grid-cols-[minmax(280px,360px)_1fr] lg:items-stretch">
@@ -323,10 +365,12 @@ export function SceneKasir({
             node={node}
             task={task}
             engine={engine}
+            direction={direction}
             pesanan={pesanan}
             getCompiled={getCompiled}
             onMaju={onMaju}
             onPesan={onPesan}
+            jawab={jawab}
           />
         </div>
       </div>

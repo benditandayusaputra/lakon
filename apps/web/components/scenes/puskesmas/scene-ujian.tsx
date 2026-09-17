@@ -3,7 +3,6 @@
 import {
   CheckCircle2,
   ClipboardList,
-  Cross,
   Hand,
   PersonStanding,
   Pill,
@@ -16,6 +15,7 @@ import type { CompiledSign } from '@lakon/sign-compiler'
 import type { ScenarioNode } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
 import { PracticeBlock } from '@/components/practice-block'
+import { useJawab } from '@/components/umpan-jawab'
 import type { ScenarioEngine } from '@/features/scenario/engine'
 import {
   JamDinding,
@@ -305,12 +305,14 @@ export function TugasPuskesmas({
   engine,
   getCompiled,
   onMaju,
+  jawab,
 }: {
   node: ScenarioNode
   task: ReturnType<ScenarioEngine['currentTask']>
   engine: ScenarioEngine
   getCompiled: (signId: string) => CompiledSign | null
   onMaju: (moved: string) => void
+  jawab: (benar: boolean, jawaban: string) => void
 }) {
   const idUtama = node.id.replace(/^repair-/, '')
 
@@ -348,7 +350,7 @@ export function TugasPuskesmas({
               <button
                 key={option}
                 type="button"
-                onClick={() => onMaju(engine.answer(index === task.correct ? 'benar' : 'salah'))}
+                onClick={() => jawab(index === task.correct, task.options[task.correct]!)}
                 className="kk-kartu-menu rounded-xl border-2 border-[#9dbfa9] bg-white px-4 py-3 text-left font-bold shadow-md"
               >
                 <Hand aria-hidden className="mr-2 inline h-4 w-4 text-[#2f7d52]" />
@@ -415,22 +417,13 @@ export function TugasPuskesmas({
           <button
             key={option}
             type="button"
-            onClick={() => onMaju(engine.answer(option === task.sign ? 'benar' : 'salah'))}
+            onClick={() => jawab(option === task.sign, prettify(task.sign))}
             className="kk-kartu-menu tombol-sekunder bg-white text-left capitalize"
           >
             {prettify(option)}
           </button>
         ))}
       </div>
-      {engine.attemptsAtCurrent() >= 3 ? (
-        <button
-          type="button"
-          onClick={() => onMaju(engine.skip())}
-          className="tombol-sekunder mt-3"
-        >
-          Lewati simpul ini
-        </button>
-      ) : null}
     </div>
   )
 }
@@ -448,6 +441,7 @@ export function SceneUjianPuskesmas({
   getCompiled: (signId: string) => CompiledSign | null
   onMaju: (moved: string) => void
 }) {
+  const { jawab, umpan } = useJawab(engine, onMaju)
   const idUtama = node.id.replace(/^repair-/, '')
   const peran = PERAN_SIMPUL[node.actor] ?? 'perawat'
   const pose = POSE_SIMPUL[idUtama] ?? 'netral'
@@ -455,6 +449,7 @@ export function SceneUjianPuskesmas({
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4 pb-12 pt-1 sm:px-6">
+      {umpan}
       <nav
         aria-label="Langkah kunjungan"
         className="mx-auto w-full max-w-3xl rounded-full border-2 border-[#c4dcca] bg-white px-4 py-2 shadow-lg"
@@ -524,12 +519,6 @@ export function SceneUjianPuskesmas({
               >
                 “{node.line.id}”
               </p>
-              {node.hint ? (
-                <p className="mt-2 rounded-lg bg-[#eef5ef] px-3 py-1.5 text-sm font-bold text-[#1d442f]">
-                  <Cross aria-hidden className="mr-1 inline h-4 w-4" />
-                  {node.hint}
-                </p>
-              ) : null}
             </div>
           </div>
 
@@ -540,6 +529,7 @@ export function SceneUjianPuskesmas({
             engine={engine}
             getCompiled={getCompiled}
             onMaju={onMaju}
+            jawab={jawab}
           />
         </div>
       </div>

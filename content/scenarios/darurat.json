@@ -25,18 +25,7 @@
           "options": ["halo", "sakit", "terima-kasih"]
         }
       },
-      "next": "kejadian",
-      "onFail": "repair-panggil",
-      "hint": "Tarik perhatian dulu dengan sapaan yang jelas, baru jelaskan kejadiannya."
-    },
-    {
-      "id": "repair-panggil",
-      "actor": "warga",
-      "line": {
-        "id": "Tenang, pelan-pelan. Ada apa?"
-      },
-      "hint": "Sapa dulu supaya warga tahu kamu butuh bantuan.",
-      "next": "panggil"
+      "next": "kejadian"
     },
     {
       "id": "kejadian",
@@ -58,18 +47,7 @@
           "correct": 1
         }
       },
-      "next": "luka",
-      "onFail": "repair-kejadian",
-      "hint": "Kartu bergambar di pos siaga membantu menjelaskan kejadian tanpa suara."
-    },
-    {
-      "id": "repair-kejadian",
-      "actor": "warga",
-      "line": {
-        "id": "Coba tunjuk lagi kartunya."
-      },
-      "hint": "Ingat, kamu terjatuh dari sepeda di perempatan.",
-      "next": "kejadian"
+      "next": "luka"
     },
     {
       "id": "luka",
@@ -88,17 +66,7 @@
           "options": ["sakit", "halo", "tangan"]
         }
       },
-      "next": "bagian",
-      "onFail": "repair-luka"
-    },
-    {
-      "id": "repair-luka",
-      "actor": "warga",
-      "line": {
-        "id": "Bilang kalau ada yang sakit."
-      },
-      "hint": "Beri tahu bahwa kamu kesakitan.",
-      "next": "luka"
+      "next": "bagian"
     },
     {
       "id": "bagian",
@@ -117,17 +85,7 @@
           "options": ["tangan", "sakit", "halo"]
         }
       },
-      "next": "lokasi",
-      "onFail": "repair-bagian"
-    },
-    {
-      "id": "repair-bagian",
-      "actor": "warga",
-      "line": {
-        "id": "Tunjukkan bagian yang sakit."
-      },
-      "hint": "Tanganmu yang terluka.",
-      "next": "bagian"
+      "next": "lokasi"
     },
     {
       "id": "lokasi",
@@ -149,18 +107,7 @@
           "correct": 1
         }
       },
-      "next": "pihak",
-      "onFail": "repair-lokasi",
-      "hint": "Peta di dinding pos punya tanda lokasi kejadian."
-    },
-    {
-      "id": "repair-lokasi",
-      "actor": "warga",
-      "line": {
-        "id": "Coba tunjuk lagi tempatnya di peta."
-      },
-      "hint": "Lihat tanda di peta, dekat perempatan depan pos.",
-      "next": "lokasi"
+      "next": "pihak"
     },
     {
       "id": "pihak",
@@ -186,18 +133,7 @@
           "correct": 0
         }
       },
-      "next": "telepon",
-      "onFail": "repair-pihak",
-      "hint": "Untuk luka, ambulans didahulukan."
-    },
-    {
-      "id": "repair-pihak",
-      "actor": "warga",
-      "line": {
-        "id": "Untuk luka, ambulans dulu ya?"
-      },
-      "hint": "Pilih pihak yang menangani orang terluka.",
-      "next": "pihak"
+      "next": "telepon"
     },
     {
       "id": "telepon",
@@ -205,7 +141,6 @@
       "line": {
         "id": "Saya telepon 119 sekarang. Tarik napas, saya di sini."
       },
-      "hint": "Warga menelepon di depanmu supaya kamu tahu bantuan sedang dipanggil.",
       "next": "tutup"
     },
     {
@@ -225,17 +160,7 @@
           "options": ["terima-kasih", "halo", "sakit"]
         }
       },
-      "next": null,
-      "onFail": "repair-tutup"
-    },
-    {
-      "id": "repair-tutup",
-      "actor": "warga",
-      "line": {
-        "id": "Sama-sama, tetap tenang."
-      },
-      "hint": "Ucapkan terima kasih.",
-      "next": "tutup"
+      "next": null
     }
   ]
 }
