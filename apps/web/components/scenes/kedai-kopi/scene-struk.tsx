@@ -118,7 +118,7 @@ export function SceneStruk({
             Terima kasih, sampai jumpa lagi!{' '}
             <Hand aria-hidden className="inline-block h-[1em] w-[1em] align-text-bottom" />
           </p>
-          <p className="mt-1 text-center text-[10px] tracking-[0.3em] text-[#b0a591]">
+          <p className="mt-1 text-center text-[10px] tracking-[0.3em] text-[#6f6759]">
             * * * * * * * * * * * *
           </p>
         </div>

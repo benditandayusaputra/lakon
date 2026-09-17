@@ -255,6 +255,7 @@ export function Profil({
               <input
                 ref={fileRef}
                 type="file"
+                aria-label="Unggah foto profil"
                 accept="image/png,image/jpeg,image/webp"
                 className="sr-only"
                 onChange={(event) => void simpanFoto(event.currentTarget.files?.[0])}
