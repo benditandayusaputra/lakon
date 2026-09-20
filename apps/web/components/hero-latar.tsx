@@ -79,7 +79,7 @@ export function HeroLatar({ ringkas = false }: { ringkas?: boolean }) {
         ? null
         : [
             ...PIN_DESKTOP.map((pin) => ({ ...pin, kelas: 'hidden lg:flex' })),
-            ...PIN_PONSEL.map((pin) => ({ ...pin, kelas: 'flex lg:hidden' })),
+            ...PIN_PONSEL.map((pin) => ({ ...pin, kelas: 'hidden sm:flex lg:hidden' })),
           ].map(({ Icon, x, y, warna, tunda, kelas }) => (
             <span
               key={`${kelas}-${x}`}

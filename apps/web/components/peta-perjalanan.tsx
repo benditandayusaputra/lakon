@@ -45,12 +45,15 @@ export type TeksPeta = {
   dibangun: string
   kamuDiSini?: string
   rumah?: string
+  sudahSelesai?: string
+  belumDimulai?: string
+  dikuasai?: string
 }
 
 const POSISI_X = [22, 74, 24, 76, 30] as const
 const RUMAH_X = 60
 const JUMLAH_SEGERA = 2
-const durasiUntuk = (langkah: number) => Math.min(3200, Math.max(700, langkah * 1000))
+const durasiUntuk = (langkah: number) => Math.min(1400, Math.max(500, langkah * 450))
 const DEKOR: { Icon: LucideIcon; x: number; y: number; size: number; kecil?: boolean }[] = [
   { Icon: TreeDeciduous, x: 8, y: 10, size: 28 },
   { Icon: TreePine, x: 6, y: 44, size: 26 },
@@ -207,7 +210,12 @@ export function PetaPerjalanan({
     tujuan !== null && pemain !== null && posisi(tujuan).x < posisi(pemain).x ? 'kiri' : 'kanan'
 
   const pilih = (item: SimpulPeta, index: number) => {
-    if (!onSampai || tujuan !== null) return
+    if (!onSampai) return
+    if (tujuan !== null) {
+      if (timer.current) clearTimeout(timer.current)
+      onSampai(item, index)
+      return
+    }
     const cepat =
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     setTujuan(index)
@@ -475,7 +483,22 @@ export function PetaPerjalanan({
                 </span>
               </>
             )
-            const label = `${teks.adegan} ${index + 1}: ${item.judul}${kunci ? `, ${teks.terkunci}` : ''}`
+            const label = [
+              `${teks.adegan} ${index + 1}: ${item.judul}`,
+              kunci
+                ? teks.terkunci
+                : status === 'selesai'
+                  ? teks.sudahSelesai
+                  : item.status
+                    ? teks.belumDimulai
+                    : null,
+              !kunci && typeof item.persen === 'number'
+                ? `${item.persen}% ${teks.dikuasai ?? teks.isyarat}`
+                : null,
+              item.keterangan,
+            ]
+              .filter(Boolean)
+              .join(', ')
             if (onSampai && !kunci) {
               return (
                 <button

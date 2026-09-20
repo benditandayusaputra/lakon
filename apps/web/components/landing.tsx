@@ -34,7 +34,7 @@ const copy = {
     navTry: 'Coba isyarat',
     navSignIn: 'Masuk',
     heroKicker: 'BISINDO Varian Jakarta',
-    heroTitle: 'Latihan percakapan BISINDO di dalam transaksi yang benar-benar Anda jalani.',
+    heroTitle: 'Latihan percakapan BISINDO di dalam transaksi yang benar-benar kamu jalani.',
     heroBody:
       'Lima adegan, dua peran. Pelajari isyarat dari video penanda asli atau avatar 3D tiga sudut, peragakan di depan kamera, umpan baliknya muncul di tempat.',
     heroCta: 'Coba satu isyarat, 20 detik',
@@ -49,7 +49,7 @@ const copy = {
     loading: 'Memuat…',
     loadBlock: 'Muat blok latihan',
     twoWayTitle: 'Satu adegan, dua peran',
-    twoWayBody: 'Pilih peran saat masuk. Setiap adegan bisa dijalani dari kedua sisi.',
+    twoWayBody: 'Pilih peranmu di peta perjalanan. Setiap adegan bisa dijalani dari kedua sisi.',
     sideDeaf: 'Sisi Tuli',
     sideService: 'Sisi pekerja layanan',
     deafRole: 'Kamu yang berisyarat. Menjalani transaksi: memesan, bertanya, membayar.',
@@ -113,7 +113,7 @@ const copy = {
     loading: 'Loading…',
     loadBlock: 'Load the practice block',
     twoWayTitle: 'One scene, two roles',
-    twoWayBody: 'Pick a role when you sign in. Every scene can be played from both sides.',
+    twoWayBody: 'Pick a role on your journey map. Every scene can be played from both sides.',
     sideDeaf: 'Deaf side',
     sideService: 'Service side',
     deafRole: 'You sign. Go through the transaction: order, ask, pay.',
@@ -249,15 +249,18 @@ export function Landing() {
               {t.heroCta}
               <ArrowRight aria-hidden size={18} strokeWidth={2.5} />
             </a>
-            <a href="#adegan" className="tombol-garis-terang text-center">
+            <a
+              href="#adegan"
+              className="tombol-garis-terang bg-panggung/70 text-center backdrop-blur-sm"
+            >
               {t.heroSecondary}
             </a>
           </div>
           <dl className="divide-halaman/15 border-halaman/15 bg-halaman/5 mx-auto mt-2 grid w-full max-w-md grid-cols-3 divide-x rounded-2xl border">
             {(
               [
-                [signs.length || 3, t.statSigns],
-                [scenarios.length || 5, t.statScenes],
+                [content ? signs.length : '—', t.statSigns],
+                [content ? scenarios.length : '—', t.statScenes],
                 [2, t.statSides],
               ] as const
             ).map(([value, label]) => (

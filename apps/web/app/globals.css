@@ -213,7 +213,8 @@ body {
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
-select:focus-visible {
+select:focus-visible,
+label:has(input.sr-only:focus-visible) {
   outline: 3px solid var(--color-info);
   outline-offset: 2px;
 }

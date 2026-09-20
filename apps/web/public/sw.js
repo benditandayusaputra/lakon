@@ -1,4 +1,5 @@
-const CACHE_VERSION = 'lakon-v1'
+const CACHE_VERSION = 'lakon-v2'
+const HALAMAN_PRIBADI = ['/profil']
 const PAGE_CACHE = `${CACHE_VERSION}-pages`
 const ASSET_CACHE = `${CACHE_VERSION}-assets`
 
@@ -33,7 +34,12 @@ self.addEventListener('install', (event) => {
     caches
       .open(PAGE_CACHE)
       .then((cache) =>
-        Promise.allSettled(PRECACHE_PAGES.map((page) => cache.add(new Request(page)))),
+        Promise.allSettled(
+          PRECACHE_PAGES.map(async (page) => {
+            const response = await fetch(page)
+            if (response.ok && !response.redirected) await cache.put(page, response)
+          }),
+        ),
       )
       .then(() => self.skipWaiting()),
   )
@@ -52,6 +58,10 @@ self.addEventListener('activate', (event) => {
   )
 })
 
+self.addEventListener('message', (event) => {
+  if (event.data === 'lakon-keluar') event.waitUntil(caches.delete(PAGE_CACHE))
+})
+
 const cacheFirst = async (request) => {
   const cache = await caches.open(ASSET_CACHE)
   const cached = await cache.match(request, { ignoreVary: true })
@@ -65,12 +75,15 @@ const cacheFirst = async (request) => {
 
 const networkFirst = async (request, fallbackUrl) => {
   const cache = await caches.open(PAGE_CACHE)
+  const pribadi = HALAMAN_PRIBADI.includes(new URL(request.url).pathname)
   try {
     const response = await fetch(request)
-    if (response.ok) cache.put(request, response.clone())
+    if (response.ok && !response.redirected && !pribadi) cache.put(request, response.clone())
     return response
   } catch (err) {
-    const cached = await cache.match(request, { ignoreVary: true, ignoreSearch: true })
+    const cached = pribadi
+      ? null
+      : await cache.match(request, { ignoreVary: true, ignoreSearch: true })
     if (cached) return cached
     if (fallbackUrl) {
       const fallback = await cache.match(fallbackUrl)

@@ -21,15 +21,24 @@ const ICON: Record<SyncState, LucideIcon> = {
 }
 
 export function SyncBadge() {
-  const [state, setState] = useState<SyncState>('tersimpan')
+  const [state, setState] = useState<SyncState | null>(null)
 
-  useEffect(() => onSyncState(setState), [])
+  useEffect(() => {
+    let awal = true
+    return onSyncState((next) => {
+      const lewati = awal && next === 'tersimpan'
+      awal = false
+      if (!lewati) setState(next)
+    })
+  }, [])
 
-  const Ikon = ICON[state]
+  const Ikon = state ? ICON[state] : CircleDashed
   return (
     <p className="text-teks-samar flex items-center gap-1.5 text-sm" aria-live="polite">
       <Ikon aria-hidden className="h-4 w-4 shrink-0" />
-      {LABEL[state]}
+      <span className="sr-only md:not-sr-only">
+        {state ? LABEL[state] : 'siap menyimpan progres'}
+      </span>
     </p>
   )
 }

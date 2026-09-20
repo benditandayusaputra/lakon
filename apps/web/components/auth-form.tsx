@@ -78,7 +78,7 @@ const features = [
   {
     icon: Sparkles,
     title: 'Dua peran dalam satu adegan',
-    body: 'Sisi Tuli dan sisi petugas layanan.',
+    body: 'Sisi Tuli dan sisi pekerja layanan.',
   },
 ]
 
@@ -180,14 +180,19 @@ export function AuthForm({ mode }: { mode: Mode }) {
         if (result.field && result.error) {
           setErrors({ [result.field]: result.error })
         } else {
-          setFormError(result.error ?? 'Email atau kata sandi tidak cocok.')
+          setFormError(
+            result.error ??
+              (mode === 'daftar'
+                ? 'Akun belum bisa dibuat. Periksa datamu lalu coba lagi.'
+                : 'Email atau kata sandi tidak cocok.'),
+          )
         }
+        setBusy(false)
         return
       }
       router.push('/skenario')
     } catch {
       setFormError('Koneksi gagal. Periksa jaringanmu lalu coba lagi.')
-    } finally {
       setBusy(false)
     }
   }
@@ -282,7 +287,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
                     autoComplete="nickname"
                     placeholder="Nama yang dipakai di adegan"
                     aria-invalid={Boolean(errors.nama)}
-                    aria-describedby="galat-nama"
+                    aria-describedby={errors.nama ? 'galat-nama' : undefined}
                     className={inputClass(Boolean(errors.nama))}
                   />
                 </Field>
@@ -296,7 +301,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
                   autoComplete="email"
                   placeholder="nama@email.com"
                   aria-invalid={Boolean(errors.email)}
-                  aria-describedby="galat-email"
+                  aria-describedby={errors.email ? 'galat-email' : undefined}
                   className={inputClass(Boolean(errors.email))}
                 />
               </Field>
@@ -311,7 +316,9 @@ export function AuthForm({ mode }: { mode: Mode }) {
                     placeholder={mode === 'daftar' ? 'Minimal 8 karakter' : 'Kata sandimu'}
                     onChange={(event) => setSandiValue(event.currentTarget.value)}
                     aria-invalid={Boolean(errors.sandi)}
-                    aria-describedby="galat-sandi bantuan-sandi"
+                    aria-describedby={
+                      errors.sandi ? 'galat-sandi' : mode === 'daftar' ? 'bantuan-sandi' : undefined
+                    }
                     className={`${inputClass(Boolean(errors.sandi))} pr-12`}
                   />
                   <button

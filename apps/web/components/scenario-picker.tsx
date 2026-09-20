@@ -39,7 +39,7 @@ const ROLES = [
     icon: Eye,
     title: 'Sisi pekerja layanan',
     body: 'Kamu yang membaca isyarat. Tebak maknanya lalu layani sampai tuntas.',
-    ctaName: 'pekerja layanan',
+    ctaName: 'sisi pekerja layanan',
   },
 ] as const
 
@@ -56,6 +56,9 @@ export function ScenarioPicker() {
   } | null>(null)
   const [progresSiap, setProgresSiap] = useState(false)
   const [progresGagal, setProgresGagal] = useState(false)
+  const [akunSiap, setAkunSiap] = useState(false)
+  const [keluarSibuk, setKeluarSibuk] = useState(false)
+  const [keluarGagal, setKeluarGagal] = useState(false)
 
   useEffect(() => {
     void bacaProgres()
@@ -66,17 +69,20 @@ export function ScenarioPicker() {
       .catch(() => setProgresGagal(true))
       .finally(() => setProgresSiap(true))
     void fetch('/api/auth/saya')
-      .then((response) => response.json())
+      .then((response) => (response.ok ? response.json() : null))
       .then(
-        (data: {
-          user: {
-            displayName: string
-            avatar: string | null
-            gender: 'perempuan' | 'laki-laki' | null
-          } | null
-        }) => setAccount(data.user),
+        (
+          data: {
+            user: {
+              displayName: string
+              avatar: string | null
+              gender: 'perempuan' | 'laki-laki' | null
+            } | null
+          } | null,
+        ) => setAccount(data?.user ?? null),
       )
       .catch(() => {})
+      .finally(() => setAkunSiap(true))
   }, [])
 
   const scenarios = useMemo(
@@ -126,8 +132,21 @@ export function ScenarioPicker() {
     return !terkunci && (runsByScenario[scenario.id] ?? 0) === 0
   })
 
+  const siap = progresSiap && scenarios.length > 0
+
   const keluar = () => {
-    void fetch('/api/auth/keluar', { method: 'POST' }).then(() => window.location.assign('/'))
+    setKeluarSibuk(true)
+    setKeluarGagal(false)
+    void fetch('/api/auth/keluar', { method: 'POST' })
+      .then((response) => {
+        if (!response.ok) throw new Error('gagal')
+        navigator.serviceWorker?.controller?.postMessage('lakon-keluar')
+        window.location.assign('/')
+      })
+      .catch(() => {
+        setKeluarGagal(true)
+        setKeluarSibuk(false)
+      })
   }
 
   return (
@@ -139,30 +158,40 @@ export function ScenarioPicker() {
             Lakon
           </Link>
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="bg-halaman hidden rounded-full px-3 py-1.5 md:block">
+            <span className="bg-halaman flex items-center rounded-full px-2 py-1.5 md:px-3">
               <SyncBadge />
             </span>
             <Link
               href="/profil"
+              aria-label="Profil"
               className="border-halaman/30 hover:border-halaman/70 flex min-h-11 items-center gap-2 rounded-lg border px-3 text-sm transition-colors"
             >
-              <AvatarAkun
-                nama={account?.displayName ?? ''}
-                avatar={account?.avatar ?? null}
-                ukuran={24}
-              />
-              <span className="max-w-28 truncate max-[359px]:sr-only">
-                {account?.displayName ?? 'Profil'}
-              </span>
+              {akunSiap ? (
+                <>
+                  <AvatarAkun
+                    nama={account?.displayName ?? 'Profil'}
+                    avatar={account?.avatar ?? null}
+                    ukuran={24}
+                  />
+                  <span aria-hidden className="max-w-28 truncate max-[359px]:sr-only">
+                    {account?.displayName ?? 'Profil'}
+                  </span>
+                </>
+              ) : (
+                <span aria-hidden className="bg-halaman/15 h-6 w-16 animate-pulse rounded-full" />
+              )}
             </Link>
             <button
               type="button"
               onClick={keluar}
-              className="border-halaman/30 hover:border-halaman/70 flex min-h-11 items-center gap-2 rounded-lg border px-3 text-sm transition-colors"
-              aria-label="Keluar dari akun"
+              disabled={keluarSibuk}
+              className="border-halaman/30 hover:border-halaman/70 flex min-h-11 items-center gap-2 rounded-lg border px-3 text-sm transition-colors disabled:opacity-60"
+              aria-label={keluarGagal ? 'Keluar gagal, coba lagi' : 'Keluar dari akun'}
             >
               <LogOut aria-hidden size={15} />
-              <span className="hidden sm:inline">Keluar</span>
+              <span className="hidden sm:inline">
+                {keluarSibuk ? 'Keluar…' : keluarGagal ? 'Coba lagi' : 'Keluar'}
+              </span>
             </button>
           </div>
         </div>
@@ -189,9 +218,9 @@ export function ScenarioPicker() {
             <dl className="grid grid-cols-3 gap-3">
               {(
                 [
-                  [Flag, `${selesai}/${scenarios.length || 5}`, 'adegan selesai'],
-                  [Hand, `${masteredSigns.size}/${totalIsyarat || 40}`, 'isyarat dikuasai'],
-                  [Repeat, String(totalRuns), 'sesi selesai'],
+                  [Flag, siap ? `${selesai}/${scenarios.length}` : '—', 'adegan selesai'],
+                  [Hand, siap ? `${masteredSigns.size}/${totalIsyarat}` : '—', 'isyarat dikuasai'],
+                  [Repeat, siap ? String(totalRuns) : '—', 'sesi selesai'],
                 ] as const
               ).map(([Ikon, value, label]) => (
                 <div
@@ -216,21 +245,23 @@ export function ScenarioPicker() {
                   {activeRole.title}
                 </span>
                 <span className="text-halaman/70 font-mono text-xs">
-                  {persenAdegan}% perjalanan
+                  {siap ? `${persenAdegan}% perjalanan` : 'memuat progres…'}
                 </span>
               </div>
               <div aria-hidden className="bg-halaman/15 h-2 overflow-hidden rounded-full">
                 <span
                   className="bg-sorot block h-full rounded-full transition-[width] duration-500"
-                  style={{ width: `${persenAdegan}%` }}
+                  style={{ width: siap ? `${persenAdegan}%` : 0 }}
                 />
               </div>
               <p className="text-halaman/70 text-xs">
-                {berikutnya
-                  ? `Berikutnya: ${berikutnya.title.id}.`
-                  : selesai === scenarios.length && scenarios.length > 0
-                    ? 'Semua adegan selesai untuk peran ini. Adegan baru segera hadir.'
-                    : 'Mulai dari adegan pertama.'}
+                {!siap
+                  ? 'Progres kamu sedang dimuat.'
+                  : berikutnya
+                    ? `Berikutnya: ${berikutnya.title.id}.`
+                    : selesai === scenarios.length
+                      ? 'Semua adegan selesai untuk peran ini. Adegan baru segera hadir.'
+                      : 'Mulai dari adegan pertama.'}
               </p>
             </div>
           </div>
@@ -287,7 +318,7 @@ export function ScenarioPicker() {
             </div>
           </fieldset>
 
-          {berikutnya ? (
+          {siap && berikutnya ? (
             <div
               className="border-border-halus bg-kartu shadow-kartu hidden flex-col gap-3 rounded-2xl border p-4 xl:flex"
               style={{ borderTopColor: paletteFor(berikutnya.id).accent, borderTopWidth: 4 }}
@@ -312,7 +343,8 @@ export function ScenarioPicker() {
 
           <p className="text-teks-sekunder hidden items-center gap-2 text-sm xl:flex">
             <Hand aria-hidden size={16} className="text-aksen" />
-            Isyarat dikuasai sebagai {activeRole.ctaName}: <strong>{masteredSigns.size}</strong>
+            Isyarat dikuasai di {activeRole.ctaName}:{' '}
+            <strong>{siap ? masteredSigns.size : '—'}</strong>
           </p>
         </aside>
 
@@ -376,6 +408,9 @@ export function ScenarioPicker() {
                 adeganBaru: 'Adegan baru',
                 segeraKeterangan: 'Sedang disiapkan. Nantikan di rilis berikutnya.',
                 dibangun: 'Masih dibangun',
+                sudahSelesai: 'sudah selesai',
+                belumDimulai: 'belum dimulai',
+                dikuasai: 'isyarat dikuasai',
               }}
               onSampai={(item) => router.push(item.href)}
             />
@@ -400,10 +435,10 @@ export function ScenarioPicker() {
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 sm:px-6">
           <p className="text-teks-sekunder flex items-center gap-2 text-sm">
             <Hand aria-hidden size={16} className="text-aksen" />
-            Isyarat yang sudah dipelajari: <strong>{masteredSigns.size}</strong>
+            Isyarat dikuasai: <strong>{siap ? masteredSigns.size : '—'}</strong>
           </p>
           <p className="text-teks-sekunder text-sm">
-            Mulai sebagai <strong className="text-teks">{activeRole.ctaName}</strong>
+            Peran aktif: <strong className="text-teks">{activeRole.title}</strong>
           </p>
         </div>
       </footer>
