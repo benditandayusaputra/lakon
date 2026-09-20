@@ -17,7 +17,7 @@ test.describe('pipeline diagnostik', () => {
 
   test.beforeEach(async ({ page }) => {
     const response = await page.request.post('/api/auth/masuk', {
-      data: { email: 'admin@lakon.id', sandi: 'AdminLakon2026' },
+      data: { email: 'admin@lakon.id', sandi: process.env.SEED_ADMIN_PASSWORD ?? '' },
     })
     test.skip(!response.ok(), 'akun admin belum di-seed, jalankan node tools/seed.mjs')
   })

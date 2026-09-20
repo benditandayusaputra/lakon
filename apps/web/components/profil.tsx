@@ -76,9 +76,16 @@ export function Profil({
   const [genderPesan, setGenderPesan] = useState<string | null>(null)
   const [fotoPesan, setFotoPesan] = useState<string | null>(null)
   const [fotoSibuk, setFotoSibuk] = useState(false)
+  const [genderSibuk, setGenderSibuk] = useState(false)
+  const [keluarSibuk, setKeluarSibuk] = useState(false)
+  const [keluarGagal, setKeluarGagal] = useState(false)
+  const [progresSiap, setProgresSiap] = useState(false)
   const [dihapus, setDihapus] = useState(false)
   const [minta, setMinta] = useState(false)
   const [hapusGagal, setHapusGagal] = useState(false)
+  const [mintaAkun, setMintaAkun] = useState(false)
+  const [akunSibuk, setAkunSibuk] = useState(false)
+  const [akunGagal, setAkunGagal] = useState(false)
   const fileRef = useRef<HTMLInputElement | null>(null)
 
   useEffect(() => {
@@ -88,6 +95,7 @@ export function Profil({
         setRuns(progres.runs)
       })
       .catch(() => {})
+      .finally(() => setProgresSiap(true))
   }, [])
 
   const scenarios = useMemo(
@@ -98,6 +106,7 @@ export function Profil({
     [content],
   )
   const totalIsyarat = new Set(scenarios.flatMap((scenario) => [...scenarioSignIds(scenario)])).size
+  const siap = progresSiap && scenarios.length > 0
 
   const ringkas = (arah: Arah) => {
     const runArah = runs.filter((run) => run.direction === arah)
@@ -143,20 +152,26 @@ export function Profil({
 
   const hapusFoto = async () => {
     setFotoSibuk(true)
+    setFotoPesan(null)
     try {
-      await fetch('/api/auth/saya', {
+      const response = await fetch('/api/auth/saya', {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ avatar: null }),
       })
+      if (!response.ok) throw new Error('gagal')
       setAvatar(null)
       setFotoPesan('Foto profil dihapus.')
+    } catch {
+      setFotoPesan('Foto belum terhapus. Periksa koneksi lalu coba lagi.')
     } finally {
       setFotoSibuk(false)
     }
   }
 
   const simpanGender = async (nilai: 'perempuan' | 'laki-laki' | null) => {
+    const sebelumnya = gender
+    setGenderSibuk(true)
     setGender(nilai)
     setGenderPesan(null)
     try {
@@ -168,12 +183,26 @@ export function Profil({
       if (!response.ok) throw new Error('gagal')
       setGenderPesan('Karakter peta tersimpan.')
     } catch {
+      setGender(sebelumnya)
       setGenderPesan('Karakter belum tersimpan, coba lagi.')
+    } finally {
+      setGenderSibuk(false)
     }
   }
 
   const keluar = () => {
-    void fetch('/api/auth/keluar', { method: 'POST' }).then(() => window.location.assign('/'))
+    setKeluarSibuk(true)
+    setKeluarGagal(false)
+    void fetch('/api/auth/keluar', { method: 'POST' })
+      .then((response) => {
+        if (!response.ok) throw new Error('gagal')
+        navigator.serviceWorker?.controller?.postMessage('lakon-keluar')
+        window.location.assign('/')
+      })
+      .catch(() => {
+        setKeluarGagal(true)
+        setKeluarSibuk(false)
+      })
   }
 
   const hapus = () => {
@@ -186,6 +215,21 @@ export function Profil({
         setDihapus(true)
       })
       .catch(() => setHapusGagal(true))
+  }
+
+  const hapusAkun = () => {
+    setAkunGagal(false)
+    setAkunSibuk(true)
+    void fetch('/api/auth/saya', { method: 'DELETE' })
+      .then((response) => {
+        if (!response.ok) throw new Error('gagal')
+        navigator.serviceWorker?.controller?.postMessage('lakon-keluar')
+        window.location.assign('/')
+      })
+      .catch(() => {
+        setAkunGagal(true)
+        setAkunSibuk(false)
+      })
   }
 
   const totalSesi = runs.length
@@ -216,17 +260,20 @@ export function Profil({
             </Link>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className="bg-halaman hidden rounded-full px-3 py-1.5 md:block">
+            <span className="bg-halaman flex items-center rounded-full px-2 py-1.5 md:px-3">
               <SyncBadge />
             </span>
             <button
               type="button"
               onClick={keluar}
-              className="border-halaman/30 hover:border-halaman/70 flex min-h-11 items-center gap-2 rounded-lg border px-3 text-sm transition-colors"
-              aria-label="Keluar dari akun"
+              disabled={keluarSibuk}
+              className="border-halaman/30 hover:border-halaman/70 flex min-h-11 items-center gap-2 rounded-lg border px-3 text-sm transition-colors disabled:opacity-60"
+              aria-label={keluarGagal ? 'Keluar gagal, coba lagi' : 'Keluar dari akun'}
             >
               <LogOut aria-hidden size={15} />
-              <span className="hidden sm:inline">Keluar</span>
+              <span className="hidden sm:inline">
+                {keluarSibuk ? 'Keluar…' : keluarGagal ? 'Coba lagi' : 'Keluar'}
+              </span>
             </button>
           </div>
         </div>
@@ -265,10 +312,10 @@ export function Profil({
               <p className="text-sorot font-mono text-xs font-bold uppercase tracking-[0.2em]">
                 Profil
               </p>
-              <h1 className="font-display mt-1 truncate text-3xl font-semibold sm:text-4xl">
+              <h1 className="font-display wrap-break-word mt-1 text-2xl font-semibold sm:text-4xl">
                 {nama}
               </h1>
-              <p className="text-halaman/70 truncate">{email}</p>
+              <p className="text-halaman/70 break-all">{email}</p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="border-halaman/25 bg-halaman/10 flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-wide">
                   <UserRound aria-hidden size={12} />
@@ -304,11 +351,11 @@ export function Profil({
           <dl className="grid grid-cols-3 gap-3 lg:w-[26rem]">
             {(
               [
-                [Hand, `${totalDikuasai}/${totalIsyarat || 16}`, 'isyarat dikuasai'],
-                [Repeat, String(totalSesi), 'sesi selesai'],
+                [Hand, siap ? `${totalDikuasai}/${totalIsyarat}` : '—', 'isyarat dikuasai'],
+                [Repeat, siap ? String(totalSesi) : '—', 'sesi selesai'],
                 [
                   Trophy,
-                  String(ringkas('deaf').selesai + ringkas('service').selesai),
+                  siap ? String(ringkas('deaf').selesai + ringkas('service').selesai) : '—',
                   'adegan tuntas',
                 ],
               ] as const
@@ -366,9 +413,9 @@ export function Profil({
                   <div className="grid grid-cols-3 gap-2 text-center">
                     {(
                       [
-                        [`${data.selesai}/${scenarios.length || 5}`, 'adegan'],
-                        [`${data.dikuasai.size}/${totalIsyarat || 16}`, 'isyarat'],
-                        [String(data.runArah.length), 'sesi'],
+                        [siap ? `${data.selesai}/${scenarios.length}` : '—', 'adegan'],
+                        [siap ? `${data.dikuasai.size}/${totalIsyarat}` : '—', 'isyarat'],
+                        [siap ? String(data.runArah.length) : '—', 'sesi'],
                       ] as const
                     ).map(([nilai, label]) => (
                       <div key={label} className="bg-terangkat rounded-2xl px-2 py-3">
@@ -407,7 +454,7 @@ export function Profil({
                           </span>
                           <span className="block min-w-0 flex-1">
                             <span className="flex items-center justify-between gap-2 text-sm">
-                              <span className="min-w-0 truncate font-bold">
+                              <span className="wrap-break-word min-w-0 font-bold">
                                 {scenario.title.id}
                               </span>
                               <span className="text-teks-samar shrink-0 font-mono text-[0.65rem]">
@@ -462,7 +509,8 @@ export function Profil({
                   type="button"
                   onClick={() => void simpanGender(nilai)}
                   aria-pressed={aktif}
-                  className={`flex flex-col items-center gap-2 rounded-2xl border-2 px-2 py-3 text-center text-xs font-bold transition-colors sm:text-sm ${
+                  disabled={genderSibuk}
+                  className={`wrap-break-word flex min-w-0 flex-col items-center gap-2 rounded-2xl border-2 px-1 py-3 text-center text-[0.7rem] font-bold transition-colors disabled:opacity-60 sm:px-2 sm:text-sm ${
                     aktif
                       ? 'border-panggung bg-panggung text-halaman'
                       : 'border-border-halus hover:border-border-tegas'
@@ -495,10 +543,11 @@ export function Profil({
               <button
                 type="button"
                 onClick={keluar}
+                disabled={keluarSibuk}
                 className="tombol-utama inline-flex items-center gap-2"
               >
                 <LogOut aria-hidden size={16} />
-                Keluar
+                {keluarSibuk ? 'Keluar…' : keluarGagal ? 'Keluar gagal, coba lagi' : 'Keluar'}
               </button>
             </div>
           </section>
@@ -550,6 +599,51 @@ export function Profil({
                 <Trash2 aria-hidden size={15} />
                 Hapus seluruh data belajarku
               </button>
+            )}
+            {akunDemo ? null : (
+              <div className="border-border-tegas/60 mt-2 flex flex-col gap-3 border-t pt-4">
+                <p className="text-teks-sekunder max-w-prose text-sm">
+                  Mau berhenti sama sekali? Menghapus akun akan menghapus emailmu beserta seluruh
+                  data belajarmu dari database, dan tidak bisa dibatalkan.
+                </p>
+                <p aria-live="polite" className="text-sm">
+                  {akunGagal ? (
+                    <span className="font-bold">
+                      Akun belum terhapus. Periksa koneksi lalu coba lagi.
+                    </span>
+                  ) : null}
+                </p>
+                {mintaAkun ? (
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="font-bold">Yakin hapus akunmu selamanya?</p>
+                    <button
+                      type="button"
+                      onClick={hapusAkun}
+                      disabled={akunSibuk}
+                      className="tombol-utama"
+                    >
+                      {akunSibuk ? 'Menghapus…' : 'Ya, hapus akunku'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMintaAkun(false)}
+                      disabled={akunSibuk}
+                      className="tombol-sekunder"
+                    >
+                      Batal
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setMintaAkun(true)}
+                    className="border-border-tegas text-teks-sekunder hover:border-galat hover:text-galat flex min-h-11 items-center gap-2 self-start rounded-lg border px-4 text-sm transition-colors"
+                  >
+                    <Trash2 aria-hidden size={15} />
+                    Hapus akunku
+                  </button>
+                )}
+              </div>
             )}
           </section>
         </div>

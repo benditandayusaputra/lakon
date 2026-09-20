@@ -47,7 +47,7 @@ landing page (automatically replacing `uji-gerak` once
 
 ### 0. Prerequisites
 
-- `pnpm dev` running; log in with `admin@lakon.id / AdminLakon2026` (seed: `node tools/seed.mjs`).
+- `pnpm dev` running; log in with `admin@lakon.id` (password from `SEED_ADMIN_PASSWORD`; seed: `node tools/seed.mjs`).
 - Project owner prepares 6 video clips (one word per clip, may be cut
   from a longer video; ideally: signer facing the camera, hands+shoulders
   visible, plain background). Save locally, e.g. `~/lakon-sumber/halo.mp4`

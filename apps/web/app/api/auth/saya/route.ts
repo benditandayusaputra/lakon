@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { db, schema } from '@/db'
-import { getSessionUser } from '@/db/auth'
+import { bacaAvatar, destroySession, getSessionUser, isDemoAccount } from '@/db/auth'
 
 const patchSchema = z.object({
   avatar: z
@@ -17,9 +17,18 @@ const patchSchema = z.object({
 export async function PATCH(request: Request) {
   const user = await getSessionUser().catch(() => null)
   if (!user) return NextResponse.json({ ok: false }, { status: 401 })
+  if (isDemoAccount(user.email)) {
+    return NextResponse.json(
+      { ok: false, error: 'Akun demo dipakai bersama, jadi profilnya tidak bisa diubah.' },
+      { status: 403 },
+    )
+  }
   const parsed = patchSchema.safeParse(await request.json().catch(() => null))
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: 'Foto tidak valid.' }, { status: 400 })
+    return NextResponse.json(
+      { ok: false, error: 'Foto atau pilihan tidak valid.' },
+      { status: 400 },
+    )
   }
   const perubahan: { avatar?: string | null; gender?: 'perempuan' | 'laki-laki' | null } = {}
   if (parsed.data.avatar !== undefined) perubahan.avatar = parsed.data.avatar
@@ -30,10 +39,25 @@ export async function PATCH(request: Request) {
   return NextResponse.json({ ok: true, ...perubahan })
 }
 
+export async function DELETE() {
+  const user = await getSessionUser().catch(() => null)
+  if (!user) return NextResponse.json({ ok: false }, { status: 401 })
+  if (isDemoAccount(user.email)) {
+    return NextResponse.json(
+      { ok: false, error: 'Akun demo dipakai bersama, jadi tidak bisa dihapus.' },
+      { status: 403 },
+    )
+  }
+  await db.delete(schema.users).where(eq(schema.users.id, user.id))
+  await destroySession()
+  return NextResponse.json({ ok: true })
+}
+
 export async function GET() {
   try {
     const user = await getSessionUser()
-    return NextResponse.json({ ok: true, user })
+    if (!user) return NextResponse.json({ ok: true, user: null })
+    return NextResponse.json({ ok: true, user: { ...user, avatar: await bacaAvatar(user.id) } })
   } catch {
     return NextResponse.json({ ok: true, user: null })
   }

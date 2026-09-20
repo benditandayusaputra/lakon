@@ -52,7 +52,7 @@ const results = []
 for (const entry of PAGES) results.push(await audit(entry))
 
 const login = await page.request.post(`${BASE}/api/auth/masuk`, {
-  data: { email: 'admin@lakon.id', sandi: 'AdminLakon2026' },
+  data: { email: 'admin@lakon.id', sandi: process.env.SEED_ADMIN_PASSWORD ?? '' },
 })
 if (login.ok()) {
   for (const entry of ADMIN_PAGES) results.push(await audit(entry))

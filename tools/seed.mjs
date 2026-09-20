@@ -9,6 +9,15 @@ const { neon } = require('@neondatabase/serverless')
 process.loadEnvFile(join(import.meta.dirname, '..', '.env'))
 const sql = neon(process.env.DATABASE_URL)
 
+const internalPassword = (name) => {
+  const value = process.env[name]
+  if (!value) {
+    console.error(`Missing ${name}. Set it in .env before seeding internal accounts.`)
+    process.exit(1)
+  }
+  return value
+}
+
 const hashPassword = (password) => {
   const salt = randomBytes(16).toString('hex')
   return `${salt}:${scryptSync(password, salt, 64).toString('hex')}`
@@ -26,8 +35,13 @@ const upsertUser = async (email, displayName, password, role) => {
 }
 
 const demoId = await upsertUser('demo@lakon.id', 'Akun Demo', 'CobaLakon2026', 'pengguna')
-await upsertUser('admin@lakon.id', 'Admin Lakon', 'AdminLakon2026', 'admin')
-await upsertUser('validator@lakon.id', 'Validator Lakon', 'ValidasiLakon2026', 'validator')
+await upsertUser('admin@lakon.id', 'Admin Lakon', internalPassword('SEED_ADMIN_PASSWORD'), 'admin')
+await upsertUser(
+  'validator@lakon.id',
+  'Validator Lakon',
+  internalPassword('SEED_VALIDATOR_PASSWORD'),
+  'validator',
+)
 
 const contoh = [
   ['bendi@lakon.id', 'Bendi', 'BendiLakon2026'],
@@ -124,10 +138,12 @@ await siapkanAkunDemo('demo.dua@lakon.id', 'Demo Dua Adegan', 'DuaLakon2026', 2)
 await siapkanAkunDemo('demo.penuh@lakon.id', 'Demo Penuh', 'PenuhLakon2026', URUTAN_ADEGAN.length)
 
 console.log('seed done: demo@lakon.id / CobaLakon2026 (partial progress)')
-console.log('           admin@lakon.id / AdminLakon2026')
-console.log('           validator@lakon.id / ValidasiLakon2026')
+console.log('           admin@lakon.id / $SEED_ADMIN_PASSWORD')
+console.log('           validator@lakon.id / $SEED_VALIDATOR_PASSWORD')
 console.log('           samples: bendi@lakon.id / BendiLakon2026, kevin@lakon.id / KevinLakon2026,')
-console.log('                    jessica@lakon.id / JessicaLakon2026, nawal@lakon.id / NawalLakon2026')
+console.log(
+  '                    jessica@lakon.id / JessicaLakon2026, nawal@lakon.id / NawalLakon2026',
+)
 console.log('           presentation: demo.baru@lakon.id / BaruLakon2026 (no progress)')
 console.log('                         demo.dua@lakon.id / DuaLakon2026 (2 scenes finished)')
 console.log('                         demo.penuh@lakon.id / PenuhLakon2026 (5 scenes finished)')

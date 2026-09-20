@@ -27,7 +27,6 @@ export type SessionUser = {
   email: string
   displayName: string
   role: 'pengguna' | 'validator' | 'admin'
-  avatar: string | null
   gender: 'perempuan' | 'laki-laki' | null
 }
 
@@ -59,7 +58,6 @@ export const getSessionUser = async (): Promise<SessionUser | null> => {
       email: schema.users.email,
       displayName: schema.users.displayName,
       role: schema.users.role,
-      avatar: schema.users.avatar,
       gender: schema.users.gender,
     })
     .from(schema.sessions)
@@ -67,6 +65,15 @@ export const getSessionUser = async (): Promise<SessionUser | null> => {
     .where(and(eq(schema.sessions.token, token), gt(schema.sessions.expiresAt, new Date())))
     .limit(1)
   return rows[0] ?? null
+}
+
+export const bacaAvatar = async (userId: string): Promise<string | null> => {
+  const rows = await db
+    .select({ avatar: schema.users.avatar })
+    .from(schema.users)
+    .where(eq(schema.users.id, userId))
+    .limit(1)
+  return rows[0]?.avatar ?? null
 }
 
 export const destroySession = async () => {

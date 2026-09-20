@@ -5,25 +5,25 @@ import { db, schema } from '@/db'
 import { getSessionUser, isDemoAccount } from '@/db/auth'
 
 const signEntry = z.object({
-  signId: z.string().min(1),
+  signId: z.string().min(1).max(64),
   direction: z.enum(['deaf', 'service']).default('deaf'),
   status: z.enum(['belum', 'berlatih', 'dikuasai', 'dinilai-sendiri']),
-  attempts: z.number().int().min(0),
-  updatedAt: z.number(),
+  attempts: z.number().int().min(0).max(100_000),
+  updatedAt: z.number().finite(),
 })
 
 const runEntry = z.object({
-  scenarioId: z.string().min(1),
+  scenarioId: z.string().min(1).max(64),
   direction: z.enum(['deaf', 'service']),
-  durationMs: z.number().int().min(0),
-  mastered: z.array(z.string()),
-  needsRepeat: z.array(z.string()),
-  completedAt: z.number(),
+  durationMs: z.number().int().min(0).max(86_400_000),
+  mastered: z.array(z.string().max(64)).max(200),
+  needsRepeat: z.array(z.string().max(64)).max(200),
+  completedAt: z.number().finite(),
 })
 
 const bodySchema = z.object({
-  signs: z.array(signEntry).default([]),
-  runs: z.array(runEntry).default([]),
+  signs: z.array(signEntry).max(200).default([]),
+  runs: z.array(runEntry).max(50).default([]),
 })
 
 export async function GET() {

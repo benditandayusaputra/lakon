@@ -51,22 +51,25 @@ Sign in at <https://lakon-learn.vercel.app/masuk>. Every account below is
 created by `node tools/seed.mjs`; re-running it resets the progress of the
 four `demo` accounts.
 
-| Email                 | Password          | Role      | What you see                                                   |
-| --------------------- | ----------------- | --------- | -------------------------------------------------------------- |
-| `demo.baru@lakon.id`  | BaruLakon2026     | Learner   | Brand-new account: no progress, only scene 1 open              |
-| `demo.dua@lakon.id`   | DuaLakon2026      | Learner   | Scenes 1–2 finished, scene 3 unlocked, in both roles           |
-| `demo.penuh@lakon.id` | PenuhLakon2026    | Learner   | All five scenes finished in both roles, new scenes coming soon |
-| `demo@lakon.id`       | CobaLakon2026     | Learner   | Partial progress: coffee shop finished on the Deaf side        |
-| `bendi@lakon.id`      | BendiLakon2026    | Learner   | Sample learner                                                 |
-| `kevin@lakon.id`      | KevinLakon2026    | Learner   | Sample learner                                                 |
-| `jessica@lakon.id`    | JessicaLakon2026  | Learner   | Sample learner                                                 |
-| `nawal@lakon.id`      | NawalLakon2026    | Learner   | Sample learner                                                 |
-| `admin@lakon.id`      | AdminLakon2026    | Admin     | Internal pages `/dev/*` and `/tools/*`                         |
-| `validator@lakon.id`  | ValidasiLakon2026 | Validator | Internal pages; may only change `review` fields of content     |
+| Email                 | Password         | Role    | What you see                                                   |
+| --------------------- | ---------------- | ------- | -------------------------------------------------------------- |
+| `demo.baru@lakon.id`  | BaruLakon2026    | Learner | Brand-new account: no progress, only scene 1 open              |
+| `demo.dua@lakon.id`   | DuaLakon2026     | Learner | Scenes 1–2 finished, scene 3 unlocked, in both roles           |
+| `demo.penuh@lakon.id` | PenuhLakon2026   | Learner | All five scenes finished in both roles, new scenes coming soon |
+| `demo@lakon.id`       | CobaLakon2026    | Learner | Partial progress: coffee shop finished on the Deaf side        |
+| `bendi@lakon.id`      | BendiLakon2026   | Learner | Sample learner                                                 |
+| `kevin@lakon.id`      | KevinLakon2026   | Learner | Sample learner                                                 |
+| `jessica@lakon.id`    | JessicaLakon2026 | Learner | Sample learner                                                 |
+| `nawal@lakon.id`      | NawalLakon2026   | Learner | Sample learner                                                 |
 
 These accounts are shared, and the four `demo` accounts cannot delete their
-learning data. To start from a clean slate, register your own account at
-<https://lakon-learn.vercel.app/daftar>.
+learning data or change their profile. To start from a clean slate, register
+your own account at <https://lakon-learn.vercel.app/daftar>.
+
+The internal `admin@lakon.id` and `validator@lakon.id` accounts unlock
+`/dev/*` and `/tools/*`. Their passwords are never committed: set
+`SEED_ADMIN_PASSWORD` and `SEED_VALIDATOR_PASSWORD` in `.env` before running
+`node tools/seed.mjs`.
 
 ## Stack
 
@@ -116,6 +119,16 @@ They are recorded as drafts in their data files and await a Deaf validation sess
 `predev`/`prebuild` run `tools/fetch-assets.mjs`, which copies the MediaPipe
 WASM from node_modules and downloads the two landmark models into
 `apps/web/public/` (self-hosted so practice works offline and without a CDN).
+
+Two things need a manual refresh when the assets behind them change:
+
+- Replacing `apps/web/public/models/seed-san.vrm` invalidates the measurements
+  in `apps/web/features/avatar/seed-san-rig.ts`, which the sign compiler reads
+  instead of downloading the 10 MB avatar. Regenerate that file from the new
+  VRM before relying on it.
+- Replacing anything under `apps/web/public/models/` or `/mediapipe/` needs
+  `CACHE_VERSION` in `apps/web/public/sw.js` bumped, otherwise devices that
+  already cached the old file keep serving it.
 
 ## Technical documentation
 

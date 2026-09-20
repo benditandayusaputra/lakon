@@ -50,7 +50,8 @@ export const onSyncState = (listener: (state: SyncState) => void) => {
 }
 
 const perbaruiState = (akhir: SyncState) => {
-  if (berjalan.size > 0) setState('menyimpan')
+  if (akhir === 'tanpa-akun') setState('tanpa-akun')
+  else if (berjalan.size > 0) setState('menyimpan')
   else if (gagal.size > 0) setState(navigator.onLine ? 'gagal' : 'offline')
   else setState(akhir)
 }
@@ -73,8 +74,11 @@ const kirim = (kunci: string, permintaan: Permintaan): Promise<void> => {
     keepalive: permintaan.body.length < BATAS_KEEPALIVE,
   })
     .then((response) => {
-      if (response.status === 401) akhir = 'tanpa-akun'
-      else if (response.status >= 500) throw new Error(`server ${response.status}`)
+      if (response.status === 401) {
+        akhir = 'tanpa-akun'
+        throw new Error('sesi habis')
+      }
+      if (!response.ok) throw new Error(`server ${response.status}`)
     })
     .catch(() => {
       if (versi.get(kunci) === nomor) gagal.set(kunci, permintaan)
@@ -175,9 +179,9 @@ export const hapusCheckpoint = (scenarioId: string, direction: Arah) => {
 export const clearAllProgress = async () => {
   cpTertunda.clear()
   await tungguTulisan()
-  gagal.clear()
   const response = await fetch('/api/progress', { method: 'DELETE' })
   if (!response.ok) throw new Error(`gagal menghapus (${response.status})`)
+  gagal.clear()
 }
 
 if (typeof window !== 'undefined') {

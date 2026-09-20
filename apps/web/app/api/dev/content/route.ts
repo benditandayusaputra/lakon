@@ -82,9 +82,19 @@ export async function POST(request: Request) {
     )
   }
 
-  const body = (await request.json()) as {
+  if (process.env.VERCEL) {
+    return NextResponse.json(
+      { ok: false, issues: ['editor konten hanya bisa menyimpan saat dijalankan lokal'] },
+      { status: 501 },
+    )
+  }
+
+  const body = (await request.json().catch(() => null)) as {
     signs?: Record<string, unknown>
     handshapes?: Record<string, unknown>
+  } | null
+  if (!body) {
+    return NextResponse.json({ ok: false, issues: ['isi permintaan tidak valid'] }, { status: 400 })
   }
   const issues: string[] = []
   const validSigns: [string, unknown][] = []
