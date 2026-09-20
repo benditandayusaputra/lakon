@@ -2,6 +2,10 @@
   "name": "lakon",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.24.0",
+  "engines": {
+    "node": ">=20.12"
+  },
   "scripts": {
     "dev": "pnpm --filter @lakon/web dev",
     "build": "pnpm --filter @lakon/web build",

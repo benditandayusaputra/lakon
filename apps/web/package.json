@@ -20,15 +20,14 @@
     "@neondatabase/serverless": "^0.10.4",
     "@pixiv/three-vrm": "^3.4.0",
     "@react-three/fiber": "^9.0.0",
-    "drizzle-orm": "^0.38.4",
+    "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.38.0",
     "next": "^15.1.6",
     "onnxruntime-web": "^1.20.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "three": "^0.172.0",
-    "zod": "^3.24.1",
-    "zustand": "^5.0.3"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",
@@ -38,7 +37,7 @@
     "@types/react-dom": "^19.0.3",
     "@types/three": "^0.172.0",
     "axe-core": "^4.13.0",
-    "drizzle-kit": "^0.30.2",
+    "drizzle-kit": "^0.31.10",
     "tailwindcss": "^4.0.0"
   }
 }

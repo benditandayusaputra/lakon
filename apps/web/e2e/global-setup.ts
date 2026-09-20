@@ -14,6 +14,7 @@ export default function globalSetup() {
     [join(import.meta.dirname, '..', '..', '..', 'tools', 'seed.mjs')],
     {
       stdio: 'inherit',
+      env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL_TEST },
     },
   )
   if (seed.status !== 0) throw new Error('seed akun demo gagal, e2e butuh progres demo')
