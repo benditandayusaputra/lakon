@@ -20,6 +20,7 @@ export type CaptureResult = CaptureHandle | CaptureUnavailable
 export type CaptureOptions = {
   video: HTMLVideoElement
   onFrame: (frame: CaptureFrame, timestampMs: number) => void
+  lewati?: () => boolean
   width?: number
   height?: number
   frameRate?: number
@@ -36,10 +37,6 @@ export const detectRoute = (): CaptureRoute | null => {
   if (hasTrackProcessor()) return 'track-processor'
   if (hasVideoFrameCallback()) return 'video-frame-callback'
   return null
-}
-
-export const closeFrame = (frame: CaptureFrame) => {
-  frame.close()
 }
 
 let kameraBersama: MediaStream | null = null
@@ -90,7 +87,7 @@ const classify = (err: unknown): CaptureUnavailable => {
 }
 
 export const startCapture = async (options: CaptureOptions): Promise<CaptureResult> => {
-  const { video, onFrame, width = 640, height = 480, frameRate = 30 } = options
+  const { video, onFrame, lewati, width = 640, height = 480, frameRate = 30 } = options
 
   if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
     return { ok: false, reason: 'unsupported' }
@@ -164,12 +161,20 @@ export const startCapture = async (options: CaptureOptions): Promise<CaptureResu
           frame.close()
           break
         }
+        if (lewati?.()) {
+          frame.close()
+          continue
+        }
         onFrame(frame, frame.timestamp / 1000)
       }
     })()
   } else {
     const tick = (_now: number, metadata: VideoFrameCallbackMetadata) => {
       if (stopped) return
+      if (lewati?.()) {
+        video.requestVideoFrameCallback(tick)
+        return
+      }
       createImageBitmap(video)
         .then((bitmap) => {
           if (stopped) {

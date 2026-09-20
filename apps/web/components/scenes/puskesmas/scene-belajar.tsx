@@ -65,7 +65,6 @@ export function PanelAlurLayanan() {
 }
 
 export function SceneBelajarPuskesmas({
-  rigMemuat,
   isyaratAktif,
   urutan,
   sign,
@@ -82,7 +81,6 @@ export function SceneBelajarPuskesmas({
   onLewati,
   onMulaiUjian,
 }: {
-  rigMemuat: boolean
   isyaratAktif: string | null
   urutan: readonly string[]
   sign: Sign | undefined
@@ -99,19 +97,6 @@ export function SceneBelajarPuskesmas({
   onLewati: () => void
   onMulaiUjian: () => void
 }) {
-  if (rigMemuat) {
-    return (
-      <AmbienRuangTunggu>
-        <div className="mx-auto mt-10 flex w-fit items-center gap-3 rounded-2xl border-2 border-[#c4dcca] bg-white px-6 py-4 shadow-lg">
-          <Stethoscope aria-hidden className="h-5 w-5 animate-pulse text-[#2f7d52]" />
-          <p aria-live="polite" className="font-bold">
-            Perawat menyiapkan peraga…
-          </p>
-        </div>
-      </AmbienRuangTunggu>
-    )
-  }
-
   if (isyaratAktif === null) {
     return (
       <AmbienRuangTunggu>

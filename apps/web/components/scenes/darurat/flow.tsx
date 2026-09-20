@@ -3,14 +3,14 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { ClipboardCheck, Siren } from 'lucide-react'
+import { ClipboardCheck } from 'lucide-react'
 import { compileSign, type CompiledSign } from '@lakon/sign-compiler'
 import type { Scenario } from '@lakon/sign-schema'
 import { IzinKamera } from '@/components/scenes/izin-kamera'
 import { KeluarAdegan } from '@/components/scenes/keluar-adegan'
 import { TiraiSelesai } from '@/components/scenes/tirai-selesai'
 import { SyncBadge } from '@/components/sync-badge'
-import { useCompilerRig } from '@/features/avatar/use-rig'
+import { SEED_SAN_RIG } from '@/features/avatar/seed-san-rig'
 import { useContent } from '@/features/content/use-content'
 import {
   createScenarioEngine,
@@ -50,7 +50,6 @@ export function DaruratFlow() {
   const [tahap, setTahap] = useState<TahapDarurat>('luar')
   const [membuka, setMembuka] = useState(false)
   const [tirai, setTirai] = useState(false)
-  const { rig, error: rigError } = useCompilerRig(tahap !== 'luar')
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [laporan, setLaporan] = useState<Laporan>(LAPORAN_KOSONG)
   const [tick, forceUpdate] = useReducer((tick: number) => tick + 1, 0)
@@ -97,13 +96,13 @@ export function DaruratFlow() {
         terapkanCheckpoint(cp.state, learning, engine)
         setLearnView(cp.state.learnView)
         setLaporan({ ...LAPORAN_KOSONG, ...cp.state.ekstra.laporan })
-        startedAtRef.current = cp.state.startedAt || Date.now()
+        startedAtRef.current = Date.now() - (cp.state.elapsedMs ?? 0)
         setLanjutan({
           tahap: cp.state.tahap,
           keterangan: keteranganCheckpoint(cp.state, learning, engine),
         })
         setMembuka(true)
-        setTahap(direction === 'deaf' ? 'kamera' : cp.state.tahap)
+        setTahap('kamera')
         forceUpdate()
       }
       setCpDicek(true)
@@ -125,20 +124,20 @@ export function DaruratFlow() {
         learning,
         engine,
         { laporan },
-        startedAtRef.current,
+        Date.now() - startedAtRef.current,
       ),
     )
   }, [cpDicek, tahap, learnView, tick, learning, engine, direction, laporan])
 
   const getCompiled = useCallback(
     (signId: string): CompiledSign | null => {
-      if (!content || !rig) return null
+      if (!content) return null
       if (compiledCache.current.has(signId)) return compiledCache.current.get(signId) ?? null
       const sign = content.signs[signId]
       let compiled: CompiledSign | null = null
       if (sign) {
         try {
-          compiled = compileSign(sign, content.handshapes, rig)
+          compiled = compileSign(sign, content.handshapes, SEED_SAN_RIG)
         } catch {
           compiled = null
         }
@@ -146,13 +145,13 @@ export function DaruratFlow() {
       compiledCache.current.set(signId, compiled)
       return compiled
     },
-    [content, rig],
+    [content],
   )
 
-  if (contentError || rigError) {
+  if (contentError) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-16">
-        <p role="alert">{contentError ?? rigError}</p>
+        <p role="alert">{contentError}</p>
         <p className="mt-4">
           <Link href="/skenario" className="underline underline-offset-4">
             Kembali ke daftar skenario
@@ -173,7 +172,6 @@ export function DaruratFlow() {
   }
 
   const currentSignId = learning.next()
-  const rigLoading = tahap !== 'luar' && !rig && !rigError
   const directionLabel = direction === 'deaf' ? 'sisi Tuli' : 'sisi warga penolong'
 
   const masukPos = () => {
@@ -242,6 +240,7 @@ export function DaruratFlow() {
       <main className="dr-ruang flex min-h-dvh flex-col">
         {kepala}
         <IzinKamera
+          tanpaKamera={direction === 'service'}
           aksen="#c8553d"
           lanjutan={lanjutan?.keterangan}
           onLanjut={() => setTahap(lanjutan?.tahap ?? 'belajar')}
@@ -326,52 +325,43 @@ export function DaruratFlow() {
 
       {tahap === 'belajar' ? (
         <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 px-4 pb-12 pt-4 sm:px-6">
-          {rigLoading ? (
-            <div className="dr-kertas mx-auto mt-10 flex w-fit items-center gap-3 rounded-2xl px-6 py-4 shadow-lg">
-              <Siren aria-hidden className="h-5 w-5 animate-pulse text-[#33465a]" />
-              <p aria-live="polite" className="font-bold">
-                Warga jaga menyiapkan peraga…
-              </p>
-            </div>
-          ) : (
-            <SceneBelajar
-              learning={learning}
-              currentSignId={currentSignId}
-              sign={currentSignId ? content.signs[currentSignId] : undefined}
-              compiled={currentSignId ? getCompiled(currentSignId) : null}
-              learnView={learnView}
-              direction={direction}
-              directionLabel={directionLabel}
-              onGantiView={setLearnView}
-              onLulus={() => {
-                if (!currentSignId) return
-                learning.recordResult(currentSignId, true)
-                persistSign(currentSignId)
-                setLearnView('demo')
-                forceUpdate()
-              }}
-              onGagal={() => {
-                if (!currentSignId) return
-                learning.recordResult(currentSignId, false)
-                persistSign(currentSignId)
-                forceUpdate()
-              }}
-              onNilaiSendiri={() => {
-                if (!currentSignId) return
-                learning.selfAssessPass(currentSignId)
-                persistSign(currentSignId)
-                setLearnView('demo')
-                forceUpdate()
-              }}
-              onLewati={() => {
-                if (!currentSignId) return
-                learning.selfAssessPass(currentSignId)
-                persistSign(currentSignId)
-                forceUpdate()
-              }}
-              onMulaiUjian={() => setTahap('ujian')}
-            />
-          )}
+          <SceneBelajar
+            learning={learning}
+            currentSignId={currentSignId}
+            sign={currentSignId ? content.signs[currentSignId] : undefined}
+            compiled={currentSignId ? getCompiled(currentSignId) : null}
+            learnView={learnView}
+            direction={direction}
+            directionLabel={directionLabel}
+            onGantiView={setLearnView}
+            onLulus={() => {
+              if (!currentSignId) return
+              learning.recordResult(currentSignId, true)
+              persistSign(currentSignId)
+              setLearnView('demo')
+              forceUpdate()
+            }}
+            onGagal={() => {
+              if (!currentSignId) return
+              learning.recordResult(currentSignId, false)
+              persistSign(currentSignId)
+              forceUpdate()
+            }}
+            onNilaiSendiri={() => {
+              if (!currentSignId) return
+              learning.selfAssessPass(currentSignId)
+              persistSign(currentSignId)
+              setLearnView('demo')
+              forceUpdate()
+            }}
+            onLewati={() => {
+              if (!currentSignId) return
+              learning.selfAssessPass(currentSignId)
+              persistSign(currentSignId)
+              forceUpdate()
+            }}
+            onMulaiUjian={() => setTahap('ujian')}
+          />
         </div>
       ) : null}
 

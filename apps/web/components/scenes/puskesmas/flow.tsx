@@ -14,7 +14,7 @@ import { SceneLuarPuskesmas } from '@/components/scenes/puskesmas/scene-luar'
 import { SceneBelajarPuskesmas } from '@/components/scenes/puskesmas/scene-belajar'
 import { SceneUjianPuskesmas } from '@/components/scenes/puskesmas/scene-ujian'
 import { SceneResepPuskesmas } from '@/components/scenes/puskesmas/scene-resep'
-import { useCompilerRig } from '@/features/avatar/use-rig'
+import { SEED_SAN_RIG } from '@/features/avatar/seed-san-rig'
 import { useContent } from '@/features/content/use-content'
 import {
   createScenarioEngine,
@@ -50,7 +50,6 @@ export function PuskesmasFlow() {
   const [tahap, setTahap] = useState<Tahap>('luar')
   const [membuka, setMembuka] = useState(false)
   const [tirai, setTirai] = useState(false)
-  const { rig, error: rigError } = useCompilerRig(tahap !== 'luar')
   const [learnView, setLearnView] = useState<'demo' | 'praktik'>('demo')
   const [tick, forceUpdate] = useReducer((tick: number) => tick + 1, 0)
   const [cpDicek, setCpDicek] = useState(false)
@@ -96,13 +95,13 @@ export function PuskesmasFlow() {
         terapkanCheckpoint(cp.state, learning, engine)
         setLearnView(cp.state.learnView)
 
-        startedAtRef.current = cp.state.startedAt || Date.now()
+        startedAtRef.current = Date.now() - (cp.state.elapsedMs ?? 0)
         setLanjutan({
           tahap: cp.state.tahap,
           keterangan: keteranganCheckpoint(cp.state, learning, engine),
         })
         setMembuka(true)
-        setTahap(direction === 'deaf' ? 'kamera' : cp.state.tahap)
+        setTahap('kamera')
         forceUpdate()
       }
       setCpDicek(true)
@@ -118,19 +117,26 @@ export function PuskesmasFlow() {
     void tulisCheckpoint(
       scenarioId,
       direction,
-      buatCheckpoint<EkstraCp>(tahap, learnView, learning, engine, {}, startedAtRef.current),
+      buatCheckpoint<EkstraCp>(
+        tahap,
+        learnView,
+        learning,
+        engine,
+        {},
+        Date.now() - startedAtRef.current,
+      ),
     )
   }, [cpDicek, tahap, learnView, tick, learning, engine, direction])
 
   const getCompiled = useCallback(
     (signId: string): CompiledSign | null => {
-      if (!content || !rig) return null
+      if (!content) return null
       if (compiledCache.current.has(signId)) return compiledCache.current.get(signId) ?? null
       const sign = content.signs[signId]
       let compiled: CompiledSign | null = null
       if (sign) {
         try {
-          compiled = compileSign(sign, content.handshapes, rig)
+          compiled = compileSign(sign, content.handshapes, SEED_SAN_RIG)
         } catch {
           compiled = null
         }
@@ -138,13 +144,13 @@ export function PuskesmasFlow() {
       compiledCache.current.set(signId, compiled)
       return compiled
     },
-    [content, rig],
+    [content],
   )
 
-  if (contentError || rigError) {
+  if (contentError) {
     return (
       <main className="mx-auto max-w-2xl px-6 py-16">
-        <p role="alert">{contentError ?? rigError}</p>
+        <p role="alert">{contentError}</p>
         <p className="mt-4">
           <Link href="/skenario" className="underline underline-offset-4">
             Kembali ke daftar skenario
@@ -165,7 +171,6 @@ export function PuskesmasFlow() {
   }
 
   const currentSignId = learning.next()
-  const rigLoading = tahap !== 'luar' && !rig && !rigError
   const directionLabel = direction === 'deaf' ? 'sisi Tuli' : 'sisi pekerja layanan'
 
   const masukPuskesmas = () => {
@@ -234,6 +239,7 @@ export function PuskesmasFlow() {
       <main className="pk-dinding flex min-h-dvh flex-col">
         {kepala}
         <IzinKamera
+          tanpaKamera={direction === 'service'}
           aksen="#2f7d52"
           lanjutan={lanjutan?.keterangan}
           onLanjut={() => setTahap(lanjutan?.tahap ?? 'belajar')}
@@ -316,7 +322,6 @@ export function PuskesmasFlow() {
 
       {tahap === 'belajar' ? (
         <SceneBelajarPuskesmas
-          rigMemuat={rigLoading}
           isyaratAktif={currentSignId}
           urutan={learning.order()}
           sign={currentSignId ? content.signs[currentSignId] : undefined}

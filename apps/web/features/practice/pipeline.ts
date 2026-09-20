@@ -1,4 +1,4 @@
-import { closeFrame, startCapture, type CaptureHandle, type CaptureRoute } from './capture'
+import { startCapture, type CaptureHandle, type CaptureRoute } from './capture'
 import { createOverlay, type Overlay, type OverlayHighlight } from './overlay'
 import {
   DEFAULT_WORKER_CONFIG,
@@ -33,7 +33,11 @@ export type PipelineStats = {
   lastLandmarkAt: number
 }
 
-export type PipelineState = { status: PipelineStatus; message?: string }
+export type PipelineState = {
+  status: PipelineStatus
+  message?: string
+  sumber?: 'kamera' | 'model'
+}
 
 export type PipelineOptions = {
   video: HTMLVideoElement
@@ -126,6 +130,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
   let overlayWidth = 0
   let overlayHeight = 0
   let generasi = 0
+  let perluGambar = true
 
   const setState = (next: PipelineState) => {
     state = next
@@ -136,19 +141,21 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     worker?.postMessage(message, transfer)
   }
 
-  const onFrame = (frame: CaptureFrame, timestamp: number) => {
+  const lewati = () => {
     const now = performance.now()
     cameraRate.tick(now)
     stats.cameraFps = cameraRate.value
 
-    if (!worker || !ready || inFlight > 0) {
+    if (!worker || !ready || inFlight > 0 || document.hidden) {
       stats.droppedFrames++
-      closeFrame(frame)
-      return
+      return true
     }
+    return false
+  }
 
+  const onFrame = (frame: CaptureFrame, timestamp: number) => {
     inFlight++
-    sentAt = now
+    sentAt = performance.now()
     stats.queuedFrames = inFlight
     send({ type: 'frame', frame, timestamp }, [frame as unknown as Transferable])
   }
@@ -177,6 +184,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     if (message.type === 'ready') {
       stats.backend = message.backend
       ready = true
+      if (capture && state.status === 'starting') setState({ status: 'running' })
       void loadClassifier()
       return
     }
@@ -197,7 +205,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
       inFlight = 0
       stats.queuedFrames = 0
       console.warn('CV worker error:', message.message)
-      setState({ status: 'error', message: message.message })
+      setState({ status: 'error', sumber: 'model', message: message.message })
       return
     }
 
@@ -205,6 +213,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     stats.queuedFrames = inFlight
     latest.hands = message.hands
     latest.pose = message.pose
+    perluGambar = true
     options.onLandmarks?.(message.hands, message.pose, message.timestamp)
     stats.hands = message.hands.length
     stats.inferenceMs = stats.inferenceMs * 0.8 + message.inferenceMs * 0.2
@@ -221,6 +230,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
       overlayWidth = width
       overlayHeight = height
       overlay?.resize(width, height)
+      perluGambar = true
     }
   }
 
@@ -236,11 +246,15 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     stats.cameraFps = cameraRate.value
     stats.inferenceFps = inferenceRate.value
     syncOverlaySize()
-    overlay?.draw(latest)
+    if (perluGambar) {
+      overlay?.draw(latest)
+      perluGambar = false
+    }
   }
 
   const start = async (route?: CaptureRoute) => {
     if (state.status === 'running' || state.status === 'starting') return
+    if (capture || worker) stop()
     setState({ status: 'starting' })
     const gen = ++generasi
 
@@ -251,10 +265,11 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
       name: 'lakon-cv',
     })
     worker.onmessage = onWorkerMessage
-    worker.onerror = (event) => setState({ status: 'error', message: event.message })
+    worker.onerror = (event) =>
+      setState({ status: 'error', sumber: 'model', message: event.message })
     send({ type: 'init', config })
 
-    const result = await startCapture({ video, onFrame, route })
+    const result = await startCapture({ video, onFrame, lewati, route })
     if (gen !== generasi) {
       if (result.ok) result.stop()
       return
@@ -263,7 +278,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
       stop()
       setState(
         result.reason === 'error'
-          ? { status: 'error', message: result.message }
+          ? { status: 'error', sumber: 'kamera', message: result.message }
           : { status: result.reason },
       )
       return
@@ -278,7 +293,11 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
     inferenceRate.reset()
     inFlight = 0
     if (raf === 0) raf = requestAnimationFrame(loop)
-    setState({ status: 'running' })
+    setState(
+      ready
+        ? { status: 'running' }
+        : { status: 'starting', message: 'Menyiapkan pengenal gerakan…' },
+    )
   }
 
   const stop = () => {
@@ -312,6 +331,7 @@ export const createPipeline = (options: PipelineOptions): Pipeline => {
 
   const setHighlights = (highlights: readonly OverlayHighlight[]) => {
     overlay?.setHighlights(highlights)
+    perluGambar = true
   }
 
   return { start, stop, stats, state: () => state, setStabilizer, setHighlights }

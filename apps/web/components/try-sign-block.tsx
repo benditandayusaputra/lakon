@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from 'react'
 import { compileSign } from '@lakon/sign-compiler'
-import { useCompilerRig } from '@/features/avatar/use-rig'
+import { SEED_SAN_RIG } from '@/features/avatar/seed-san-rig'
 import { useContent } from '@/features/content/use-content'
 import { PracticeBlock } from '@/components/practice-block'
 import { lepasKamera } from '@/features/practice/capture'
@@ -17,24 +17,21 @@ export default function TrySignBlock({
   loadingText: string
 }) {
   const { content } = useContent()
-  const { rig } = useCompilerRig()
   useEffect(() => lepasKamera, [])
 
   const trySign = useMemo(() => {
-    if (!content || !rig) return null
+    if (!content) return null
     const sign = content.signs.halo ?? Object.values(content.signs)[0]
     if (!sign) return null
     try {
-      return { sign, compiled: compileSign(sign, content.handshapes, rig) }
+      return { sign, compiled: compileSign(sign, content.handshapes, SEED_SAN_RIG) }
     } catch {
       return null
     }
-  }, [content, rig])
+  }, [content])
 
   if (!trySign) {
-    return (
-      <p className="text-teks-sekunder max-w-prose">{content && rig ? missingText : loadingText}</p>
-    )
+    return <p className="text-teks-sekunder max-w-prose">{content ? missingText : loadingText}</p>
   }
   return (
     <PracticeBlock

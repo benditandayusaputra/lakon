@@ -42,15 +42,9 @@ const collectHandBones = (vrm: VRM, side: Side, missing: string[]): HandBoneMap 
   return { hand, upperArm, lowerArm, fingers }
 }
 
-export const loadAvatar = async (url: string = AVATAR_URL): Promise<AvatarRig> => {
-  const loader = new GLTFLoader()
-  loader.register((parser) => new VRMLoaderPlugin(parser))
-
-  const gltf = await loader.loadAsync(url)
-  const vrm = gltf.userData.vrm as VRM
-
-  VRMUtils.removeUnnecessaryVertices(gltf.scene)
-  VRMUtils.combineSkeletons(gltf.scene)
+export const rigFromVrm = (vrm: VRM): AvatarRig => {
+  VRMUtils.removeUnnecessaryVertices(vrm.scene)
+  VRMUtils.combineSkeletons(vrm.scene)
   VRMUtils.combineMorphs(vrm)
 
   vrm.scene.traverse((object) => {
@@ -71,6 +65,13 @@ export const loadAvatar = async (url: string = AVATAR_URL): Promise<AvatarRig> =
   const right = initHandRig('right', rightBones)
 
   return { vrm, left, right }
+}
+
+export const loadAvatar = async (url: string = AVATAR_URL): Promise<AvatarRig> => {
+  const loader = new GLTFLoader()
+  loader.register((parser) => new VRMLoaderPlugin(parser))
+  const gltf = await loader.loadAsync(url)
+  return rigFromVrm(gltf.userData.vrm as VRM)
 }
 
 export const disposeAvatar = (rig: AvatarRig) => {

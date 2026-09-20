@@ -76,13 +76,13 @@ export function PracticeBlock({
   const [peragaTampil, setPeragaTampil] = useState(peragaAwal)
 
   useEffect(() => {
-    setPhase((current) =>
-      current === 'jalan-keluar' || current === 'ditolak'
-        ? current
-        : pipelineRef.current?.state().status === 'running'
-          ? 'siap'
-          : 'kamera-mati',
-    )
+    setPhase((current) => {
+      if (current === 'jalan-keluar' || current === 'ditolak') return current
+      const status = pipelineRef.current?.state().status
+      if (status === 'running') return 'siap'
+      if (status === 'starting') return 'menunggu-izin'
+      return 'kamera-mati'
+    })
     setFailures(0)
     setResult(null)
     setVerdict(null)
@@ -206,6 +206,7 @@ export function PracticeBlock({
   }, [compiled, onFailedAttempt])
 
   const cameraRunning = pipelineState.status === 'running'
+  const modelGagal = pipelineState.status === 'error' && pipelineState.sumber === 'model'
   const kembaliSiap = () => setPhase(cameraRunning ? 'siap' : 'kamera-mati')
 
   const selfAssess = () => {
@@ -313,19 +314,28 @@ export function PracticeBlock({
           </div>
         ) : null}
 
-        {phase === 'menunggu-izin' ? <p>Menunggu izin kamera dari peramban…</p> : null}
+        {phase === 'menunggu-izin' ? (
+          <p>{pipelineState.message ?? 'Menunggu izin kamera dari peramban…'}</p>
+        ) : null}
 
         {phase === 'ditolak' ? (
           <div className="flex flex-col gap-2">
-            <p>
-              <VideoOff
-                aria-hidden
-                className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
-              />
-              Kamera tidak tersedia
-              {pipelineState.status === 'denied' ? ' karena izin ditolak' : ''}. Kamu tetap bisa
-              berlatih dengan membandingkan sendiri.
-            </p>
+            {modelGagal ? (
+              <p>
+                Pengenal gerakan gagal dimuat. Kamu tetap bisa berlatih dengan membandingkan
+                sendiri.
+              </p>
+            ) : (
+              <p>
+                <VideoOff
+                  aria-hidden
+                  className="mr-1 inline-block h-[1em] w-[1em] align-text-bottom"
+                />
+                Kamera tidak tersedia
+                {pipelineState.status === 'denied' ? ' karena izin ditolak' : ''}. Kamu tetap bisa
+                berlatih dengan membandingkan sendiri.
+              </p>
+            )}
             <div className="flex flex-wrap gap-3">
               <button
                 type="button"
@@ -335,7 +345,7 @@ export function PracticeBlock({
                 Latihan tanpa kamera
               </button>
               <button type="button" onClick={startCamera} className="tombol-sekunder">
-                Coba kamera lagi
+                {modelGagal ? 'Muat ulang pengenal' : 'Coba kamera lagi'}
               </button>
             </div>
           </div>
