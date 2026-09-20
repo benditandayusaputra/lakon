@@ -64,23 +64,26 @@ export function PilihJumlah({
         Jumlah penumpang: 1 orang
       </p>
       <div className="grid gap-3 sm:grid-cols-3">
-        {options.map((option, index) => (
-          <button
-            key={option}
-            type="button"
-            onClick={() => onPilih(index)}
-            className="kk-kartu-menu tp-kertas flex flex-col items-center gap-1 rounded-2xl border-2 border-[#8fb4d8] p-4 text-center shadow-lg"
-          >
-            <JariAngka jumlah={(index + 1) as 1 | 2 | 3} className="h-20 w-20" />
-            <span className="font-display text-lg font-bold">{option}</span>
-            <span className="mt-1 rounded-full bg-[#1c3a55] px-3 py-0.5 text-sm font-bold text-[#eef5fb]">
-              {rupiah(HARGA_TIKET * (index + 1))}
-            </span>
-            <span className="text-teks-samar mt-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wider">
-              <Hand aria-hidden className="h-3.5 w-3.5" /> tunjuk ini
-            </span>
-          </button>
-        ))}
+        {options.map((option, index) => {
+          const jumlah = (Number.parseInt(option, 10) || 1) as 1 | 2 | 3
+          return (
+            <button
+              key={option}
+              type="button"
+              onClick={() => onPilih(index)}
+              className="kk-kartu-menu tp-kertas flex flex-col items-center gap-1 rounded-2xl border-2 border-[#8fb4d8] p-4 text-center shadow-lg"
+            >
+              <JariAngka jumlah={jumlah} className="h-20 w-20" />
+              <span className="font-display text-lg font-bold">{option}</span>
+              <span className="mt-1 rounded-full bg-[#1c3a55] px-3 py-0.5 text-sm font-bold text-[#eef5fb]">
+                {rupiah(HARGA_TIKET * jumlah)}
+              </span>
+              <span className="text-teks-samar mt-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wider">
+                <Hand aria-hidden className="h-3.5 w-3.5" /> tunjuk ini
+              </span>
+            </button>
+          )
+        })}
       </div>
     </div>
   )

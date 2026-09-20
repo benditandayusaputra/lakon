@@ -132,22 +132,30 @@ function PesananPelanggan({
   useEffect(() => {
     const cepat = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const tunjuk = setTimeout(() => setDitunjuk(pilihan), cepat ? 200 : 1200)
-    const selesai = setTimeout(() => onSelesai(entri), cepat ? 1800 : 3600)
-    return () => {
-      clearTimeout(tunjuk)
-      clearTimeout(selesai)
-    }
+    return () => clearTimeout(tunjuk)
   }, [])
 
   return (
-    <PilihanMenu
-      prompt={
-        ditunjuk === undefined ? prompt : `Pelanggan menunjuk ${entri?.nama ?? options[pilihan]}.`
-      }
-      options={options}
-      ditunjuk={ditunjuk ?? -1}
-      onPilih={() => {}}
-    />
+    <div className="flex flex-col gap-3">
+      <PilihanMenu
+        prompt={
+          ditunjuk === undefined ? prompt : `Pelanggan menunjuk ${entri?.nama ?? options[pilihan]}.`
+        }
+        options={options}
+        ditunjuk={ditunjuk ?? -1}
+        onPilih={() => {}}
+      />
+      {ditunjuk === undefined ? null : (
+        <button
+          type="button"
+          autoFocus
+          onClick={() => onSelesai(entri)}
+          className="tombol-sorot self-start"
+        >
+          Lanjut
+        </button>
+      )}
+    </div>
   )
 }
 
@@ -205,6 +213,10 @@ function TugasKedai({
         <PilihanMenu
           prompt={task.prompt}
           options={task.options}
+          catatan={`Pesananmu hari ini: ${
+            MENU_UTAMA.find((menu) => menu.opsi === task.options[task.correct])?.nama ??
+            task.options[task.correct]
+          }`}
           onPilih={(index, entri) => {
             const benar = index === task.correct
             if (benar && entri) onPesan(entri)

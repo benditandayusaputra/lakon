@@ -8,11 +8,13 @@ export function PilihanMenu({
   prompt,
   options,
   ditunjuk,
+  catatan,
   onPilih,
 }: {
   prompt: string
   options: string[]
   ditunjuk?: number
+  catatan?: string
   onPilih: (index: number, entri: MenuKedai | undefined) => void
 }) {
   const otomatis = ditunjuk !== undefined
@@ -21,6 +23,11 @@ export function PilihanMenu({
       <p aria-live="polite" className="font-bold text-[#f5e9d7]">
         {prompt}
       </p>
+      {catatan ? (
+        <p className="w-fit rounded-full bg-[#d9a521] px-3 py-1 text-xs font-black uppercase tracking-wider text-[#2b1a0e]">
+          {catatan}
+        </p>
+      ) : null}
       <div className="grid gap-3 sm:grid-cols-3">
         {options.map((option, index) => {
           const entri = MENU_UTAMA.find((m) => m.opsi === option)

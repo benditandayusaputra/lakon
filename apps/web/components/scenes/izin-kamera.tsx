@@ -9,11 +9,13 @@ export function IzinKamera({
   aksen = '#d9a521',
   lanjutan,
   onMulaiUlang,
+  tanpaKamera = false,
 }: {
   onLanjut: () => void
   aksen?: string
   lanjutan?: string
   onMulaiUlang?: () => void
+  tanpaKamera?: boolean
 }) {
   const [sibuk, setSibuk] = useState(false)
   const [pesan, setPesan] = useState<string | null>(null)
@@ -46,10 +48,18 @@ export function IzinKamera({
           className="flex h-14 w-14 items-center justify-center rounded-2xl"
           style={{ backgroundColor: `${aksen}33`, color: aksen }}
         >
-          <Camera size={28} strokeWidth={2} />
+          {tanpaKamera ? (
+            <RotateCcw size={28} strokeWidth={2} />
+          ) : (
+            <Camera size={28} strokeWidth={2} />
+          )}
         </span>
         <h1 id="izin-kamera-judul" className="font-display mt-4 text-2xl font-semibold sm:text-3xl">
-          {lanjutan ? 'Lanjutkan dari checkpoint' : 'Nyalakan kamera untuk berlatih'}
+          {lanjutan
+            ? 'Lanjutkan dari checkpoint'
+            : tanpaKamera
+              ? 'Siap memulai adegan?'
+              : 'Nyalakan kamera untuk berlatih'}
         </h1>
         {lanjutan ? (
           <p
@@ -59,32 +69,48 @@ export function IzinKamera({
             Kamu berhenti di {lanjutan}. Kemajuanmu tersimpan.
           </p>
         ) : null}
-        <p className="mt-2 text-[#f6efe4]/80">
-          Kamera dipakai untuk memeriksa gerakan tanganmu di tiap isyarat. Sekali dinyalakan, kamera
-          tetap menyala sampai adegan selesai, jadi kamu tinggal menekan tombol mulai.
-        </p>
-        <p className="mt-3 flex items-center gap-2 text-sm text-[#f6efe4]/70">
-          <ShieldCheck aria-hidden size={16} style={{ color: aksen }} />
-          Video tidak pernah keluar dari perangkatmu.
-        </p>
+        {tanpaKamera ? (
+          <p className="mt-2 text-[#f6efe4]/80">
+            Di sisi pekerja layanan kamu membaca isyarat, jadi kamera tidak diperlukan.
+          </p>
+        ) : (
+          <>
+            <p className="mt-2 text-[#f6efe4]/80">
+              Kamera dipakai untuk memeriksa gerakan tanganmu di tiap isyarat. Sekali dinyalakan,
+              kamera tetap menyala sampai adegan selesai, jadi kamu tinggal menekan tombol mulai.
+            </p>
+            <p className="mt-3 flex items-center gap-2 text-sm text-[#f6efe4]/70">
+              <ShieldCheck aria-hidden size={16} style={{ color: aksen }} />
+              Video tidak pernah keluar dari perangkatmu.
+            </p>
+          </>
+        )}
         {pesan ? (
           <p role="alert" className="mt-4 rounded-xl bg-white/10 px-4 py-3 text-sm font-bold">
             {pesan}
           </p>
         ) : null}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+          {tanpaKamera ? null : (
+            <button
+              type="button"
+              onClick={() => void nyalakan()}
+              disabled={sibuk}
+              className="tombol-sorot justify-center"
+            >
+              <Camera aria-hidden className="h-5 w-5" />
+              {sibuk ? 'Meminta izin…' : 'Nyalakan kamera'}
+            </button>
+          )}
           <button
             type="button"
-            onClick={() => void nyalakan()}
-            disabled={sibuk}
-            className="tombol-sorot justify-center"
+            onClick={onLanjut}
+            className={
+              tanpaKamera ? 'tombol-sorot justify-center' : 'tombol-garis-terang justify-center'
+            }
           >
-            <Camera aria-hidden className="h-5 w-5" />
-            {sibuk ? 'Meminta izin…' : 'Nyalakan kamera'}
-          </button>
-          <button type="button" onClick={onLanjut} className="tombol-garis-terang justify-center">
-            <CameraOff aria-hidden className="mr-2 h-5 w-5" />
-            Lanjut tanpa kamera
+            {tanpaKamera ? null : <CameraOff aria-hidden className="mr-2 h-5 w-5" />}
+            {tanpaKamera ? (lanjutan ? 'Lanjutkan adegan' : 'Mulai adegan') : 'Lanjut tanpa kamera'}
           </button>
         </div>
         {lanjutan && onMulaiUlang ? (

@@ -16,20 +16,33 @@ const masukAkunBaru = async (page: Page) => {
 const tutupUmpan = async (page: Page) => {
   const lembar = page.getByRole('dialog')
   await expect(lembar).toBeVisible()
+  const lanjut = lembar.getByRole('button', { name: 'Lanjut' })
+  if (await lanjut.isVisible().catch(() => false)) {
+    await lanjut.click()
+    await page.waitForTimeout(250)
+    return true
+  }
   const lewati = lembar.getByRole('button', { name: 'Lewati' })
-  if (await lewati.isVisible().catch(() => false)) await lewati.click()
-  await lembar.getByRole('button', { name: 'Lanjut' }).click()
+  if (await lewati.isVisible().catch(() => false)) {
+    await lewati.click()
+    await lembar.getByRole('button', { name: 'Lanjut' }).click()
+    await page.waitForTimeout(250)
+    return true
+  }
+  await lembar.getByRole('button', { name: 'Coba lagi' }).click()
   await page.waitForTimeout(250)
+  return false
 }
 
 const jawabLatihanBaca = async (page: Page) => {
   const soal = page.getByText('Pelanggan berisyarat. Apa maknanya?')
   if (!(await soal.isVisible().catch(() => false))) return false
-  await page
-    .locator('p:has-text("Pelanggan berisyarat. Apa maknanya?") + div button')
-    .first()
-    .click()
-  await tutupUmpan(page)
+  const opsi = page.locator('p:has-text("Pelanggan berisyarat. Apa maknanya?") + div button')
+  const jumlah = await opsi.count()
+  for (let i = 0; i < jumlah; i++) {
+    await opsi.nth(i).click()
+    if (await tutupUmpan(page)) return true
+  }
   return true
 }
 
@@ -65,7 +78,8 @@ const skipAllLearning = async (page: Page) => {
 }
 
 const finishExam = async (page: Page) => {
-  for (let i = 0; i < 60; i++) {
+  let percobaan = 0
+  for (let i = 0; i < 90; i++) {
     if (
       await page
         .getByRole('button', { name: 'Ulangi kunjungan' })
@@ -80,7 +94,7 @@ const finishExam = async (page: Page) => {
         .isVisible()
         .catch(() => false)
     ) {
-      await tutupUmpan(page)
+      percobaan = (await tutupUmpan(page)) ? 0 : percobaan + 1
       continue
     }
     const tirai = page.getByRole('button', { name: 'Lihat ringkasan' })
@@ -107,7 +121,9 @@ const finishExam = async (page: Page) => {
       await page.waitForTimeout(250)
       continue
     }
-    const option = page.locator('button.kk-kartu-menu:enabled').first()
+    const kartu = page.locator('button.kk-kartu-menu:enabled')
+    const jumlahKartu = await kartu.count()
+    const option = jumlahKartu > 0 ? kartu.nth(percobaan % jumlahKartu) : kartu.first()
     if (await option.isVisible().catch(() => false)) {
       await option.click()
       await page.waitForTimeout(250)

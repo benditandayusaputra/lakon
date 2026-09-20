@@ -23,11 +23,14 @@ export function UmpanJawab({
 }) {
   const ref = useRef<HTMLDialogElement>(null)
   const judulId = useId()
+  const pesanId = useId()
   const [dilewati, setDilewati] = useState(false)
 
-  useEffect(() => {
+  const bukaLagi = () => {
     if (ref.current && !ref.current.open) ref.current.showModal()
-  }, [])
+  }
+
+  useEffect(bukaLagi, [])
 
   const lulus = benar || dilewati
 
@@ -35,7 +38,9 @@ export function UmpanJawab({
     <dialog
       ref={ref}
       aria-labelledby={judulId}
+      aria-describedby={lulus ? undefined : pesanId}
       onCancel={(event) => event.preventDefault()}
+      onClose={bukaLagi}
       className={`umpan-jawab bg-halaman text-teks fixed inset-x-0 bottom-0 top-auto m-0 max-h-none w-full max-w-none border-0 border-t-4 px-4 py-5 shadow-[0_-16px_40px_-16px_rgba(0,0,0,0.45)] backdrop:bg-black/25 sm:px-6 ${
         benar ? 'border-berhasil' : 'border-ulang'
       }`}
@@ -58,7 +63,11 @@ export function UmpanJawab({
           {lulus && jawaban ? (
             <p className="font-display mt-1 text-2xl font-bold first-letter:uppercase">{jawaban}</p>
           ) : null}
-          {lulus ? null : <p className="mt-1">{pesanSalah}</p>}
+          {lulus ? null : (
+            <p id={pesanId} className="mt-1">
+              {pesanSalah}
+            </p>
+          )}
         </div>
         <div className="flex flex-row-reverse flex-wrap justify-end gap-3">
           {lulus ? (

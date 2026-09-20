@@ -1,23 +1,14 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { CompiledSign } from '@lakon/sign-compiler'
 import type { Sign } from '@lakon/sign-schema'
 import { AvatarStage } from '@/components/avatar-stage'
 import { UmpanJawab } from '@/components/umpan-jawab'
+import { acak } from '@/features/scenario/engine'
+import { ESCAPE_AFTER_FAILURES } from '@/features/scenario/learning'
 
 const rapikan = (id: string) => id.replace(/-/g, ' ')
-
-const acak = <T,>(daftar: readonly T[], benih: number): T[] => {
-  const hasil = [...daftar]
-  let nilai = benih
-  for (let i = hasil.length - 1; i > 0; i--) {
-    nilai = (nilai * 1103515245 + 12345) % 2147483648
-    const j = nilai % (i + 1)
-    ;[hasil[i], hasil[j]] = [hasil[j]!, hasil[i]!]
-  }
-  return hasil
-}
 
 export function LatihanBaca({
   compiled,
@@ -37,6 +28,9 @@ export function LatihanBaca({
   onLewati: () => void
 }) {
   const [benar, setBenar] = useState<boolean | null>(null)
+  const [gagal, setGagal] = useState(0)
+
+  useEffect(() => setGagal(0), [signId])
 
   const pilihan = useMemo(() => {
     const lain = kandidat.filter((id) => id !== signId)
@@ -45,7 +39,10 @@ export function LatihanBaca({
   }, [kandidat, signId])
 
   const pilih = (id: string) => {
-    if (id !== signId) onGagal()
+    if (id !== signId) {
+      onGagal()
+      setGagal((jumlah) => jumlah + 1)
+    }
     setBenar(id === signId)
   }
 
@@ -89,7 +86,7 @@ export function LatihanBaca({
           jawaban={rapikan(signId)}
           onLanjut={tutupLalu(onLulus)}
           onCobaLagi={() => setBenar(null)}
-          onLewati={tutupLalu(onLewati)}
+          onLewati={gagal >= ESCAPE_AFTER_FAILURES ? tutupLalu(onLewati) : undefined}
         />
       )}
     </div>

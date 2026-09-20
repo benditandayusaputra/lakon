@@ -18,11 +18,7 @@
         "handshape": "five-spread",
         "location": {
           "anchor": "pelipis",
-          "offset": [
-            0.3,
-            0.15,
-            0.15
-          ]
+          "offset": [0.3, 0.15, 0.15]
         },
         "orientation": {
           "palm": "in",
@@ -38,11 +34,7 @@
         "handshape": "five-spread",
         "location": {
           "anchor": "pelipis",
-          "offset": [
-            0.35,
-            0.15,
-            0.2
-          ]
+          "offset": [0.35, 0.15, 0.2]
         },
         "orientation": {
           "palm": "in",
@@ -65,11 +57,7 @@
         "handshape": "five-spread",
         "location": {
           "anchor": "bahu",
-          "offset": [
-            0.0,
-            -1.2,
-            0.08
-          ]
+          "offset": [0.0, -1.2, 0.08]
         },
         "orientation": {
           "palm": "in",

@@ -8,7 +8,7 @@ export type Checkpoint<E> = {
   learning: SignProgress[]
   engine: EngineSnapshot
   ekstra: E
-  startedAt: number
+  elapsedMs?: number
 }
 
 export const buatCheckpoint = <E>(
@@ -17,14 +17,14 @@ export const buatCheckpoint = <E>(
   learning: LearningPhase,
   engine: ScenarioEngine,
   ekstra: E,
-  startedAt: number,
+  elapsedMs: number,
 ): Checkpoint<E> => ({
   tahap,
   learnView,
   learning: learning.snapshot(),
   engine: engine.snapshot(),
   ekstra,
-  startedAt,
+  elapsedMs,
 })
 
 export const terapkanCheckpoint = <E>(

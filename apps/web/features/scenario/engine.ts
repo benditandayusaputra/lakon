@@ -13,6 +13,17 @@ export type ScenarioEvent = {
 
 export type AdvanceResult = 'next' | 'onFail' | 'stay' | 'selesai'
 
+export const acak = <T>(daftar: readonly T[], benih: number): T[] => {
+  const hasil = [...daftar]
+  let nilai = benih
+  for (let i = hasil.length - 1; i > 0; i--) {
+    nilai = (nilai * 1103515245 + 12345) % 2147483648
+    const j = nilai % (i + 1)
+    ;[hasil[i], hasil[j]] = [hasil[j]!, hasil[i]!]
+  }
+  return hasil
+}
+
 export type EngineSnapshot = {
   currentId: string | null
   path: string[]
@@ -47,8 +58,16 @@ export const createScenarioEngine = (
   let failuresByNode = new Map<string, number>()
   let path: string[] = startId ? [startId] : []
   let events: ScenarioEvent[] = []
+  const pilihanAcak = new Map<string, ScenarioTask>()
 
   const node = (): ScenarioNode | null => (currentId ? (nodesById.get(currentId) ?? null) : null)
+
+  const mulaiUlang = () => {
+    currentId = startId
+    failuresByNode = new Map()
+    path = startId ? [startId] : []
+    events = []
+  }
 
   const moveTo = (nextId: string | null): AdvanceResult => {
     currentId = nextId
@@ -77,10 +96,11 @@ export const createScenarioEngine = (
       failures: [...failuresByNode.entries()],
     }),
     restore(snapshot) {
-      currentId =
-        snapshot.currentId !== null && nodesById.has(snapshot.currentId)
-          ? snapshot.currentId
-          : startId
+      if (snapshot.currentId === null || !nodesById.has(snapshot.currentId)) {
+        mulaiUlang()
+        return
+      }
+      currentId = snapshot.currentId
       path = [...snapshot.path]
       events = snapshot.events.map((event) => ({ ...event }))
       failuresByNode = new Map(snapshot.failures)
@@ -88,7 +108,22 @@ export const createScenarioEngine = (
     current: node,
     currentTask: () => {
       const active = node()
-      return active?.task ? active.task[direction] : null
+      if (!active?.task) return null
+      const task = active.task[direction]
+      if (task.type === 'produce') return task
+      const tersimpan = pilihanAcak.get(active.id)
+      if (tersimpan) return tersimpan
+      const benih = [...active.id].reduce(
+        (jumlah, huruf) => jumlah + huruf.charCodeAt(0),
+        direction.length + task.options.length,
+      )
+      const options = acak(task.options, benih)
+      const diacak: ScenarioTask =
+        task.type === 'receptive'
+          ? { ...task, options }
+          : { ...task, options, correct: options.indexOf(task.options[task.correct]!) }
+      pilihanAcak.set(active.id, diacak)
+      return diacak
     },
     attemptsAtCurrent: () => (currentId ? (failuresByNode.get(currentId) ?? 0) : 0),
     isDone: () => currentId === null,
@@ -122,12 +157,7 @@ export const createScenarioEngine = (
       record('lewati', at)
       return moveTo(active.next)
     },
-    reset() {
-      currentId = startId
-      failuresByNode = new Map()
-      path = startId ? [startId] : []
-      events = []
-    },
+    reset: mulaiUlang,
   }
 }
 

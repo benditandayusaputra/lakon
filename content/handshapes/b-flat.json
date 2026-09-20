@@ -8,51 +8,28 @@
   "dialect": "bisindo-jakarta",
   "fingers": {
     "thumb": {
-      "flex": [
-        10,
-        5,
-        0
-      ],
+      "flex": [10, 5, 0],
       "abduct": 0,
       "oppose": 0
     },
     "index": {
-      "flex": [
-        0,
-        0,
-        0
-      ],
+      "flex": [0, 0, 0],
       "abduct": 0
     },
     "middle": {
-      "flex": [
-        0,
-        0,
-        0
-      ],
+      "flex": [0, 0, 0],
       "abduct": 0
     },
     "ring": {
-      "flex": [
-        0,
-        0,
-        0
-      ],
+      "flex": [0, 0, 0],
       "abduct": 0
     },
     "pinky": {
-      "flex": [
-        0,
-        0,
-        0
-      ],
+      "flex": [0, 0, 0],
       "abduct": 0
     }
   },
-  "usedIn": [
-    "terima-kasih",
-    "uji-gerak"
-  ],
+  "usedIn": ["terima-kasih", "uji-gerak"],
   "notes": null,
   "source": "candidate",
   "review": {

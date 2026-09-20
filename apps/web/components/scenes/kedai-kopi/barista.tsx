@@ -77,10 +77,7 @@ export function Barista({ pose, className = '' }: { pose: PoseBarista; className
         <path d="M149 132 q11 8 22 0 v6 q-11 8 -22 0 Z" fill="rgba(0,0,0,0.08)" />
 
         <circle cx="160" cy="92" r="46" fill={KULIT} />
-        <path
-          d="M114 92 a46 46 0 0 1 92 0 l0 -14 q-14 -34 -46 -34 q-32 0 -46 34 Z"
-          fill={RAMBUT}
-        />
+        <path d="M114 92 a46 46 0 0 1 92 0 l0 -14 q-14 -34 -46 -34 q-32 0 -46 34 Z" fill={RAMBUT} />
         <path
           d="M114 92 q-4 -28 14 -40"
           fill="none"
@@ -182,7 +179,13 @@ function LatarKonter() {
       <div className="absolute right-[7%] top-[13%] w-[22%] max-w-28 rotate-2 rounded-md border-4 border-[#7a4d2a] bg-[#26301f] p-1.5 shadow-lg">
         <svg viewBox="0 0 60 44" className="w-full">
           <path d="M12 30 H40 L37 40 H15 Z" fill="#ece7d6" opacity="0.85" />
-          <path d="M40 32 q8 1 6 7 h-8" fill="none" stroke="#ece7d6" strokeWidth="2.5" opacity="0.85" />
+          <path
+            d="M40 32 q8 1 6 7 h-8"
+            fill="none"
+            stroke="#ece7d6"
+            strokeWidth="2.5"
+            opacity="0.85"
+          />
           <path
             d="M20 24 q-3 -6 2 -9 M28 24 q-3 -7 2 -11 M36 25 q-3 -6 2 -9"
             fill="none"
@@ -213,7 +216,14 @@ function KonterBar({ pose }: { pose: PoseBarista }) {
           <rect x="6" y="10" width="28" height="34" rx="4" fill="#c9b695" opacity="0.75" />
           <rect x="6" y="26" width="28" height="18" rx="4" fill="#8a5f10" opacity="0.6" />
           <rect x="10" y="4" width="20" height="8" rx="2" fill="#6b4226" />
-          <text x="20" y="22" textAnchor="middle" fontSize="8" fill="#452817" fontFamily="var(--font-kapur), cursive">
+          <text
+            x="20"
+            y="22"
+            textAnchor="middle"
+            fontSize="8"
+            fill="#452817"
+            fontFamily="var(--font-kapur), cursive"
+          >
             tip
           </text>
         </svg>

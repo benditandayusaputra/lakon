@@ -26,21 +26,16 @@ export function TiraiSelesai({
     const cepat =
       typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (cepat) {
-      onSelesai()
+      setSisa(0)
       return
     }
-    const timer = window.setInterval(() => {
-      setSisa((nilai) => {
-        if (nilai <= 1) {
-          window.clearInterval(timer)
-          onSelesai()
-          return 0
-        }
-        return nilai - 1
-      })
-    }, 1000)
+    const timer = window.setInterval(() => setSisa((nilai) => Math.max(0, nilai - 1)), 1000)
     return () => window.clearInterval(timer)
-  }, [onSelesai])
+  }, [])
+
+  useEffect(() => {
+    if (sisa === 0) onSelesai()
+  }, [sisa, onSelesai])
 
   return (
     <div
@@ -75,7 +70,7 @@ export function TiraiSelesai({
       <p className="font-mono text-sm text-[#f6efe4]/70">
         {dikuasai} isyarat dikuasai · ± {menit} menit
       </p>
-      <button type="button" onClick={onSelesai} className="tombol-sorot mt-2">
+      <button type="button" autoFocus onClick={onSelesai} className="tombol-sorot mt-2">
         Lihat ringkasan {sisa > 0 ? `(${sisa})` : ''}
       </button>
     </div>

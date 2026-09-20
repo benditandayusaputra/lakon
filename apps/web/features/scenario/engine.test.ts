@@ -97,6 +97,53 @@ describe('createScenarioEngine', () => {
     expect(engine.current()?.id).toBe('tutup')
   })
 
+  it('mengacak urutan pilihan tapi tetap stabil dan menandai jawaban benar', () => {
+    const satuSimpul = (nodeId: string) =>
+      parseScenario({
+        id: 'uji-point',
+        title: { id: 'Uji', en: 'Test' },
+        sdg: [10],
+        vocab: ['halo'],
+        estimatedMinutes: 1,
+        nodes: [
+          {
+            id: nodeId,
+            actor: 'barista',
+            line: { id: 'Pilih.' },
+            task: {
+              deaf: { type: 'point', prompt: 'p', options: ['a', 'b', 'c', 'd'], correct: 0 },
+              service: { type: 'point', prompt: 'p', options: ['a', 'b', 'c', 'd'], correct: 0 },
+            },
+            next: null,
+          },
+        ],
+      })
+
+    const engine = createScenarioEngine(satuSimpul('pesan'), 'deaf', () => 0)
+    const task = engine.currentTask()
+    if (task?.type !== 'point') throw new Error('tugas bukan point')
+    expect([...task.options].sort()).toEqual(['a', 'b', 'c', 'd'])
+    expect(task.options[task.correct]).toBe('a')
+    expect(engine.currentTask()).toBe(task)
+
+    const posisi = ['sapa', 'pesan', 'harga', 'bayar', 'ambil'].map((id) => {
+      const tugas = createScenarioEngine(satuSimpul(id), 'deaf', () => 0).currentTask()
+      return tugas?.type === 'point' ? tugas.correct : -1
+    })
+    expect(new Set(posisi).size).toBeGreaterThan(1)
+  })
+
+  it('restore dengan simpul tak dikenal mengulang dari awal tanpa sisa riwayat', () => {
+    const engine = createScenarioEngine(scenario(), 'deaf', () => 0)
+    engine.answer('salah')
+    engine.continueNode()
+    engine.restore({ currentId: 'entah', path: ['sapa', 'pesan'], events: [], failures: [] })
+    expect(engine.current()?.id).toBe('sapa')
+    expect(engine.path()).toEqual(['sapa'])
+    expect(engine.events()).toEqual([])
+    expect(engine.attemptsAtCurrent()).toBe(0)
+  })
+
   it('ringkasan memisahkan isyarat dikuasai dan perlu diulang tanpa skor kompetitif', () => {
     const engine = createScenarioEngine(scenario(), 'deaf', () => 0)
     engine.answer('salah')
